@@ -106,7 +106,7 @@ ion-slides{
 }
 
 .toolbar{
-  min-height: 56px;
+  height: 56px;
 }
 
 .title{

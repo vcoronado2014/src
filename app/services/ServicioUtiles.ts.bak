@@ -35,8 +35,7 @@ export class ServicioUtiles{
         public appVersion: AppVersion,
         public toast: ToastController,
         public device: Device,
-        private servicioGeo: ServicioGeo,
-        public network: Network
+        private servicioGeo: ServicioGeo
     ){
       //inicializamos los valores
       moment.locale('es');

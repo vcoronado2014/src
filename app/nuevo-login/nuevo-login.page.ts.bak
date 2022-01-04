@@ -871,60 +871,54 @@ export class NuevoLoginPage implements OnInit {
     await loader.present().then(async () => {
       if (!this.utiles.isAppOnDevice()) {
         //llamada web
-        setTimeout(() => {
-          this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data) => {
-            if (data) {
-              let respuesta = data;
-              localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
-              localStorage.setItem('TIENE_REGISTRO', 'true');
-              loader.dismiss();
-              let registro = JSON.parse(localStorage.getItem('REGISTRO'));
-  
-              this.autentificarse(registro.Run, password);
-            }
-            else {
-              this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
-              this.estaCargando = false;
-              loader.dismiss();
-              return;
-            }
-  
-          }, error => {
-            //console.log(error.message);
-            //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+        this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data) => {
+          if (data) {
+            let respuesta = data;
+            localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
+            localStorage.setItem('TIENE_REGISTRO', 'true');
+            loader.dismiss();
+            let registro = JSON.parse(localStorage.getItem('REGISTRO'));
+
+            this.autentificarse(registro.Run, password);
+          }
+          else {
+            this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
             this.estaCargando = false;
             loader.dismiss();
-            this.procesoLocal();
-          })
-        }, 5000);
+            return;
+          }
+
+        }, error => {
+          console.log(error.message);
+          this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          this.estaCargando = false;
+          loader.dismiss();
+        })
       }
       else {
         //llamada nativa
-        setTimeout(() => {
-          this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data) => {
-            let respuesta = JSON.parse(data.data);
-            if (respuesta) {
-              localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
-              localStorage.setItem('TIENE_REGISTRO', 'true');
-              loader.dismiss();
-              let registro = JSON.parse(localStorage.getItem('REGISTRO'));
-              this.autentificarse(registro.Run, password);
-            }
-            else {
-              this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
-              this.estaCargando = false;
-              loader.dismiss();
-              return;
-            }
-  
-          }).catch(error => {
-            //console.log(error.message);
-            //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+        this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data) => {
+          let respuesta = JSON.parse(data.data);
+          if (respuesta) {
+            localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
+            localStorage.setItem('TIENE_REGISTRO', 'true');
+            loader.dismiss();
+            let registro = JSON.parse(localStorage.getItem('REGISTRO'));
+            this.autentificarse(registro.Run, password);
+          }
+          else {
+            this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
             this.estaCargando = false;
             loader.dismiss();
-            this.procesoLocal();
-          })
-        }, 5000);
+            return;
+          }
+
+        }).catch(error => {
+          console.log(error.message);
+          this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          this.estaCargando = false;
+          loader.dismiss();
+        })
       }
     })
   }
@@ -938,33 +932,16 @@ export class NuevoLoginPage implements OnInit {
   }
 
   async onSubmit() {
-    //this.utiles.verificaInternet();
-    var puede = true;
-    if (this.utiles.isAppOnDevice()) {
-      if (sessionStorage.getItem('CONEXION')) {
-        if (sessionStorage.getItem('CONEXION') == 'Offline') {
-          puede = false;
-        }
-      }
-
+    if (this.forma.invalid) {
+      return;
     }
-    if (puede == false) {
-      this.utiles.presentToast('NO tienes conexión a internet', 'bottom', 3000);
-      //levantar una ventana de información a internet
-      this.navCtrl.navigateRoot('error');
+    if (this.usaEnrolamiento) {
+      //loguearse con enrolamiento
+      this.loguearseEnrolamiento();
     }
     else {
-      if (this.forma.invalid) {
-        return;
-      }
-      if (this.usaEnrolamiento) {
-        //loguearse con enrolamiento
-        this.loguearseEnrolamiento();
-      }
-      else {
-        //loguearse con registro app
-        this.loguearseRegistro();
-      }
+      //loguearse con registro app
+      this.loguearseRegistro();
     }
   }
   async autentificarse(userName, password) {

@@ -40,7 +40,6 @@ import { ServicioParametrosApp } from './services/ServicioParametrosApp';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServicioFCM } from './services/ServicioFCM';
 import { ServicioNotificacionesLocales } from './services/ServicioNotificacionesLocales';
-import { NetworkService } from './services/network.service';
 /** componentes material  */
 import { MatCardModule  } from '@angular/material/card';
 import { MatButtonModule  } from '@angular/material/button';
@@ -118,7 +117,6 @@ import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/
     ServicioPaginacion,
     ServicioNotificaciones,
     ServicioNotificacionesLocales,
-    NetworkService,
     ServicioClaveUnica,
     ServicioParametrosApp,
     ServicioFCM,

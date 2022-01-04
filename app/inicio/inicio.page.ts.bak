@@ -415,17 +415,11 @@ export class InicioPage implements OnInit {
       console.log('Datos politicos existentes');
     }
     else {
-      /* if (this.status == ConnectionStatus.Online) { */
-        this.servicioGeo.getMapaNative(lat, lon).then(response => {
-          //console.log(data);
-          this.utiles.procesarRespuestaMapa(JSON.parse(response.data));
+      this.servicioGeo.getMapaNative(lat, lon).then(response => {
+        //console.log(data);
+        this.utiles.procesarRespuestaMapa(JSON.parse(response.data));
 
-        });
-/*       }
-      else{
-        console.log('NO HAY CONEXIÓN A INTERNET');
-      } */
-
+      });
     }
 
   }

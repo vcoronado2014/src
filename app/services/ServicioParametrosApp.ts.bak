@@ -76,7 +76,7 @@ export class ServicioParametrosApp{
         return retorno;
     }
     USA_API_MANAGEMENT = ()=>{
-        let retorno = true;
+        let retorno = false;
         if (localStorage.getItem('PARAMETROS_APP')){
             let elementos = JSON.parse(localStorage.getItem('PARAMETROS_APP'));
             if (elementos && elementos.length > 0){

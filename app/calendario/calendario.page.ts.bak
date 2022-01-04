@@ -575,17 +575,6 @@ export class CalendarioPage implements OnInit {
   private getTime(date?: Date) {
     return date != null ? new Date(date).getTime() : 0;
   }
-  cargarDataLocal(){
-    sessionStorage.setItem('EVENTOS_LOCAL', JSON.stringify(this.EVENTOS_LOCAL));
-    this.citasVerticalTodas = this.EVENTOS_LOCAL;
-    this.procesarArregloCitasTodas();
-    this.citasVerticalMostrar = this.citasVerticalTodas.filter(e => e.Mostrar == true);
-    this.citasVerticalMostrar.sort((a: any, b: any) => { return this.getTime(a.FechaCompleta) - this.getTime(b.FechaCompleta) });
-    //guardamos la variable de ordenamiento
-    sessionStorage.setItem('ORDEN_EVENTOS', 'descendente');
-    //creamos top limit al nuevo arreglo de citas
-    this.citasVerticalTodasTop = this.citasVerticalMostrar.slice(0, this.topLimit);
-  }
   async cargarTodosLosEventosApi() {
     //usar citasVerticalTodas
     this.citasVerticalTodas = [];
@@ -631,15 +620,9 @@ export class CalendarioPage implements OnInit {
           this.estaCargando = false;
           this.tituloLoading = '';
           loader.dismiss();
-          //*** agregado por homologación ***/
-          if (this.utiles.isAppIOS()){
-            this.cargarDataLocal();
-          }
-          else{
-            this.tiene = false;
-            this.utiles.presentToast('Se produjo un error al obtener la información, vuelva a intentarlo más tarde', 'bottom', 3000);
-            this.agregarUnElemento(moment().toDate());
-          }
+          this.tiene = false;
+          this.utiles.presentToast('Se produjo un error al obtener la información, vuelva a intentarlo más tarde', 'bottom', 3000);
+          this.agregarUnElemento(moment().toDate());
           console.log(this.tieneEventosFuturos);
         });
       }
@@ -666,16 +649,9 @@ export class CalendarioPage implements OnInit {
           this.estaCargando = false;
           this.tituloLoading = '';
           loader.dismiss();
-          //*** agregado por homologación ***/
-          if (this.utiles.isAppIOS()){
-            this.cargarDataLocal();
-          }
-          else {
-            this.tiene = false;
-            this.utiles.presentToast('Se produjo un error al obtener la información, vuelva a intentarlo más tarde', 'bottom', 3000);
-            this.agregarUnElemento(moment().toDate());
-          }
-
+          this.tiene = false;
+          this.utiles.presentToast('Se produjo un error al obtener la información, vuelva a intentarlo más tarde', 'bottom', 3000);
+          this.agregarUnElemento(moment().toDate());
         });
       }
     });

@@ -25,17 +25,30 @@ export class ItemHomeComponent implements OnInit {
 
   ngOnInit() {}
   openGenerico(modulo){
-    var pageName = modulo.toLowerCase();
-    if (modulo == 'EXAMENES'){
-      pageName = 'pre-ordenes';
-    }
-    //registramos movimiento
-    if (sessionStorage.getItem("RSS_ID")) {
-      if (this.parametrosApp.USA_LOG_MODULOS()) {
-        this.utiles.registrarMovimiento(sessionStorage.getItem("RSS_ID"), modulo.toUpperCase());
+    var tieneInternet = true;
+    if (this.utiles.isAppOnDevice()) {
+      if (sessionStorage.getItem('CONEXION')) {
+        if (sessionStorage.getItem('CONEXION') == 'Offline') {
+          tieneInternet = false;
+        }
       }
     }
-    this.navCtrl.navigateRoot(pageName);
+    if (tieneInternet == false){
+      this.navCtrl.navigateRoot('error');
+    }
+    else{
+      var pageName = modulo.toLowerCase();
+      if (modulo == 'EXAMENES'){
+        pageName = 'pre-ordenes';
+      }
+      //registramos movimiento
+      if (sessionStorage.getItem("RSS_ID")) {
+        if (this.parametrosApp.USA_LOG_MODULOS()) {
+          this.utiles.registrarMovimiento(sessionStorage.getItem("RSS_ID"), modulo.toUpperCase());
+        }
+      }
+      this.navCtrl.navigateRoot(pageName);
+    }
   }
 
   openItemPage(modulo){

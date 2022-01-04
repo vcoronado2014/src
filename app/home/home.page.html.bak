@@ -6,7 +6,7 @@
        <!-- <ion-title class="fcw">Menu</ion-title> -->
     <!-- </ion-toolbar> -->
     <!-- menu avatar -->
-    <ion-item lines="none" style="padding-top: 15%;" >
+    <ion-item lines="none" >
      <ion-avatar class="avatar" slot="start">
        <img *ngIf = "miImagen != ''" src={{miImagen}}>
        <img *ngIf = "miImagen == ''" src="../assets/img/no-imagen.jpg">
