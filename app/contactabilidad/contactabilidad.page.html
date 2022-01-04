@@ -1,0 +1,50 @@
+<ion-header class="back-app">
+  <ion-toolbar color="primary" mode="md">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/familia" class="fcw"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="fcw">Configurar integrante</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-progress [mostrar]="estaCargando" [titulo]="tituloProgress"></app-progress>
+  <div [hidden]="estaCargando" class="ion-padding" style="margin-top: 15px;">
+    <form [formGroup]="forma" novalidate>
+      <ion-item lines="none" style="--ion-item-background: transparent; --padding-start:0px;">
+        <ion-avatar slot="start" style="margin-top: -10px;">
+          <img *ngIf="usuarioAps.UrlImagen != ''" src={{usuarioAps.UrlImagen}}>
+          <img *ngIf="usuarioAps.UrlImagen == ''" src="../assets/img/no-imagen.jpg">
+        </ion-avatar>
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>Nombre social</mat-label>
+          <input matInput placeholder="Nombre social" formControlName="nombreSocial" name="nombreSocial">
+          <!-- <mat-error [hidden]="!(f.nombreSocial.errors && f.nombreSocial.errors.required)">Nombre social</mat-error> -->
+          <mat-hint align="start"><strong>Nombre por el cual te sientes identificado</strong> </mat-hint>
+        </mat-form-field>
+      </ion-item>
+      <h3 class="mt-40">Datos de contacto</h3>
+      <ion-row>
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput placeholder="ejemplo@gmail.com" formControlName="email" name="email">
+          <mat-error [hidden]="!(f.email.errors && f.email.errors.pattern)">Correo inválido</mat-error>
+        </mat-form-field>
+      </ion-row>
+
+      <ion-row>
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>Teléfono</mat-label>
+          <input matInput placeholder="9XXXXXXXX" formControlName="telefono" name="telefono">
+          <mat-error [hidden]="!(f.telefono.errors && f.telefono.errors.pattern)">Teléfono inválido</mat-error>
+        </mat-form-field>
+      </ion-row>
+      <!-- boton de registrarse -->
+      <ion-row>
+        <button  [disabled]="forma.invalid" class="button-registrarse" (click)="onSumbit()" mat-raised-button
+          color="accent">GUARDAR</button>
+      </ion-row>
+    </form>
+  
+  </div>
+</ion-content>

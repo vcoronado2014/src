@@ -1,0 +1,94 @@
+<ion-menu side="start" menuId="first" contentId="content">
+ 
+  <ion-header> 
+     <!-- <ion-toolbar [style.--background]="miColor"> -->
+    <!-- <ion-toolbar color="primary"> -->
+       <!-- <ion-title class="fcw">Menu</ion-title> -->
+    <!-- </ion-toolbar> -->
+    <!-- menu avatar -->
+    <ion-item lines="none" >
+     <ion-avatar class="avatar" slot="start">
+       <img *ngIf = "miImagen != ''" src={{miImagen}}>
+       <img *ngIf = "miImagen == ''" src="../assets/img/no-imagen.jpg">
+     </ion-avatar>
+     <ion-row class="texAvatarContainer">
+       <div class="text-avatar">{{miNombre}}</div>
+       <div class="subtext-avatar">{{miInstitucion}}</div>
+     </ion-row>
+   </ion-item>
+   </ion-header>
+   <ion-content class="back-app">
+ 
+     <ion-list>
+       <ion-item *ngFor="let p of pages" (click)="openPage(p)" class="listItem" button lines="none" [ngStyle]="{'margin-left': p.esSubMenu ? '16px' : '0px'}">
+         <ion-icon name={{p.icon}} slot="start"></ion-icon>
+         <ion-label>
+           {{p.title}}
+         </ion-label>
+       </ion-item>
+       <!-- ajustes de la cuenta -->
+       <ion-item button lines="none" (click)="abrirEditar()" class="listItem">
+         <ion-icon name="heart" slot="start"></ion-icon>
+         <ion-label>
+           Ajustes de la cuenta
+         </ion-label>
+       </ion-item>
+       <!-- cerrar sesión -->
+       <ion-item button lines="none" (click)="logout()" class="listItem">
+         <ion-icon name="close" slot="start"></ion-icon>
+         <ion-label>
+           Cerrar sesión
+         </ion-label>
+       </ion-item>
+ 
+     </ion-list>
+ 
+   </ion-content>
+ </ion-menu>
+ 
+ <ion-header class="home header">
+   <ion-toolbar  class="toolbar" color="primary">
+     <ion-buttons slot="start">
+       <ion-menu-button class="home"></ion-menu-button>
+     </ion-buttons>
+     <ion-title class="title">Mi salud familiar</ion-title>
+     <!-- icono de notificaciones -->
+     <ion-buttons slot="end"  style="padding-right: 16px;" [hidden]="estaCargandoNotificaciones == false">
+       <ion-spinner color="light"></ion-spinner>
+     </ion-buttons>
+     <ion-buttons slot="end"  style="padding-right: 16px;" [hidden]="estaCargandoNotificaciones && notificaciones.length == 0" (click)="mostrarNotificacionesModal(true)">
+       <ion-icon [hidden]="notificaciones.length == 0" class="fcw" slot="icon-only" name="notifications" style="color:white;"></ion-icon>
+       <ion-badge [hidden]="notificaciones.length == 0" slot="end" color="danger" class="badge-notificaciones">{{notificaciones.length}}</ion-badge>
+     </ion-buttons>
+   </ion-toolbar>
+ </ion-header>
+ <ion-content class="card-background-page-home back-app" id="content">
+   <!-- notificaciones lo comentamos para usar un modal -->
+<!--    <ion-slides [hidden]="muestraNotificaciones == false" pager="true" [options]="slideOpts" #mySlider class="slides-back">
+     <ion-slide *ngFor="let info of notificaciones">
+       <div class="slide-content-padding">
+         <app-content-slide [titulo]="info.Titulo" [subTitulo]="info.Subtitulo" [contenido]="info.Contenido" [modulo]="info.IrA"></app-content-slide>
+       </div>
+       <div class="slide-buttons-padding">
+         <ion-grid>
+           <ion-row>
+             <ion-col size="6">
+               <button [hidden]="info.IrA == null" mat-flat-button (click)="openNotificacion(info.IrA)">Ir...</button>
+             </ion-col>
+             <ion-col size="6">
+               <button mat-raised-button color="accent" class="boton" (click)="moverSlide(info.Indice)">SIGUIENTE</button>
+             </ion-col>
+           </ion-row>
+         </ion-grid>
+       </div>
+     </ion-slide>
+   </ion-slides> -->
+   <ion-grid>
+     <app-progress [mostrar]="estaCargando" titulo="Buscando preferencias"></app-progress>
+     <ion-row [hidden]="estaCargando" class="ion-padding-top">
+       <ion-col size="6" *ngFor="let modulo of itemsMenu">
+         <app-item-home [modulo]="modulo.NombreModulo" [classImagen]="modulo.ClaseImagen" [rutaImagen]="modulo.Imagen"></app-item-home>
+       </ion-col>
+     </ion-row>
+   </ion-grid>
+ </ion-content>

@@ -1,0 +1,78 @@
+<ion-header>
+  <ion-toolbar color="primary" mode="md">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/calendario" class="fcw"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="fcw">Reserva de horas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="back-app">
+  <!-- combo de reserva de horas -->
+    <mat-form-field appearance="outline" class="field-tipo-atencion">
+      <mat-label>Tipo atención</mat-label>
+      <mat-select [disabled]="disabledCombo" [(ngModel)]="comboSeleccionado" (selectionChange)="buscarCitas($event)">
+        <mat-option *ngFor="let tipo of tiposAtencion" [value]="tipo.Texto">{{tipo.Texto}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  
+  <!-- progress bar -->
+<!--   <div class="centrado" [hidden]="!mostrarProgress">
+    <ion-label class="titulo-item-2">Buscando citas</ion-label>
+    <ion-progress-bar type="indeterminate" class="ion-margin-top"></ion-progress-bar>
+  </div> -->
+  <app-progress [mostrar]="mostrarProgress" titulo="Buscando citas"></app-progress>
+  <!-- progress bar buscando tipos de atencion  -->
+<!--   <div class="centradoDisp" [hidden]="!mostrarProgressDisp">
+    <ion-label class="titulo-item-2">Buscando tipos atención</ion-label>
+    <ion-progress-bar type="indeterminate" class="ion-margin-top"></ion-progress-bar>
+  </div> -->
+  <app-progress [mostrar]="mostrarProgressDisp" titulo="Buscando tipos atención"></app-progress>
+  <!-- resultados -->
+  <div *ngIf="encontroCitas">
+    <div class="ion-padding-start ion-padding-end">
+      <h6 class="titulo-item">
+        Citas más próximas
+      </h6>
+      <p class="ion-text-wrap texto-item">
+        A continuación se listan los cupos disponibles más próximos.
+      </p>
+    </div>
+    <div class="ion-padding">
+      <ion-grid class="ion-no-padding" *ngFor="let cita of citasFiltradas">
+        <ion-row class="ion-padding-bottom ion-padding-top linea-item" *ngIf="cita.indice <= 3" (click)="citaSelected(cita)">
+          <ion-col size="9" class="texto-item ion-text-capitalize">
+            {{cita.Servicio.Nombre}}
+          </ion-col>
+          <ion-col size="3" class="titulo-hora ion-text-end">
+            {{transformDateIso(cita.FechaHoraInicio)}}
+          </ion-col>
+          <ion-col size="12" class="titulo-fecha" class="ion-text-capitalize">
+            {{transformDate(cita.FechaHoraInicio, 'dddd DD MMMM YYYY')}}
+          </ion-col>
+          <ion-col class="texto-item ion-text-capitalize">
+            {{cita.NombresMedico.toLowerCase()}} {{cita.ApellidosMedico.toLowerCase()}}
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+    <!--pie de búsqueda -->
+    <div class="pl-24 pr-24">
+      <p class="ion-text-wrap texto-item ion-text-left">
+        Si no te sirven los cupos propuesto prueba con la búsqueda avanzada.
+      </p>
+    </div>
+    <!-- boton busqueda avanzada -->
+    <div class="ion-padding-top">
+      <ion-button expand="full" fill="clear" (click)="openBusquedaAvanzada()">BÚSQUEDA AVANZADA</ion-button>
+    </div>
+
+  </div>
+  <div *ngIf="!encontroCitas && mostrarProgress == false && citasFiltradas.length > 0" class="ion-padding-start ion-padding-end centrado">
+    <ion-label class="ion-text-center no-encontrado">No existen cupos con los criterios ingresados</ion-label>
+  </div>
+
+
+  
+
+</ion-content>

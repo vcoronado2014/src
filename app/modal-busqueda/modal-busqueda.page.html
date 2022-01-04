@@ -1,0 +1,43 @@
+<ion-header>
+    <!-- <ion-toolbar [style.--background]="miColor"> -->
+    <ion-toolbar color="primary">
+      <ion-title class="home">Búsqueda</ion-title>
+      <ion-buttons slot="end" class="pdr10" (click)="dismiss()">
+        <ion-icon class="home" slot="icon-only" name="close"></ion-icon>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content class="back-app">
+    <ion-list>
+      <ion-radio-group value="fechas" (ionChange)="onChange($event)">
+        <ion-list-header lines="none">
+          <ion-label>Ordenado por</ion-label>
+        </ion-list-header>
+        <div class="ion-margin" lines="full" *ngFor="let item of listaBusqueda">
+          <ion-item *ngIf="item.TieneFecha">
+            <ion-label>
+              {{item.Nombre}}
+            </ion-label>
+            <ion-radio slot="end" [value]="item.Nombre"></ion-radio>
+          </ion-item>
+        </div>
+      </ion-radio-group>
+    
+      
+    </ion-list>
+    <ion-item lines="none">
+      <ion-grid>
+        <ion-row>
+          <ion-col></ion-col>
+          <ion-col class="ion-text-right">
+            <button mat-button color="primary" class="boton" (click)="dismiss()">CANCELAR</button>
+          </ion-col>
+          <ion-col class="ion-text-right">
+            <button mat-button color="primary" class="boton" (click)="dismissDatos()">ACEPTAR</button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+
+  </ion-content>

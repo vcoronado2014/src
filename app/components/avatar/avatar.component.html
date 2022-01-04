@@ -1,0 +1,13 @@
+<ion-item [lines]="lines" [ngClass]="{'avatar-padding':style, 'avatar-no-padding': style == false }" style="width: 100%;">
+  <!-- poner avatar -->
+  <ion-avatar slot="start">
+    <img *ngIf="urlImagen != ''" src={{urlImagen}}>
+    <img *ngIf="urlImagen == ''" src="../assets/img/no-imagen.jpg">
+  </ion-avatar>
+  <ion-row style="display: block; width: 100%;">
+    <div class="text-avatar">{{nombreCompleto}}</div>
+    <div class="subtext-avatar">{{parentezco}}</div>
+  </ion-row>
+</ion-item>
+
+

@@ -1,0 +1,93 @@
+<ion-header>
+  <ion-toolbar [style.--background]="miColor" mode="md">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" class="fcw"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="fcw">Cupos disponibles</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="back-app">
+
+  <ion-item>
+    <ion-label>Tipos de atención</ion-label>
+    <ion-select interface="popover" (ionChange)="tipoSeleccionado($event)" multiple="false" value="{{comboSeleccionado}}">
+      <ion-select-option *ngFor="let tipo of tiposAtencion" [value]="tipo.Texto">{{tipo.Texto}}</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="1" class="ion-no-margin ion-no-padding" [style.background]="miColor" [style.color]="textColor">
+        <ion-icon name="chevron-back-outline" style="font-size: 2em;padding-top: 10px;" *ngIf="indiceActual > 0" (click)="onClickCambiarSemana('ant')"></ion-icon>
+      </ion-col>
+      <ion-col class="ion-no-margin ion-no-padding">
+        <ion-item [style.--background]="miColor" [style.--color]="textColor">
+          <ion-label class="ion-text-wrap ion-text-center titulo-semanas">
+            {{semana.texto}}
+          </ion-label>
+        </ion-item>
+        <ion-grid class="ion-no-margin ion-no-padding">
+          <ion-row>
+            <ion-col *ngFor="let item of semana.semanas" class="ion-text-center ion-padding-bottom label-fecha" 
+              [style.background]="item.selected ? '#3880ff' : '#3dc2ff'" 
+              (click)="seleccionarCuposAgrupados(item)"
+              [style.color]="textColor">
+              <ion-label class="ion-text-center ion-text-capitalize">
+                <strong>{{item.diaStr}}</strong> 
+                <!-- {{item.texto}} -->
+              </ion-label>
+              <p class="ion-text-center ion-text-capitalize">
+                {{item.texto}}
+              </p>
+              <ion-badge *ngIf="item.total > 0" class="badge-cita" color="success"><ion-icon name="checkmark"></ion-icon></ion-badge>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-col>
+      <ion-col size="1" class="ion-no-margin ion-no-padding" [style.background]="miColor" [style.color]="textColor">
+        <ion-icon name="chevron-forward-outline" style="font-size: 2em;padding-top: 10px;" *ngIf="indiceActual < cantidadSemanas" (click)="onClickCambiarSemana('sig')"></ion-icon>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <div>
+   
+      <ion-list *ngFor="let cita of cuposAgrupadosSelected" class="ion-padding-left">
+        
+        <ion-list-header lines="inset" [hidden]="contadorHorasDisponibles(cita[1].HorasDisponibles) == 0">
+          <ion-label><h1>{{cita[1].MedicoPrestador.NombreCompletoMedico}}</h1></ion-label>
+          <ion-label>{{cita[0]}}</ion-label>
+        </ion-list-header>
+        <div *ngFor="let cupo of cita[1].HorasDisponibles">
+          <ion-item lines="none" [hidden]="!cupo.Visible">
+            <ion-label class="ion-text-wrap" [ngClass]="{'danger':cupo.Estado === 'cancelled'}">
+              <h5><ion-icon name="navigate" slot="start"></ion-icon>&nbsp;{{cupo.Servicio.Nombre}}</h5>
+              <h6><ion-icon name="bandage" slot="start"></ion-icon>&nbsp;{{cupo.TipoAtencion}}</h6>
+              <h6 class="ion-text-capitalize"><ion-icon name="alarm" slot="start"></ion-icon>&nbsp;{{transformDate(cupo.FechaHoraInicio, 'dddd DD MMMM YYYY')}}</h6>
+              <h6 class="ion-text-capitalize">Estado: <strong>{{traduceString(cupo.Estado)}}</strong></h6>
+            </ion-label>
+            <ion-button 
+              [ngClass]="{'danger-boton':cupo.Estado === 'cancelled', 'success-boton':cupo.Estado === 'booked' || cupo.Estado === 'confirmed'}" 
+              (click)="citaSelected(cupo)">{{cupo.HoraInicio}} - {{cupo.HoraTermino}}
+              <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </div>
+
+      </ion-list>
+   
+      <!-- no hay datos -->
+    <ion-row *ngIf="cuposAgrupadosSelected.length == 0">
+      <div style="position: absolute; display: table; height: 80%; font-size: 30px; color:#BDBDBD; text-align: center;" class="ion-padding">
+        <p style="display: table-cell; vertical-align: middle">No hay citas para el día seleccionado  <br>
+        <ion-icon name="information-circle" style="font-size: 50px;"></ion-icon></p>
+      </div>
+    </ion-row>
+
+  </div>
+</ion-content>
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button (click)="logout()" [style.--background]="miColor">
+    <ion-icon name="close"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

@@ -1,0 +1,51 @@
+<ion-header>
+  <!-- <ion-toolbar [style.--background]="miColor"> -->
+  <ion-toolbar color="primary">
+    <ion-title class="home">{{titulo}}</ion-title>
+    <ion-buttons slot="end" class="pdr10" (click)="dismiss()">
+      <ion-icon class="home" slot="icon-only" name="close"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding back-app">
+  <app-progress [mostrar]="estaCargando" [titulo]="tituloLoading"></app-progress>
+  <div [hidden]="estaCargando">
+    <ion-list class="ion-padding-bottom">
+      <ion-item>
+        <ion-label>
+          <h5 class="label-info">FECHA</h5>
+          <p class="ion-text-wrap detalle-label-info">
+            <span style="text-transform: capitalize;">{{transformDate(cita.FechaHoraInicio, 'dddd')}}</span>,  {{transformDate(cita.FechaHoraInicio, 'D')}} de 
+            {{transformDate(cita.FechaHoraInicio, 'MMMM')}} {{transformDate(cita.FechaHoraInicio, 'YYYY')}}
+          </p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          <h5 class="label-info">HORA</h5>
+          <p class="ion-text-wrap detalle-label-info">{{transformDateIso(cita.FechaHoraInicio)}}</p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          <h5 class="label-info">PROFESIONAL</h5>
+          <p class="ion-text-wrap detalle-label-info">{{cita.NombresMedico}}  {{cita.ApellidosMedico}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+    <div class="ion-padding-top">
+      <!--boton cancelar -->
+      <ion-button *ngIf="botonCancelar.Visible" (click)="presentAlertConfirm(botonCancelar)" [color]="botonCancelar.Color">
+        {{botonCancelar.Titulo}}</ion-button>
+      <!--boton reservar -->
+      <ion-button *ngIf="botonReservar.Visible" (click)="presentAlertConfirm(botonReservar)" [color]="botonReservar.Color">
+        {{botonReservar.Titulo}}</ion-button>
+      <!--boton confirmar -->
+      <ion-button *ngIf="botonConfirmar.Visible" (click)="presentAlertConfirm(botonConfirmar)"
+        [color]="botonConfirmar.Color">
+        {{botonConfirmar.Titulo}}</ion-button>
+    </div>
+  </div>
+
+</ion-content>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1034586005863",
+    "firebase_url": "https://mifamiliaapp-default-rtdb.firebaseio.com",
+    "project_id": "mifamiliaapp",
+    "storage_bucket": "mifamiliaapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1034586005863:android:9bf19d71b38ca18e7d8fc2",
+        "android_client_info": {
+          "package_name": "com.misaludfamiliar.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1034586005863-ff8mbqluidij3gj3ph8eeq78o53rqd1c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdVsao6jnlFGpRqeBmtzv7SOOtYHs67ng"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1034586005863-ff8mbqluidij3gj3ph8eeq78o53rqd1c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1034586005863-4sg092ev19r7v774eom9fedei9ojg2gk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.misaludfamiliar.com"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

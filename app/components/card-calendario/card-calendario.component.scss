@@ -1,0 +1,93 @@
+/* Set the width to the full container and center the content */
+ion-select {
+    width: 100%;
+  
+    justify-content: center;
+  }
+  
+  /* Set the flex in order to size the text width to its content */
+  ion-select::part(placeholder),
+  ion-select::part(text) {
+    flex: 0 0 auto;
+  }
+  
+  /* Set the placeholder color and opacity */
+  ion-select::part(placeholder) {
+    color: #20a08a;
+    opacity: 1;
+  }
+  
+  /*
+   * Set the font of the first letter of the placeholder
+   * Shadow parts work with pseudo-elements, too!
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements
+   */
+  ion-select::part(placeholder)::first-letter {
+    font-size: 24px;
+    font-weight: 500;
+  }
+  
+  /* Set the text color */
+  ion-select::part(text) {
+    color: #545ca7;
+  }
+  
+  /* Set the icon color and opacity */
+  ion-select::part(icon) {
+    color: #971e49;
+    opacity: 1;
+  }
+  .content-card-fav{
+    height: 58px;
+    min-height: 56px;
+  }
+  .ion-fav-calendar{
+    height: 48px;
+    width: 48px;
+  }
+  .botonReservar{
+    /*color:#000000DE;
+    font-weight: 20px;*/
+    font: normal normal medium 14px/16px Roboto;
+    letter-spacing: 1.25px;
+    color: #000000DE;
+    text-transform: uppercase;
+    opacity: 1;
+  }
+  /* estilos para material */
+  .example-header-image {
+    background-size: cover;
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+  }
+  mat-card{
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+  }
+  ::ng-dep .mat-card-header-text{
+    width: 100%;
+    margin: 0;
+  }
+  .hora{
+    font-size: 0.8em;
+  }
+  .row-card{
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+  .img-card{
+    width: 80px;
+    float: right;
+    margin: 0;
+    padding: 0;
+    min-width: 80px;
+  }
+  hr {
+    margin-top: 0;
+    margin-bottom: 0;
+    border: 0;
+    height: 1px;
+    background-color: rgba(0,0,0,.12);
+  }

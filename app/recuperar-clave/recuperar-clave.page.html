@@ -1,0 +1,32 @@
+<ion-header>
+  <!-- esto lo comentamos ya que se decidió no usar color de header personalizado -->
+  <!-- <ion-toolbar [style.--background]="miColor" mode="md"> -->
+  <ion-toolbar color="primary" mode="md">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/nuevo-login" class="fcw"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="fcw">Recuperar contraseña</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <app-progress [mostrar]="estaCargando" titulo="Recuperando clave"></app-progress>
+  <ion-row [hidden]="estaCargando" class="texto-1 mt-32">
+    Ingresa tu correo electrónico, te enviaremos un correo con tu contraseña, recuerda revisar de igual manera los spam o correo no deseado.
+  </ion-row>
+  <form [hidden]="estaCargando" [formGroup]="forma" novalidate>
+      <ion-row class="mt-32">
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput placeholder="Correo electrónico" formControlName="correo" name="correo" required>
+          <mat-error *ngIf="f.correo.errors && f.correo.errors.required">Correo requerido</mat-error>
+          <mat-error [hidden]="!(f.correo.errors && f.correo.errors.pattern)">Correo inválido</mat-error>
+        </mat-form-field>
+      </ion-row>
+      <ion-row class="mt-32">
+        <button [disabled]="forma.invalid" mat-flat-button color="primary" style="width: 90%; margin-left: 5%;"
+          (click)="submit()">CONTINUAR</button>
+      </ion-row>
+  </form>
+
+</ion-content>

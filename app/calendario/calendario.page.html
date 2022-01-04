@@ -1,0 +1,96 @@
+<ion-header>
+  <!-- esto lo comentamos ya que se decidió no usar color de header personalizado -->
+  <!-- <ion-toolbar [style.--background]="miColor" mode="md"> -->
+  <ion-toolbar color="primary" mode="md">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" class="fcw"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="fcw">Calendario</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="back-app" style="--padding-bottom: 50px !important;" #content>
+<app-progress [mostrar]="estaCargando" [titulo]="tituloLoading"></app-progress>
+ <div *ngIf="!tiene">
+  <div [hidden]="estaCargando" *ngFor="let item of citasVerticalTodasTop">
+    <ion-grid *ngIf="item.Mostrar">
+      <app-card-calendario [fechaActual]="fechaActual" [item]="item" [anioActual]="anioActual"></app-card-calendario>
+      <ion-row class="ion-no-padding ion-no-margin row-card"
+        *ngIf="item.Eventos[0].NombrePrincipal != 'Nada planificado para hoy'">
+        <mat-card *ngFor="let evento of item.Eventos" color="light" style="margin-bottom: 8px;" id="myListCard">
+          <mat-card-header (click)="goToDetalleCita(evento)">
+    
+            <mat-card-subtitle class="hora">{{evento.HoraInicioFin}}</mat-card-subtitle>
+            <mat-card-title>{{evento.DetalleEventoMes.Titulo}}</mat-card-title>
+            <mat-card-subtitle class="ion-text-capitalize">{{evento.DetalleEventoMes.NombrePaciente.toLowerCase()}}
+            </mat-card-subtitle>
+    
+            <div class="img-card">
+              <img class="example-header-image" src="./assets/imgs_svg/{{evento.Imagen}}">
+            </div>
+          </mat-card-header>
+          <mat-card-actions *ngIf="revisaEstado(evento)">
+            <button color="primary" mat-button *ngIf="revisarCita(evento, 'Anular')[1]"
+              (click)="presentAlertConfirm(botonCancelar, evento)">ANULAR</button>
+            <button color="primary" mat-button *ngIf="revisarCita(evento, 'Confirmar')[0]"
+              (click)="presentAlertConfirm(botonConfirmar, evento)">CONFIRMAR</button>
+          </mat-card-actions>
+        </mat-card>
+      </ion-row>
+      <hr
+        *ngIf="transformDate(item.FechaCompleta, 'YYYY-MM-DD') == fechaActual && item.Eventos[0].NombrePrincipal != 'Nada planificado para hoy'">
+    </ion-grid>
+    </div>
+  <div style="position: absolute; display: table; height: 90%;font-size: 16px; color:rgba(0, 0, 0, 0.54); text-align: center; width: -webkit-fill-available;" class="ion-padding">
+<!--     <p style="display: table-cell; vertical-align: middle">No hay eventos para mostrar  <br>
+    <ion-icon name="information-circle" style="font-size: 50px;"></ion-icon></p> -->
+    <p style="display: table-cell; vertical-align: middle">No tiene actividades  <br>
+      programadas para el futuro</p>
+  </div>
+ </div>
+ <div *ngIf="tiene">
+  <div [hidden]="estaCargando" *ngFor="let item of citasVerticalTodasTop">
+    <ion-grid *ngIf="item.Mostrar">
+      <app-card-calendario [fechaActual]="fechaActual" [item]="item" [anioActual]="anioActual"></app-card-calendario>
+      <ion-row class="ion-no-padding ion-no-margin row-card" *ngIf="item.Eventos[0].NombrePrincipal != 'Nada planificado para hoy'">
+        <mat-card *ngFor="let evento of item.Eventos" color="light" style="margin-bottom: 8px;" id="myListCard">
+          <mat-card-header (click)="goToDetalleCita(evento)">
+            
+              <mat-card-subtitle *ngIf="evento.DetalleEventoMes.Titulo != 'Vacuna administrada'" class="hora">{{evento.HoraInicioFin}}</mat-card-subtitle>
+              <mat-card-title>{{evento.DetalleEventoMes.Titulo}}</mat-card-title>
+              <mat-card-subtitle class="ion-text-capitalize">{{evento.DetalleEventoMes.NombrePaciente.toLowerCase()}}</mat-card-subtitle>
+            
+            <div class="img-card">
+              <img class="example-header-image" src="./assets/imgs_svg/{{evento.Imagen}}">
+            </div>
+          </mat-card-header>
+          <mat-card-actions *ngIf="revisaEstado(evento)">
+            <button color="primary" mat-button *ngIf="revisarCita(evento, 'Anular')[1]" (click)="presentAlertConfirm(botonCancelar, evento)">ANULAR</button>
+            <button color="primary" mat-button *ngIf="revisarCita(evento, 'Confirmar')[0]" (click)="presentAlertConfirm(botonConfirmar, evento)">CONFIRMAR</button>
+          </mat-card-actions>
+        </mat-card>
+      </ion-row>
+      <hr *ngIf="transformDate(item.FechaCompleta, 'YYYY-MM-DD') == fechaActual && item.Eventos[0].NombrePrincipal != 'Nada planificado para hoy'">
+    </ion-grid>
+  </div>
+  <!-- mostrar cuando no tenga eventos futuros y si tenga eventos pasados -->
+  <div *ngIf="!tieneEventosFuturos" [hidden]="estaCargando">
+    <div style="display: table; height: 10%;font-size: 16px; color:rgba(0, 0, 0, 0.54); text-align: center; width: -webkit-fill-available;" class="ion-padding">
+          <p style="display: table-cell; vertical-align: middle">No tiene actividades  <br>
+            programadas para el futuro</p>
+        </div>
+  </div>
+  <!-- pruebas con infinite scroll -->
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más eventos...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+ </div>
+</ion-content>
+<!-- este es el fab para abrir reservar horas -->
+<ion-fab vertical="bottom" horizontal="end" slot="fixed" [hidden]="estaCargando" style="min-height: 48px;">
+  <ion-button color="secondary" (click)="openReservarHoraPage()" shape="round" style="min-height: 48px;">
+    <ion-icon slot="start" name="add-outline" style="font-size: 24px;margin-right: 12px;"></ion-icon>
+    <span class="botonReservar" style="font-size: 1em;">RESERVAR HORA</span>
+  </ion-button>
+</ion-fab>

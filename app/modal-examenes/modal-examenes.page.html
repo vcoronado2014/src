@@ -1,0 +1,89 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title class="home">Exámenes</ion-title>
+    <ion-buttons slot="end" class="pdr10" (click)="dismiss()">
+      <ion-icon class="home" slot="icon-only" name="close"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="back-app">
+  <app-progress [mostrar]="estaCargando" [titulo]="tituloProgress"></app-progress>
+  <!-- HAY EXAMENES -->
+  <ion-list [hidden]="estaCargando" *ngIf="tiene">
+    
+      <app-avatar [lines]="linesAvatar" [urlImagen] = "orden.UrlImagen" 
+      [nombreCompleto]="orden.NombreUsuario" 
+      [parentezco]="orden.Parentezco"></app-avatar>
+    <ion-list-header lines="inset" mode="md">
+      <ion-label><strong>Nº Órden: {{oalaId}}</strong></ion-label>
+      <ion-badge color="secondary" class="ion-margin-end">{{ fechaOrden }}</ion-badge>
+      <!-- <ion-button>Clear</ion-button> -->
+    </ion-list-header>
+    <ion-item lines="none" *ngFor="let item of listadoExamenes">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="8">
+            <h5>{{item.NombreExamen}}</h5>
+            <p *ngIf="item.VisibleIcono">
+              <ion-icon name="checkmark-circle" *ngIf="item.Check"></ion-icon>
+              <ion-icon name="remove-circle" *ngIf="item.UnCheck"></ion-icon>&nbsp;{{item.TextoResultados}}
+            </p>
+          </ion-col>
+          <ion-col size="4">
+            <ion-badge color="primary">{{ item.Estado }}</ion-badge>
+            <h6 *ngIf="!item.VisibleTabla" style="color: #666; font-size:0.7em;"><ion-icon name="analitycs"></ion-icon>&nbsp;Sin Resultados</h6> 
+            <h6 *ngIf="item.VisibleTabla" style="color: #666; font-size:0.7em;"><ion-icon name="time"></ion-icon>&nbsp;{{item.FechaMuestraStr}}</h6> 
+          </ion-col>
+          <!-- RESULTADOS -->
+          <!-- aca debemos agregar otra lista quitar visible -->
+          <ion-list *ngIf="item.VisibleTabla" style="width: 100%;">
+            <ion-grid>
+              <ion-row class="titulo-tabla-examen" [ngStyle]="{'background-color': userColor}">
+                <ion-col size="6" class="ion-text-wrap ion-text-center">
+                  Nombre
+                </ion-col>
+                <ion-col size="2" class="ion-text-center">
+                  Valor
+                </ion-col>
+                <ion-col size="2" class="ion-text-center">
+                  U/M
+                </ion-col>
+                <ion-col size="2" class="ion-text-center">
+                  Ref.
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+
+            <ion-row  *ngFor="let exa of item.Resultados">
+              <ion-grid>
+                <ion-row style="font-size: 0.8em;font-style: italic;">
+                  <ion-col size="6" class="ion-text-wrap">
+                    {{exa.DescripcionResultado}}
+                  </ion-col>
+                  <ion-col size="2" class="ion-text-center">
+                    {{exa.Resultado}}
+                  </ion-col>
+                  <ion-col size="2" class="ion-text-center">
+                    {{exa.Um}}
+                  </ion-col>
+                  <ion-col size="2" class="ion-text-center">
+                    {{exa.ValoresReferencia}}
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-row>
+          </ion-list>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+  </ion-list>
+  <!-- NO HAY EXAMENES -->
+  <div [hidden]="estaCargando" *ngIf="tiene == false" style="position: relative; height: 100vh;">
+    <div style="position: absolute; display: table; height: 100%; font-size: 30px; color:#BDBDBD; text-align: center;">
+      <p style="display: table-cell; vertical-align: middle">No hay exámenes para mostrar  <br>
+      <ion-icon name="information-circle" style="font-size: 50px;"></ion-icon></p>
+    </div>
+  </div>
+
+</ion-content>

@@ -1,0 +1,28 @@
+<ion-content class="ion-padding">
+    <ion-row class="mt-24">
+      <button mat-icon-button aria-label="Example icon-button with a heart icon" (click)="volver()">
+        <mat-icon>arrow_back_ios</mat-icon>
+      </button>
+    </ion-row>
+    <ion-row class="mt-24">
+      <h2>Autenticación con clave única</h2>
+    </ion-row>
+    <ion-row class="texto-1 mt-24">
+      <p>
+        Para acceder a tu información de salud, debemos confirmar tu identidad, esto lo puedes hacer muy fácil ingresando tu clave única.
+      </p>
+    </ion-row>
+    <div class="mt-52">
+      <div class="my-5">
+        <!-- Código para visualizar botón oficial iniciar sesión con ClaveÚnica-->
+        <a class="btn-cu btn-l btn-fw btn-color-estandar" [attr.href]="urlClaveUnica" title="Este es el botón Iniciar sesión de ClaveÚnica">
+          <span class="cl-claveunica"></span>
+          <span class="texto">Iniciar sesión</span>
+        </a>
+        <!--./ fin botón-->
+      </div>
+    </div>
+    <ion-row class="mt-62 texto-2">
+      <p>Al registrarte con clave única, aceptas nuestras Condiciones, la Política de datos y la Política de cookies.</p>
+    </ion-row>
+  </ion-content>

@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title class="home">Ajustes {{nombrePaciente}}</ion-title>
+    <ion-buttons slot="end" class="pdr10" (click)="dismiss()">
+      <ion-icon class="home" slot="icon-only" name="close"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="back-app">
+  <!-- la imagen -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Mi imagen</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div>
+        <img [src]="image" *ngIf="image" />
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <!-- control abrir archivos si es que tiene registro -->
+  <ion-list lines="none" *ngIf="tieneRegistro">
+    <ion-item>
+      <ion-note id="profile_image" color="primary">Seleccione el archivo</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-input  type="file" accept="image/*" (change)="changeListener($event)"></ion-input>
+    </ion-item>
+  </ion-list>
+  <!-- si no tiene registro -->
+  <ion-item *ngIf="!tieneRegistro">
+    No puede editar ya que no se encuentra registrado
+  </ion-item>
+  <ion-row class="ion-padding">
+          <button mat-raised-button color="primary" (click)="abrirEditar()" style="width: 90%; margin-left: 5%; height:36px;background: #3880ff;color:white;" >Cambiar datos de contacto</button>
+  </ion-row>
+</ion-content>

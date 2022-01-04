@@ -1,0 +1,169 @@
+<ion-header>
+  <!-- <ion-toolbar [style.--background]="miColor" mode="md"> -->
+  <ion-toolbar color="primary" mode="md">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/antecedentes" class="fcw"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="fcw">Antecedentes</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="back-app">
+  
+  <app-progress [mostrar]="estaCargando" [titulo]="tituloProgress"></app-progress>
+  
+<!--   <ion-item lines="none" [hidden]="estaCargando" style="padding-top: 15px;">
+    <app-avatar [style]="false" [urlImagen] = "usuario.UrlImagen" [nombreCompleto]="usuario.Nombres + ' ' + usuario.ApellidoPaterno + ' ' + usuario.ApellidoMaterno" [parentezco]="usuario.Parentezco.Nombre"></app-avatar>
+  </ion-item> -->
+
+<!--   <ion-grid [hidden]="estaCargando">
+    
+      <ion-slides pager="true" [options]="slideOpts" #mySlider class="slides-back" style="padding-bottom: 30px;">
+        <ion-slide class="row ion-no-padding" *ngIf="arrMedicionesParteUno.length > 0" style="justify-content: left;">
+            <ion-col size="4" class="ion-no-padding" *ngFor="let sl of arrMedicionesParteUno">
+              <ion-card style="margin: 5px;">
+                <ion-card-header style="background: #D1C4E9;">
+                  <ion-card-subtitle style="color: #000000DE;font-size: 16pt;">{{sl.Nombre}}</ion-card-subtitle>
+                </ion-card-header>
+                <ion-card-content style="display: block;padding-left: 5px;padding-right: 5px;" class="ion-text-center">
+                  <div style="margin-top: 11px;color: #000000DE;font-size: 20pt;">{{sl.Valor.toString()}}&nbsp;
+                    <span *ngIf="sl.Medida == 'mg/dl'" style="font-size: 12pt;">{{sl.Medida}}</span>
+                    <span *ngIf="sl.Medida != 'mg/dl'" style="font-size: 20pt;">{{sl.Medida}}</span>
+                  </div>
+                  <div style="margin-top: 8px;font-size: 12pt;color: #0000008A;">{{sl.Fecha}}</div>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+
+        </ion-slide>
+        <ion-slide class="row ion-no-padding" style="justify-content: left;" *ngIf="arrMedicionesParteDos.length > 0">
+          <ion-col size="4" class="ion-no-padding" *ngFor="let dl of arrMedicionesParteDos">
+            <ion-card style="margin: 5px;">
+              <ion-card-header style="background: #D1C4E9;">
+                <ion-card-subtitle style="color: #000000DE;font-size: 16pt;">{{dl.Nombre}}</ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content style="display: block;padding-left: 5px;padding-right: 5px;" class="ion-text-center">
+                <div style="margin-top: 11px;color: #000000DE;font-size: 20pt;">{{dl.Valor.toString()}}&nbsp;
+                  <span *ngIf="dl.Medida == 'mg/dl'" style="font-size: 12pt;">{{dl.Medida}}</span>
+                  <span *ngIf="dl.Medida != 'mg/dl'" style="font-size: 20pt;">{{dl.Medida}}</span>
+                </div>
+                <div style="margin-top: 8px;font-size: 12pt;color: #0000008A;">{{dl.Fecha}}</div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+
+      </ion-slide>
+      </ion-slides>
+    
+  </ion-grid> -->
+
+  
+<!--   <ion-list [hidden]="estaCargando" style="padding-top: 0;">
+    <ion-list-header *ngIf="alergias && alergias.length > 0" style="background-color: #FAF9FA;">
+      <div style="font-weight: 500; color: #000000DE; font-size: 14pt; margin-top: 0;margin-bottom: 24px;">{{title}}</div>
+    </ion-list-header>
+    <ion-item *ngFor="let item of alergias" class ="lista-alergias">
+      <ion-label class="ion-text-wrap" style="color:#000000DE;font-size: 16pt;text-transform: capitalize;">{{item.Descripcion.toLowerCase()}}</ion-label>
+    </ion-item>
+    <ion-list-header *ngIf="personales && personales.length > 0" style="background-color: #FAF9FA;">
+      <div style="font-weight: 500; color: #000000DE; font-size: 14pt; margin-top: 24px;margin-bottom: 24px;">Diagnósticos relevantes</div>
+    </ion-list-header>
+    <ion-item *ngFor="let ante of personales" class ="lista-alergias">
+      <ion-label class="ion-text-wrap" style="color:#000000DE;font-size: 16pt;">{{ante.Nombre}}</ion-label>
+    </ion-item>
+    <ion-list-header *ngIf="familiares && familiares.length > 0" style="background-color: #FAF9FA;">
+      <div style="font-weight: 500; color: #000000DE; font-size: 14pt; margin-top: 24px;margin-bottom: 24px;">Diagnósticos familiares relevantes</div>
+    </ion-list-header>
+    <ion-item *ngFor="let fam of familiares" class ="lista-alergias">
+      <ion-label class="ion-text-wrap" style="color:#000000DE;font-size: 16pt;">{{fam.Nombre}}</ion-label>
+    </ion-item>
+  </ion-list> -->
+  
+  <!-- implementacion con spinner independiente -->
+
+  <ion-item lines="none" style="padding-top: 15px;">
+    <app-avatar [style]="false" [urlImagen] = "usuario.UrlImagen" [nombreCompleto]="usuario.Nombres + ' ' + usuario.ApellidoPaterno + ' ' + usuario.ApellidoMaterno" [parentezco]="usuario.Parentezco.Nombre"></app-avatar>
+  </ion-item>
+  <app-progress-minimo [mostrar]="estaCargandoDatosUsuario" [titulo]="tituloProgressDatosUsuario"></app-progress-minimo>
+  <ion-grid [hidden]="estaCargandoDatosUsuario">
+  
+    <ion-slides pager="true" [options]="slideOpts" #mySlider class="slides-back" style="padding-bottom: 30px;">
+      <ion-slide class="row ion-no-padding" *ngIf="arrMedicionesParteUno.length > 0" style="justify-content: left;">
+        <ion-col size="4" class="ion-no-padding" *ngFor="let sl of arrMedicionesParteUno">
+          <ion-card style="margin: 5px;">
+            <ion-card-header style="background: #D1C4E9;">
+              <ion-card-subtitle style="color: #000000DE;font-size: 16pt;">{{sl.Nombre}}</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content style="display: block;padding-left: 5px;padding-right: 5px;" class="ion-text-center">
+              <div style="margin-top: 11px;color: #000000DE;font-size: 20pt;">{{sl.Valor.toString()}}&nbsp;
+                <span *ngIf="sl.Medida == 'mg/dl'" style="font-size: 12pt;">{{sl.Medida}}</span>
+                <span *ngIf="sl.Medida != 'mg/dl'" style="font-size: 20pt;">{{sl.Medida}}</span>
+              </div>
+              <div style="margin-top: 8px;font-size: 12pt;color: #0000008A;">{{sl.Fecha}}</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+  
+      </ion-slide>
+      <ion-slide class="row ion-no-padding" style="justify-content: left;" *ngIf="arrMedicionesParteDos.length > 0">
+        <ion-col size="4" class="ion-no-padding" *ngFor="let dl of arrMedicionesParteDos">
+          <ion-card style="margin: 5px;">
+            <ion-card-header style="background: #D1C4E9;">
+              <ion-card-subtitle style="color: #000000DE;font-size: 16pt;">{{dl.Nombre}}</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content style="display: block;padding-left: 5px;padding-right: 5px;" class="ion-text-center">
+              <div style="margin-top: 11px;color: #000000DE;font-size: 20pt;">{{dl.Valor.toString()}}&nbsp;
+                <span *ngIf="dl.Medida == 'mg/dl'" style="font-size: 12pt;">{{dl.Medida}}</span>
+                <span *ngIf="dl.Medida != 'mg/dl'" style="font-size: 20pt;">{{dl.Medida}}</span>
+              </div>
+              <div style="margin-top: 8px;font-size: 12pt;color: #0000008A;">{{dl.Fecha}}</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+  
+      </ion-slide>
+    </ion-slides>
+  
+  </ion-grid>
+  <div [hidden]="estaCargandoDatosUsuario">
+    <div class="no-tiene-antecedentes" *ngIf="tieneDatosUsuario == false">No tiene mediciones registradas</div>
+  </div>
+
+  <app-progress-minimo [mostrar]="estaCargandoAlergias" [titulo]="tituloProgressAlergias"></app-progress-minimo>
+  <ion-list [hidden]="estaCargandoAlergias" style="padding-top: 0;">
+    <ion-list-header *ngIf="alergias && alergias.length > 0" style="background-color: #FAF9FA;">
+      <div style="font-weight: 500; color: #000000DE; font-size: 14pt; margin-top: 0;margin-bottom: 24px;">{{title}}</div>
+    </ion-list-header>
+    <ion-item *ngFor="let item of alergias" class ="lista-alergias">
+      <ion-label class="ion-text-wrap" style="color:#000000DE;font-size: 16pt;text-transform: capitalize;">{{item.Descripcion.toLowerCase()}}</ion-label>
+    </ion-item>
+    <div>
+      <div class="no-tiene-antecedentes" *ngIf="tieneAlergias == false">No tiene alergias registradas</div>
+    </div>
+  </ion-list>
+
+
+  <app-progress-minimo [mostrar]="estaCargandoMorbidos" [titulo]="tituloProgressMorbidos"></app-progress-minimo>
+  <ion-list [hidden]="estaCargandoMorbidos" style="padding-top: 0;padding-bottom: 0;">
+    <ion-list-header *ngIf="personales && personales.length >= 0" style="background-color: #FAF9FA;">
+      <div style="font-weight: 500; color: #000000DE; font-size: 14pt; margin-top: 24px;margin-bottom: 24px;">Diagnósticos relevantes</div>
+    </ion-list-header>
+    <ion-item *ngFor="let ante of personales" class ="lista-alergias">
+      <ion-label class="ion-text-wrap" style="color:#000000DE;font-size: 16pt;">{{ante.Nombre}}</ion-label>
+    </ion-item>
+    <div>
+      <div *ngIf="tieneMorbidosPersonales == false" class="no-tiene-antecedentes">No tiene diagnósticos relevantes <br> registrados</div>
+    </div>
+    <ion-list-header *ngIf="familiares && familiares.length >= 0" style="background-color: #FAF9FA;">
+      <div style="font-weight: 500; color: #000000DE; font-size: 14pt; margin-top: 24px;margin-bottom: 24px;">Diagnósticos familiares relevantes</div>
+    </ion-list-header>
+    <ion-item *ngFor="let fam of familiares" class ="lista-alergias">
+      <ion-label class="ion-text-wrap" style="color:#000000DE;font-size: 16pt;">{{fam.Nombre}}</ion-label>
+    </ion-item>
+    <div>
+      <div *ngIf="tieneMorbidosFamiliares == false" class="no-tiene-antecedentes">No tiene diagnósticos familiares <br> relevantes registrados</div>
+    </div>
+  </ion-list>
+  
+
+
+</ion-content>

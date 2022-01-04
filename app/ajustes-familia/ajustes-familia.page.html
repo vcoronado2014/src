@@ -1,0 +1,35 @@
+<ion-header class="back-app">
+  <ion-toolbar color="primary" mode="md">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/familia" class="fcw"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="fcw">Ajustes {{nombrePaciente}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="back-app">
+  <!-- la imagen -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Mi imagen</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div>
+        <img [src]="image" *ngIf="image" />
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <!-- control abrir archivos si es que tiene registro -->
+  <ion-list lines="none" *ngIf="tieneRegistro">
+    <ion-item>
+      <ion-note id="profile_image" color="primary">Seleccione el archivo</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-input  type="file" accept="image/*" (change)="changeListener($event)"></ion-input>
+    </ion-item>
+  </ion-list>
+  <!-- si no tiene registro -->
+  <ion-item *ngIf="!tieneRegistro">
+    No puede editar ya que no se encuentra registrado
+  </ion-item>
+</ion-content>

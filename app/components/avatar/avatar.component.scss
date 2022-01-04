@@ -1,0 +1,14 @@
+.text-avatar{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+.avatar-no-padding{
+    --padding-start: 0;
+    width: 100%;
+}
+.avatar-padding{
+    --padding-start: 8px;
+    width: 100%;
+}

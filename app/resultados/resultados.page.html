@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar color="primary" mode="md">
+    <ion-buttons slot="start">
+      <ion-back-button (click)="volver()" defaultHref="/" class="fcw"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="fcw">{{nombreExamen}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="back-app">
+
+  <div>
+    <h5 class="text-h5">Exámenes de {{nombreExamen}}</h5>
+  </div>
+  
+  <ion-item lines="full"  *ngFor="let exa of resultados">
+    <ion-grid>
+      <ion-row style=" width: 100%;">
+        <ion-col size="8">
+          <div class="text-avatar-1">{{exa.DescripcionResultado}}</div>
+        </ion-col>
+        <ion-col size="4">
+          <div class="text-solicitud" style="float: right;">{{exa.Resultado}} {{exa.Um}}</div>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <div class="subtext-avatar-1">[{{exa.ValoresReferencia}}]</div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+</ion-item>
+
+
+<!-- NO HAY examenes -->
+<div *ngIf="tiene == false" style="position: relative; height: 30vh;">
+  <div style="position: absolute; display: table; height: 100%; font-size: 16pt; color:#0000008A; text-align: center;width: 100%;letter-spacing: 0.5pt;">
+    <p style="display: table-cell; vertical-align: middle">No tiene resultados  <br>registrados
+    </p>
+  </div>
+</div>
+</ion-content>

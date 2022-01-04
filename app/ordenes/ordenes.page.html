@@ -1,0 +1,91 @@
+<ion-header>
+  <ion-toolbar color="primary" mode="md">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/pre-ordenes" class="fcw"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="fcw">Exámenes</ion-title>
+    <ion-buttons *ngIf="tiene" slot="end" (click)="modalBusqueda()" style="padding-right: 16px;">
+      <ion-icon class="fcw" slot="icon-only" name="funnel"></ion-icon>
+    </ion-buttons> 
+    <ion-buttons *ngIf="tiene" slot="end" (click)="buscar()" style="padding-right: 16px;">
+      <ion-icon class="fcw" slot="icon-only" name="search"></ion-icon>
+    </ion-buttons> 
+  </ion-toolbar>
+  <ion-toolbar color="primary" *ngIf="mostrarBusqueda">
+    <ion-searchbar placeholder="Nombre examen" (ionInput)="filterList($event)"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="back-app">
+<!--SI HAY ORDENES -->
+<app-progress [mostrar]="estaCargando" titulo="Cargando exámenes"></app-progress>
+<div [hidden]="estaCargando" style="padding-top: 24px;">
+  <ion-item lines="none" style="--background:#FAF9FA; padding-bottom: 24px;">
+    <!-- poner avatar -->
+    <ion-avatar slot="start">
+      <img *ngIf="usuarioAps.UrlImagen != ''" src={{usuarioAps.UrlImagen}}>
+      <img *ngIf="usuarioAps.UrlImagen == ''" src="../assets/img/no-imagen.jpg">
+    </ion-avatar>
+    <ion-row style="display: block;">
+      <div class="text-avatar">{{usuarioAps.Nombres + ' ' + usuarioAps.ApellidoPaterno + ' ' + usuarioAps.ApellidoMaterno}}</div>
+      <div class="subtext-avatar">{{usuarioAps.Parentezco.Nombre}}</div>
+    </ion-row>
+  </ion-item>
+</div>
+<!-- nueva implementación -->
+<div [hidden]="estaCargando">
+  <ion-item lines="full"  *ngFor="let exa of listadoExamenesCompleto" (click)="ordenSelectedCompleto(exa)">
+    <ion-grid>
+      <ion-row style=" width: 100%;">
+        <ion-col size="8">
+          <div class="text-avatar-1">{{exa.NombreExamen}}</div>
+        </ion-col>
+        <ion-col size="4">
+          <div class="text-solicitud" style="float: right;">{{exa.FechaSolicitud}}</div>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <div class="subtext-avatar-1" *ngIf="exa.Resultados == null">
+            <div *ngIf="exa.FechaMuestra != '01-01-0001'">
+              Fecha de toma {{exa.FechaMuestra}}
+            </div>
+          </div>
+          <div class="subtext-avatar-1" *ngIf="exa.Resultados != null">Fecha resultados {{exa.FechaResultado}}</div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+</ion-item>
+</div>
+
+
+<!-- <ion-card [hidden]="estaCargando" *ngFor="let item of listadoOrdenes" (click)="ordenSelected(item)">
+  <ion-card-content>
+    <app-avatar [lines]="none" [urlImagen] = "item.UrlImagen" 
+    [nombreCompleto]="item.NombreUsuario" 
+    [parentezco]="item.Parentezco"></app-avatar>
+    <ion-item lines="none">
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-label class="ion-text-wrap">N° de órden: <strong>{{ item.Id }}</strong></ion-label>
+          </ion-col>
+          <ion-col>
+            <ion-label class="ion-text-wrap">Estado: <strong>{{ item.Estado }}</strong></ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-badge color="primary" slot="end">{{ item.Fecha }}</ion-badge>
+    </ion-item>
+  </ion-card-content>
+</ion-card>   -->
+<!-- NO HAY ORDENES -->
+<div [hidden]="estaCargando" *ngIf="tiene == false" style="position: relative; height: 30vh;">
+  <div style="position: absolute; display: table; height: 100%; font-size: 16pt; color:#0000008A; text-align: center;width: 100%;letter-spacing: 0.5pt;">
+    <p style="display: table-cell; vertical-align: middle">No tiene exámenes  <br>registrados
+    </p>
+  </div>
+</div>
+</ion-content>

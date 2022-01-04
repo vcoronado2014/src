@@ -1,0 +1,27 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+import { IonicModule } from '@ionic/angular';
+
+import { RouterModule } from '@angular/router';
+
+import { AjustesFamiliaPage } from './ajustes-familia.page';
+import { ComponentsModule } from '../components/components.module';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    ComponentsModule,
+    RouterModule.forChild([
+      {
+        path: '',
+        component: AjustesFamiliaPage
+      }
+    ])
+  ],
+  declarations: [AjustesFamiliaPage]
+})
+export class AjustesFamiliaPageModule {}

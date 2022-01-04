@@ -1,0 +1,34 @@
+      <!-- prueba de material -->
+      <!-- fila fecha superior si es actual la mostramos en negrita-->
+      <div id="{{item.DiferenciaFechas.toString()}}">
+        <ion-row *ngIf="transformDate(item.FechaCompleta, 'YYYY-MM-DD') == fechaActual && item.Eventos[0].NombrePrincipal != 'Nada planificado para hoy'">
+          <label class="fecha-card" style="font-size: 1.3em;"><strong>{{item.NumeroDia}} de
+              {{transformDate(item.FechaCompleta, 'MMMM')}}</strong></label>
+        </ion-row>
+        <ion-row
+          *ngIf="transformDate(item.FechaCompleta, 'YYYY-MM-DD') == fechaActual && item.Eventos[0].NombrePrincipal == 'Nada planificado para hoy'">
+          <ion-grid style="background-color: #d1c4e9;
+                      font-size: 16px;
+                      width: initial;
+                      border-radius: 4px;
+                      height: 40px;
+                      margin: 8px;
+                      margin-top: 0;
+                      margin-bottom: 0;" id="0">
+            <ion-col>
+              <span><strong>{{item.NumeroDia}} de
+                  {{transformDate(item.FechaCompleta, 'MMMM')}}</strong></span>
+            </ion-col>
+            <ion-col>
+              <span style="padding-inline: 16px;color: rgb(0 0 0 / 54%);">Nada planificado para hoy </span>
+            </ion-col>
+          </ion-grid>
+        
+        </ion-row>
+      </div>
+      <ion-row *ngIf="transformDate(item.FechaCompleta, 'YYYY-MM-DD') != fechaActual">
+        <label *ngIf="transformDate(item.FechaCompleta, 'YYYY') != anioActual" class="fecha-card">{{item.NumeroDia}} de
+          {{transformDate(item.FechaCompleta, 'MMMM')}} del {{transformDate(item.FechaCompleta, 'YYYY')}}</label>
+        <label *ngIf="transformDate(item.FechaCompleta, 'YYYY') == anioActual" class="fecha-card">{{item.NumeroDia}} de
+          {{transformDate(item.FechaCompleta, 'MMMM')}} </label>
+      </ion-row>

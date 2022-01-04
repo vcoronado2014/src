@@ -1,0 +1,24 @@
+#la directiva text-avatar se encuentra en la siguiente url
+https://github.com/mumairofficial/text-avatar
+
+ojo con clear text en las redes, el original está así
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+<base-config cleartextTrafficPermitted="true">
+    <trust-anchors> 
+        <certificates src="system" />
+    </trust-anchors>
+</base-config>
+<domain-config cleartextTrafficPermitted="true">
+    <domain includeSubdomains="true">localhost</domain>
+    <domain includeSubdomains="true">10.0.2.2</domain>
+    <domain includeSubdomains="true">https://app.rayensalud.com</domain>
+    <domain includeSubdomains="true">http://190.151.14.101:8065</domain>
+</domain-config>
+</network-security-config>
+
+sin embargo lo tuve que cambiar porque playstore me lo rechazo por seguridad, ver
+https://qastack.mx/programming/51902629/how-to-allow-all-network-connection-types-http-and-https-in-android-9-pie
+
+https://es.stackoverflow.com/questions/460715/google-console-tr%C3%A1fico-de-texto-no-cifrado-permitido-para-todos-los-dominios
+

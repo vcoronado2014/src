@@ -1,0 +1,25 @@
+<ion-header>
+  <!-- <ion-toolbar [style.--background]="miColor" mode="md"> -->
+  <ion-toolbar color="primary" mode="md">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" class="fcw"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="fcw">Exámenes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="back-app">
+  <app-progress [mostrar]="estaCargando" titulo="Buscando antecedentes"></app-progress>
+
+  <div [hidden]="estaCargando" *ngIf="listadoUsuario.length <= 0" style="padding-top: 162px; font-size: 30px; color:#BDBDBD; text-align: center;"><p>No hay antecedentes para mostrar  <br>
+    <ion-icon name="information-circle" style="font-size: 60px;"></ion-icon></p>
+  </div>
+
+  <div style="padding-top: 12px;" [hidden]="estaCargando">
+    <h5 class="texto m-16">Selecciona un integrante de tu familia</h5>
+    <div *ngFor="let item of listadoUsuario" (click)="goToDetails(item)">
+      <!-- poner avatar -->
+      <app-avatar [lines]="linesAvatar" [urlImagen] = "item.UrlImagen" [nombreCompleto]="item.Nombres + ' ' + item.ApellidoPaterno + ' ' + item.ApellidoMaterno" [parentezco]="item.Parentezco.Nombre"></app-avatar>
+    </div>
+  </div>
+</ion-content>

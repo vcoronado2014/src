@@ -1,0 +1,28 @@
+<ion-content class="ion-padding">
+  <ion-row class="mt-24">
+    <button mat-icon-button aria-label="Example icon-button with a heart icon" (click)="volver()">
+      <mat-icon>arrow_back_ios</mat-icon>
+    </button>
+  </ion-row>
+  <ion-row class="mt-52">
+    <h1>¡Ayudados a conocerte!</h1>
+  </ion-row>
+  <ion-row class="mt-16">
+    <p class="texto-1">¿Cual es tu nombre?</p>
+    
+  </ion-row>
+  <form [formGroup]="forma" novalidate>
+      <ion-row class="mt-24">
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>Nombre</mat-label>
+          <input matInput placeholder="Nombre" formControlName="nombre" name="nombre" required>
+          <mat-error *ngIf="f.nombre.errors && f.nombre.errors.required">Requerido</mat-error>
+        </mat-form-field>
+      </ion-row>
+      <ion-row class="mt-32">
+        <button [disabled]="forma.invalid" mat-flat-button color="primary" style="width: 90%; margin-left: 5%;"
+          (click)="irRegistroUno()">CONTINUAR</button>
+      </ion-row>
+  </form>
+
+</ion-content>

@@ -1,0 +1,21 @@
+.titulo-semanas{
+    font-size: 0.8em;
+}
+.badge-cita{
+    position: absolute;
+    top:2px;
+    right: 1px;
+    border-radius: 100%;
+}
+.danger{
+    color: var(--ion-color-danger);
+}
+.danger-boton{
+    --background: var(--ion-color-danger);
+}
+.success-boton{
+    --background: var(--ion-color-success);
+}
+.label-fecha{
+    padding-top: 28px;;
+}

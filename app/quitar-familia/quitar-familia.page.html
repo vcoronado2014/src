@@ -1,0 +1,42 @@
+<ion-header class="back-app">
+  <ion-toolbar color="primary" mode="md">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" class="fcw"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="fcw">Activar o desactivar integrantes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="back-app">
+  <app-progress [mostrar]="estaCargando" [titulo]="tituloProgress"></app-progress>
+
+  <div [hidden]="estaCargando">
+<!--     <div class="ion-padding">
+      <p class="texto-item">
+        Puede activar o desactivar a los miembros de la familia deslizando el check de cada unos de ellos.
+      </p>
+    </div> -->
+  
+    <div *ngIf="familiaAsociar.length > 0" style="padding-top: 24px;">
+      <div *ngFor="let item of familiaAsociar">
+        <ion-item lines="inset">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="10">
+                <h3 class="text-integrante">{{item.NombreCompleto}}</h3>
+                <!-- <small>Run: {{item.Run}}</small> -->
+              </ion-col>
+              <ion-col size="2">
+                <ion-toggle mode="ios" [checked]="item.EsAceptado" [(ngModel)]="item.EsAceptado"></ion-toggle>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+      </div>
+      <!-- boton acpetar -->
+      <ion-row>
+        <button [disabled]="familiaAsociar.length == 0" class="button-registrarse" (click)="onSubmit()" mat-raised-button
+          color="accent">GUARDAR</button>
+      </ion-row>
+    </div>
+  </div>
