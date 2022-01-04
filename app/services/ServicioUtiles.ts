@@ -1039,4 +1039,16 @@ export class ServicioUtiles{
 		}
     }
 
+    guardarLogin(userName, password){
+        var pass = this.encriptar(password);
+        localStorage.setItem('NOMBRE_USUARIO_LOGUEADO', userName);
+        localStorage.setItem('PASS_USUARIO_LOGUEADO', pass);
+    }
+    tieneUsuarioYPassword(){
+        var tieneUsuario = localStorage.getItem('NOMBRE_USUARIO_LOGUEADO') && localStorage.getItem('NOMBRE_USUARIO_LOGUEADO') != '' ? true : false;
+        var tienePassword = localStorage.getItem('PASS_USUARIO_LOGUEADO') && localStorage.getItem('PASS_USUARIO_LOGUEADO') != '' ? true : false;
+        
+        return tieneUsuario && tienePassword;
+    }
+
 }

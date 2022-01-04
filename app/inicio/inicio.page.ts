@@ -365,15 +365,24 @@ export class InicioPage implements OnInit {
   procesarInfo(registro, loader) {
     //console.log(registro);
     if (registro == null) {
-      //no tiene registro, hay que dejarlo acá
-      //console.log('no tiene registro');
-      //limpiamos local storage
-      this.limpiarRegistro();
       loader.dismiss();
-      let tieneRegistroPendiente = this.validaPreRegistro();
-      if (tieneRegistroPendiente) {
-        //si tiene registro pendiente se envía a la página de autentificación
-        this.abrirValidacionFactor();
+      //nueva funcionalidad... el usuario puede haberse logueado y esta validación va a 
+      //buscar el registro mediante el idDispositivo, por lo tanto si ya accedió entonces 
+      //ocupamos otras variables de local storage para determinar si enviarlo al login o no
+      var tieneUsuPass = this.utiles.tieneUsuarioYPassword();
+      if (tieneUsuPass){
+        this.abrirLogin();
+      }
+      else {
+        //no tiene registro, hay que dejarlo acá
+        //console.log('no tiene registro');
+        //limpiamos local storage
+        this.limpiarRegistro();
+        let tieneRegistroPendiente = this.validaPreRegistro();
+        if (tieneRegistroPendiente) {
+          //si tiene registro pendiente se envía a la página de autentificación
+          this.abrirValidacionFactor();
+        }
       }
     }
     else {

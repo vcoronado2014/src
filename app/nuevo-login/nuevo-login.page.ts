@@ -877,6 +877,9 @@ export class NuevoLoginPage implements OnInit {
               let respuesta = data;
               localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
               localStorage.setItem('TIENE_REGISTRO', 'true');
+              //nueva funcionalidad
+              this.utiles.guardarLogin(correo, password);
+              //************** */
               loader.dismiss();
               let registro = JSON.parse(localStorage.getItem('REGISTRO'));
   
@@ -906,6 +909,9 @@ export class NuevoLoginPage implements OnInit {
             if (respuesta) {
               localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
               localStorage.setItem('TIENE_REGISTRO', 'true');
+              //nueva funcionalidad
+              this.utiles.guardarLogin(correo, password);
+              //************** */
               loader.dismiss();
               let registro = JSON.parse(localStorage.getItem('REGISTRO'));
               this.autentificarse(registro.Run, password);
@@ -934,6 +940,9 @@ export class NuevoLoginPage implements OnInit {
     let run = this.forma.controls.run.value;
     let password = this.forma.controls.clave ? this.utiles.encriptar(this.forma.controls.clave.value) : '';
     localStorage.setItem('TIENE_REGISTRO', 'false');
+    //nueva funcionalidad
+    this.utiles.guardarLogin(run, password);
+    //************** */
     this.autentificarse(run, password);
   }
 
@@ -995,6 +1004,9 @@ export class NuevoLoginPage implements OnInit {
       else {
         //llamada nativa
         this.acceso.loginWebNative(f).then((response: any) => {
+          //NUEVOS CAMBIOS, GUARDAREMOS LOS DATOS DEL LOGIN
+          this.utiles.guardarLogin(userName, password);
+          //********** */
           this.procesarLogin(JSON.parse(response.data), loader);
         },
           (error) => {
