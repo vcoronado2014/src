@@ -661,6 +661,7 @@ export class CalendarioPage implements OnInit {
           loader.dismiss();
           this.estaCargando = false;
           this.tituloLoading = '';
+          this.scrollListVisible();
         }).catch(error => {
           //console.log(error.message);
           this.estaCargando = false;

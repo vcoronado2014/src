@@ -38,7 +38,8 @@ export class AppComponent {
 
   initializeApp() {
     this.platform.ready().then(async () => {
-      this.statusBar.styleDefault();
+      //this.statusBar.styleDefault();
+      this.statusBar.styleBlackTranslucent();
       this.splashScreen.hide();
       if (this.utiles.isAppOnDevice()){
         this.networkService.onNetworkChange().subscribe(async (status: ConnectionStatus) => {
