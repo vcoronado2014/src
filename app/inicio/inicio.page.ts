@@ -113,7 +113,9 @@ export class InicioPage implements OnInit {
 
   }
   abrirLogin() {
-    this.navCtrl.navigateRoot('nuevo-login');
+    //this.navCtrl.navigateRoot('nuevo-login');
+    //this.navCtrl.navigateForward('nuevo-login');
+    this.router.navigateByUrl('/nuevo-login', { replaceUrl:true });
   }
   abrirPrimerosPasos() {
     const navigationExtras: NavigationExtras = {
@@ -121,7 +123,8 @@ export class InicioPage implements OnInit {
         modulo: 'inicio'
       }
     }
-    this.navCtrl.navigateRoot(['pre-registro-uno'], navigationExtras);
+    //this.navCtrl.navigateRoot(['pre-registro-uno'], navigationExtras);
+    this.navCtrl.navigateForward(['pre-registro-uno'], navigationExtras);
   }
   irARegistro(registroIncompleto) {
     //enviar registroIncompleto
@@ -131,12 +134,14 @@ export class InicioPage implements OnInit {
           usuario: JSON.stringify(registroIncompleto)
         }
       };
-      this.navCtrl.navigateRoot(['registro-usuario'], navigationExtras);
+      //this.navCtrl.navigateRoot(['registro-usuario'], navigationExtras);
+      this.navCtrl.navigateForward(['registro-usuario'], navigationExtras);
     }
 
   }
   abrirValidacionFactor() {
-    this.navCtrl.navigateRoot('validacion-factor');
+    //this.navCtrl.navigateRoot('validacion-factor');
+    this.navCtrl.navigateForward('validacion-factor');
   }
 
   async procesarRespuestaCU(registros, loader, run, state) {

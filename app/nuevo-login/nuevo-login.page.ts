@@ -17,7 +17,6 @@ import { Device } from '@ionic-native/device/ngx';
 
 import * as moment from 'moment';
 
-
 //estoy implementando progress bar
 //aca hay que controlar cuando no hay internet
 
@@ -55,7 +54,7 @@ export class NuevoLoginPage implements OnInit {
     Id: '0'
   };
   //para progress bar
-  estaCargando = false;
+  estaCargandoHome = false;
   esDataLocal = false;
   dataLocalStorage = {
     PARAMETROS_APP: [
@@ -613,6 +612,12 @@ export class NuevoLoginPage implements OnInit {
   }
 
   statusNetwork = 'online';
+  //sesión automática
+  recordarme: boolean = false;
+  nombreCompleto = '';
+  miFoto = '';
+
+
   constructor(
     private navCtrl: NavController,
     public utiles: ServicioUtiles,
@@ -636,8 +641,13 @@ export class NuevoLoginPage implements OnInit {
 
   ngOnInit() {
     moment.locale('es');
+    this.miFoto = this.utiles.entregaMiImagenLogin();
+    console.log(this.miFoto);
     //vamos a obtener las notificaciones push en esta pantalla
-    this.servNotificaciones.buscarCitasTodas();
+    this.recordarme = localStorage.getItem('RECORDARME') && localStorage.getItem('RECORDARME').toLowerCase() == 'true' ? true : false;
+    //this.servNotificaciones.buscarCitasTodas();
+    this.servNotificaciones.buscarCitasTodasLocales();
+    //this.servNotificaciones.;
     this.usaEnrolamiento = this.parametrosApp.USA_LOGIN_ENROLAMIENTO();
     this.cargarForma();
   }
@@ -650,10 +660,13 @@ export class NuevoLoginPage implements OnInit {
     this.navCtrl.navigateRoot(['pre-registro-uno'], navigationExtras);
   }
   cargarForma() {
+    
+    console.log(this.recordarme);
     this.forma = new FormGroup({
       'run': new FormControl('', [Validators.required]),
       'email': new FormControl('', [Validators.required, Validators.pattern(this.expEmail)]),
-      'clave': new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(10)])
+      'clave': new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(10)]),
+      //'recordarme': new FormControl(this.recordarme)
     });
     //si usa enrolamiento hay que quitar validación de email
     if (this.usaEnrolamiento) {
@@ -661,33 +674,24 @@ export class NuevoLoginPage implements OnInit {
     }
     else {
       this.forma.get('run').clearValidators();
+      //seteamos los datos de clave
+      if (this.utiles.tieneUsuarioYPassword()) {
+        this.nombreCompleto = this.utiles.getMiNombre();
+        this.forma.setValue({
+          run: '',
+          email: this.utiles.getNombreUsuario(),
+          clave: this.utiles.getPassword(),
+          //recordarme: this.recordarme
+        });
+      }
     }
-    //acá ver si dejamos preseteado el usuario y clave
-    //por lo pronto lo comentamos
-
-    /*     if (this.registro && this.registro.Id > 0){
-          this.forma.setValue({
-            run: this.registro.Run,
-            email: this.registro.CorreoElectronico,
-            nombre: this.registro.Nombres,
-            apellido: this.registro.Apellidos,
-            telefono: this.registro.TelefonoContacto,
-            genero: this.registro.Sexo.toString(),
-            clave: '',
-            repetirClave: ''
-          })
-        } */
   }
   async crearToken() {
     var versionAppName;
     var versionNumber;
     var plataforma;
-    //original
-    /*     let loader = await this.loading.create({
-          message: 'Creando...<br>Token inicial',
-          duration: 2000
-        }); */
-    this.estaCargando = true;
+
+    this.estaCargandoHome = true;
     let loader = await this.loading.create({
       cssClass: 'loading-vacio',
       showBackdrop: false,
@@ -707,7 +711,7 @@ export class NuevoLoginPage implements OnInit {
           this.tokenDispositivo = localStorage.getItem('token_dispositivo');
         }
         versionAppName = "Mi salud familiar"
-        versionNumber = "0.0";
+        versionNumber = "1.0.2";
         plataforma = "Web";
         //loader.dismiss();
         //otras variables
@@ -715,7 +719,7 @@ export class NuevoLoginPage implements OnInit {
         localStorage.setItem('version_number', versionNumber);
         localStorage.setItem('plataforma', plataforma);
         loader.dismiss();
-        this.estaCargando = false;
+        this.estaCargandoHome = false;
       }
       else {
         if (this.platform.is('ios')) {
@@ -735,7 +739,7 @@ export class NuevoLoginPage implements OnInit {
         }
         else {
           versionAppName = "Mi salud familiar"
-          versionNumber = "0.0";
+          versionNumber = "1.0.2";
           plataforma = "No informado";
         }
         //crear token para web
@@ -746,7 +750,7 @@ export class NuevoLoginPage implements OnInit {
         localStorage.setItem('version_number', versionNumber);
         localStorage.setItem('plataforma', plataforma);
         loader.dismiss();
-        this.estaCargando = false;
+        this.estaCargandoHome = false;
       }
 
     })
@@ -766,7 +770,7 @@ export class NuevoLoginPage implements OnInit {
               message: 'Creando...<br>registro de sessión',
               duration: 2000
             }); */
-      this.estaCargando = true;
+      this.estaCargandoHome = true;
       let loader = await this.loading.create({
         cssClass: 'loading-vacio',
         showBackdrop: false,
@@ -785,7 +789,7 @@ export class NuevoLoginPage implements OnInit {
               }
             }
             loader.dismiss();
-            this.estaCargando = false;
+            this.estaCargandoHome = false;
           });
         }
         else {
@@ -794,7 +798,7 @@ export class NuevoLoginPage implements OnInit {
             let respuesta = JSON.parse(response.data);
             sessionStorage.setItem("RSS_ID", respuesta.Id);
             loader.dismiss();
-            this.estaCargando = false;
+            this.estaCargandoHome = false;
           });
         }
       });
@@ -862,7 +866,73 @@ export class NuevoLoginPage implements OnInit {
     let password = this.forma.controls.clave ? this.utiles.encriptar(this.forma.controls.clave.value) : '';
 
     //ahora guardamos
-    this.estaCargando = true;
+    this.estaCargandoHome = true;
+
+    
+      if (!this.utiles.isAppOnDevice()) {
+        //llamada web
+        setTimeout(() => {
+          this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data) => {
+            if (data) {
+              let respuesta = data;
+              localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
+              localStorage.setItem('TIENE_REGISTRO', 'true');
+              //nueva funcionalidad
+              this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
+              //************** */
+              let registro = JSON.parse(localStorage.getItem('REGISTRO'));
+              this.estaCargandoHome = false;
+              this.autentificarse(registro.Run, password);
+            }
+            else {
+              this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
+              this.estaCargandoHome = false;
+              return;
+            }
+  
+          }, error => {
+            //console.log(error.message);
+            //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+            this.estaCargandoHome = false;
+            this.procesoLocal();
+          })
+        }, 5000);
+      }
+      else {
+        //llamada nativa
+        setTimeout(() => {
+          this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data) => {
+            let respuesta = JSON.parse(data.data);
+            if (respuesta) {
+              localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
+              localStorage.setItem('TIENE_REGISTRO', 'true');
+              //nueva funcionalidad
+              this.utiles.guardarLogin(correo,this.utiles.desencriptar(password), this.recordarme);
+              //************** */
+              let registro = JSON.parse(localStorage.getItem('REGISTRO'));
+              this.estaCargandoHome = false;
+              this.autentificarse(registro.Run, password);
+            }
+            else {
+              this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
+              this.estaCargandoHome = false;
+
+              return;
+            }
+  
+          }).catch(error => {
+            //console.log(error.message);
+            //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+            this.estaCargandoHome = false;
+            this.procesoLocal();
+          })
+        }, 5000);
+      }
+    
+  }
+  async loguearseRegistroRecordarme(correo, password) {
+    //ahora guardamos
+    this.estaCargandoHome = true;
     let loader = await this.loading.create({
       cssClass: 'loading-vacio',
       showBackdrop: false,
@@ -878,7 +948,7 @@ export class NuevoLoginPage implements OnInit {
               localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
               localStorage.setItem('TIENE_REGISTRO', 'true');
               //nueva funcionalidad
-              this.utiles.guardarLogin(correo, password);
+              this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
               //************** */
               loader.dismiss();
               let registro = JSON.parse(localStorage.getItem('REGISTRO'));
@@ -887,7 +957,7 @@ export class NuevoLoginPage implements OnInit {
             }
             else {
               this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
-              this.estaCargando = false;
+              this.estaCargandoHome = false;
               loader.dismiss();
               return;
             }
@@ -895,7 +965,7 @@ export class NuevoLoginPage implements OnInit {
           }, error => {
             //console.log(error.message);
             //this.utiles.presentToast("Error de conexión.", "middle", 3000);
-            this.estaCargando = false;
+            this.estaCargandoHome = false;
             loader.dismiss();
             this.procesoLocal();
           })
@@ -910,7 +980,7 @@ export class NuevoLoginPage implements OnInit {
               localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
               localStorage.setItem('TIENE_REGISTRO', 'true');
               //nueva funcionalidad
-              this.utiles.guardarLogin(correo, password);
+              this.utiles.guardarLogin(correo, password, this.recordarme);
               //************** */
               loader.dismiss();
               let registro = JSON.parse(localStorage.getItem('REGISTRO'));
@@ -918,7 +988,7 @@ export class NuevoLoginPage implements OnInit {
             }
             else {
               this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
-              this.estaCargando = false;
+              this.estaCargandoHome = false;
               loader.dismiss();
               return;
             }
@@ -926,7 +996,7 @@ export class NuevoLoginPage implements OnInit {
           }).catch(error => {
             //console.log(error.message);
             //this.utiles.presentToast("Error de conexión.", "middle", 3000);
-            this.estaCargando = false;
+            this.estaCargandoHome = false;
             loader.dismiss();
             this.procesoLocal();
           })
@@ -936,12 +1006,12 @@ export class NuevoLoginPage implements OnInit {
   }
 
   async loguearseEnrolamiento() {
-    this.estaCargando = true;
+    this.estaCargandoHome = true;
     let run = this.forma.controls.run.value;
     let password = this.forma.controls.clave ? this.utiles.encriptar(this.forma.controls.clave.value) : '';
     localStorage.setItem('TIENE_REGISTRO', 'false');
     //nueva funcionalidad
-    this.utiles.guardarLogin(run, password);
+    this.utiles.guardarLogin(run, password, this.recordarme);
     //************** */
     this.autentificarse(run, password);
   }
@@ -976,28 +1046,53 @@ export class NuevoLoginPage implements OnInit {
       }
     }
   }
+  async onSubmitRecordarme() {
+    //this.utiles.verificaInternet();
+    var puede = true;
+    if (this.utiles.isAppOnDevice()) {
+      if (sessionStorage.getItem('CONEXION')) {
+        if (sessionStorage.getItem('CONEXION') == 'Offline') {
+          puede = false;
+        }
+      }
+
+    }
+    if (puede == false) {
+      this.utiles.presentToast('NO tienes conexión a internet', 'bottom', 3000);
+      //levantar una ventana de información a internet
+      this.navCtrl.navigateRoot('error');
+    }
+    else {
+      if (!this.utiles.tieneUsuarioYPassword()) {
+        return;
+      }
+      if (this.usaEnrolamiento) {
+        //loguearse con enrolamiento
+        this.loguearseEnrolamiento();
+      }
+      else {
+        //loguearse con registro app
+        var usuario = this.utiles.getNombreUsuario();
+        var pass = this.utiles.encriptar(this.utiles.getPassword());
+        this.loguearseRegistroRecordarme(usuario, pass);
+      }
+    }
+  }
   async autentificarse(userName, password) {
     //en este caso ya el user name es el email
 
     let f = { UserName: userName, Password: password, UsaEnrolamiento: this.usaEnrolamiento, TokenFCM: this.utiles.entregaTokenFCM() };
 
-    this.estaCargando = true;
-    let loader = await this.loading.create({
-      cssClass: 'loading-vacio',
-      showBackdrop: false,
-      spinner: null,
-    });
+    this.estaCargandoHome = true;
 
 
-    await loader.present().then(async () => {
       if (!this.utiles.isAppOnDevice()) {
         //llamada web
         this.acceso.loginWebDirecto(f).subscribe((response: any) => {
-          this.procesarLogin(response, loader);
+          this.procesarLogin(response);
         },
           (error) => {
-            loader.dismiss();
-            this.estaCargando = false;
+            this.estaCargandoHome = false;
             return;
           });
       }
@@ -1005,19 +1100,18 @@ export class NuevoLoginPage implements OnInit {
         //llamada nativa
         this.acceso.loginWebNative(f).then((response: any) => {
           //NUEVOS CAMBIOS, GUARDAREMOS LOS DATOS DEL LOGIN
-          this.utiles.guardarLogin(userName, password);
+          this.utiles.guardarLogin(userName, this.utiles.desencriptar(password), this.recordarme);
           //********** */
-          this.procesarLogin(JSON.parse(response.data), loader);
+          this.procesarLogin(JSON.parse(response.data));
         },
           (error) => {
             this.utiles.presentToast('Ocurrió un error de autentificación', 'bottom', 4000);
-            this.estaCargando = false;
-            loader.dismiss();
+            this.estaCargandoHome = false;
             return;
           }
         );
       }
-    })
+
   }
   setDatosUsuario(retorno, user, userFamilia) {
     //variable de sessión muy importante para el resto de la app.
@@ -1056,7 +1150,7 @@ export class NuevoLoginPage implements OnInit {
     /*     this.fcmService.initFCM();
         this.fcmService.receiveMessage(true); */
   }
-  procesarLogin(response, loader) {
+  procesarLogin(response) {
     var retorno = response;
     let tieneUsuario = false;
     if (retorno.RespuestaBase) {
@@ -1073,14 +1167,12 @@ export class NuevoLoginPage implements OnInit {
               //tiene entidad contratante
               tieneUsuario = true;
               this.setDatosUsuario(retorno, user, userFamilia);
-              loader.dismiss();
-              this.estaCargando = false;
+              this.estaCargandoHome = false;
             }
             else {
               //no tiene entidad contratante
               this.utiles.presentToast("No tiene entidad contratante asociada", "middle", 3000);
-              loader.dismiss();
-              this.estaCargando = false;
+              this.estaCargandoHome = false;
               return;
             }
           }
@@ -1088,8 +1180,7 @@ export class NuevoLoginPage implements OnInit {
             //no usa entidad contratante
             tieneUsuario = true;
             this.setDatosUsuario(retorno, user, userFamilia);
-            loader.dismiss();
-            this.estaCargando = false;
+            this.estaCargandoHome = false;
           }
 
         }
@@ -1108,8 +1199,7 @@ export class NuevoLoginPage implements OnInit {
         this.CodigoMensaje = retorno.RespuestaBase.CodigoMensaje;
         this.Mensaje = retorno.RespuestaBase.Mensaje;
         this.loggedIn = true;
-        loader.dismiss();
-        this.estaCargando = false;
+        this.estaCargandoHome = false;
         this.utiles.presentToast(this.Mensaje, 'middle', 4000);
         return;
       }
@@ -1121,17 +1211,48 @@ export class NuevoLoginPage implements OnInit {
       this.CodigoMensaje = 1000;
       this.Mensaje = 'Error de llamada Http;';
       this.loggedIn = true;
-      this.estaCargando = false;
-      loader.dismiss();
+      this.estaCargandoHome = false;
       this.utiles.presentToast(this.Mensaje, 'middle', 4000);
       return;
     }
   }
   irAHome() {
-    this.navCtrl.navigateRoot('home');
+    if (this.estaCargandoHome){
+      this.estaCargandoHome = false;
+    }
+    console.log(this.estaCargandoHome);
+    //this.navCtrl.navigateForward('home');
+    //this.router.navigate(['/home'], { replaceUrl:true });
+    this.navCtrl.navigateRoot('home', { animated: true, animationDirection: 'forward' });
+
   }
   irRecuperarClave() {
     this.navCtrl.navigateRoot('recuperar-clave');
+  }
+  onChange(event){
+    var email = this.forma.controls.email.value;
+    var pass = this.forma.controls.clave.value;
+    
+    if (event.detail){
+      this.recordarme = event.detail.checked;
+      if (this.recordarme){
+        //guardar los valores en varibales locales
+        this.utiles.guardarLogin(email, pass, this.recordarme);
+        //set
+        if (this.utiles.tieneUsuarioYPassword) {
+          this.nombreCompleto = this.utiles.getMiNombre();
+          this.forma.setValue({
+            run: '',
+            email: this.utiles.getNombreUsuario(),
+            clave: this.utiles.getPassword(),
+            //recordarme: new FormControl(this.recordarme)
+          });
+        }
+      }
+      else{
+        localStorage.setItem('RECORDARME', this.recordarme.toString());
+      }
+    }
   }
   get f() { return this.forma.controls; }
 }

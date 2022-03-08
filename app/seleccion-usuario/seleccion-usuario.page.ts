@@ -24,6 +24,8 @@ export class SeleccionUsuarioPage implements OnInit {
   estaCargando = false;
   linesAvatar = 'inset';
   @ViewChild('myList', { read: IonList }) list: IonList;
+  //para volver al calendario
+  usuarioSeleccionado;
 
   constructor(
     public navCtrl: NavController,
@@ -110,5 +112,8 @@ export class SeleccionUsuarioPage implements OnInit {
       }
     };
     this.navCtrl.navigateRoot(['pre-tiposatencion'], navigationExtras);
+  }
+  irAHome(){
+
   }
 }

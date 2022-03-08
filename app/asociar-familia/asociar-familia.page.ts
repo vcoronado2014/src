@@ -167,7 +167,6 @@ export class AsociarFamiliaPage implements OnInit {
         let header = "Aviso";
         let message = "Hay al menos un miembro de la familia al cual no está aceptando. Posteriormente lo puede volver a aceptar en Activar/Desactivar integrantes. \n¿Está seguro de continuar?.";
         this.presentAlertConfirm(header, message);
-        //this.procesarFamilia();
       }
       else {
         //console.log('esta aceptando a todos los miembros');

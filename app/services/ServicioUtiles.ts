@@ -212,15 +212,35 @@ export class ServicioUtiles{
         var usaAgenda = this.entregaParametroUsaAgenda();
 
         var arrPages = [];
-        var pagUno = {
+/*         var pagUno = {
             title: 'Configurar familia',
             visible: true,
             icon: 'settings',
             src: 'familia',
             esSubMenu: false
         };
+        arrPages.push(pagUno); */
+
+        var pagUno = {
+            title: 'Actualizar datos',
+            visible: true,
+            icon: 'cloud-upload',
+            src: 'familia',
+            esSubMenu: false,
+            parrafo: 'En el centro de salud'
+        };
         arrPages.push(pagUno);
 
+        if (this.tieneFamiliaAceptada() || this.tieneFamiliaRechazada()) {
+            var pagQuitarIntegrantes = {
+                title: 'Configurar familia',
+                visible: false,
+                icon: 'people',
+                src: 'quitar-familia',
+                esSubMenu: false
+            }
+            arrPages.push(pagQuitarIntegrantes);
+        }
         //ahora los submenus de configurar familia
         //simepre y cuando tenga familia aceptada
 /*         if (this.tieneFamiliaAceptada() || this.tieneFamiliaRechazada()) {
@@ -856,7 +876,7 @@ export class ServicioUtiles{
               entidad.tokenDispositivo = localStorage.getItem('token_dispositivo');
             }
             entidad.versionAppName = "Mi salud familiar"
-            entidad.versionNumber = "0.0";
+            entidad.versionNumber = "1.0.2";
             entidad.plataforma = "Web";
             //loader.dismiss();
             //otras variables
@@ -877,12 +897,12 @@ export class ServicioUtiles{
             }
             else if (this.platform.is('mobileweb')){
               entidad.versionAppName = "Mi salud familiar"
-              entidad.versionNumber = "0.0";
+              entidad.versionNumber = "1.0.2";
               entidad.plataforma = "Web";
             }
             else {
               entidad.versionAppName = "Mi salud familiar"
-              entidad.versionNumber = "0.0";
+              entidad.versionNumber = "1.0.2";
               entidad.plataforma = "No informado";
             }
             //crear token para web
@@ -1039,10 +1059,11 @@ export class ServicioUtiles{
 		}
     }
 
-    guardarLogin(userName, password){
+    guardarLogin(userName, password, recordarme){
         var pass = this.encriptar(password);
         localStorage.setItem('NOMBRE_USUARIO_LOGUEADO', userName);
         localStorage.setItem('PASS_USUARIO_LOGUEADO', pass);
+        localStorage.setItem('RECORDARME', recordarme.toString());
     }
     tieneUsuarioYPassword(){
         var tieneUsuario = localStorage.getItem('NOMBRE_USUARIO_LOGUEADO') && localStorage.getItem('NOMBRE_USUARIO_LOGUEADO') != '' ? true : false;
@@ -1050,5 +1071,69 @@ export class ServicioUtiles{
         
         return tieneUsuario && tienePassword;
     }
+    getNombreUsuario(){
+        return localStorage.getItem('NOMBRE_USUARIO_LOGUEADO') && localStorage.getItem('NOMBRE_USUARIO_LOGUEADO') != '' ? localStorage.getItem('NOMBRE_USUARIO_LOGUEADO') : '';
+    }
+    getPassword(){
+        var pass = localStorage.getItem('PASS_USUARIO_LOGUEADO') && localStorage.getItem('PASS_USUARIO_LOGUEADO') != '' ? localStorage.getItem('PASS_USUARIO_LOGUEADO') : '';
+        return this.desencriptar(pass);
+    }
+    getMiNombre(){
+        return localStorage.getItem('MI_NOMBRE') && localStorage.getItem('MI_NOMBRE') != '' ? localStorage.getItem('MI_NOMBRE') : '';
+    }
+    entregaUsuarioRut(rut){
+        //buscamos al usuario en local sttorage
+        let usuario = null;   
+        if (localStorage.getItem('UsuarioAps')){
+          var usu = JSON.parse(localStorage.getItem('UsuarioAps'));
+          if (usu){
+            if (usu.Rut == rut){
+              usuario = usu;
+            }
+          }
+        }
+        if (localStorage.getItem('UsuariosFamilia')){
+          var existe = false;
+          var usuarios = JSON.parse(localStorage.getItem('UsuariosFamilia'));
+          if (usuarios && usuarios.length > 0){
+            for(var i=0; i < usuarios.length; i++){
+              if (usuarios[i].Rut == rut){
+                usuario = usuarios[i];
+              }
+            }
+          }
+        }
+        return usuario;
+    
+      }
+      
+    entregaMiImagenLogin() {
+        var retorno = environment.URL_FOTOS + '/Recursos/logousuario.png';
+        if (localStorage.getItem('MI_IMAGEN')) {
+            var imagen = localStorage.getItem('MI_IMAGEN');
+            retorno = environment.URL_FOTOS + imagen;
+        }
+        return retorno;
+    }
+    entregaInfoApp(){
+        var ambiente = '';
+        if (environment.API_ENDPOINT.includes('https://preapp.')){
+            ambiente = 'Pre-producción';
+        }
+        else if (environment.API_ENDPOINT.includes('https://app.')){
+            ambiente = 'Producción';
+        }
+        else{
+            ambiente = 'Desarrollo';
+        }
+
+        var entidad = {
+            Version: localStorage.getItem('version_number') ? localStorage.getItem('version_number') : '1.0.2',
+            EsProduccion: environment.production,
+            Nombre: localStorage.getItem('version_app_name') ? localStorage.getItem('version_app_name') : '',
+            Ambiente: ambiente
+        }
+        return entidad;
+    }   
 
 }

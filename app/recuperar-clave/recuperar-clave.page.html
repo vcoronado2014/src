@@ -1,7 +1,7 @@
 <ion-header>
   <!-- esto lo comentamos ya que se decidió no usar color de header personalizado -->
   <!-- <ion-toolbar [style.--background]="miColor" mode="md"> -->
-  <ion-toolbar color="primary" mode="md">
+  <ion-toolbar mode="md">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/nuevo-login" class="fcw"></ion-back-button>
     </ion-buttons>
@@ -11,7 +11,7 @@
 
 <ion-content class="ion-padding">
   <app-progress [mostrar]="estaCargando" titulo="Recuperando clave"></app-progress>
-  <ion-row [hidden]="estaCargando" class="texto-1 mt-32">
+  <ion-row [hidden]="estaCargando" class="texto-1 mt-32" style="font-size: 1em;">
     Ingresa tu correo electrónico, te enviaremos un correo con tu contraseña, recuerda revisar de igual manera los spam o correo no deseado.
   </ion-row>
   <form [hidden]="estaCargando" [formGroup]="forma" novalidate>

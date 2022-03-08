@@ -109,6 +109,24 @@ $colors: (
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
 }
+/* background global */
+.back-app{
+  --background: #FAF9FA;
+}
+/* esto es importante porque en el login se extiende el alto demasiado */
+.ion-page {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flexbox !important;
+  position: absolute;
+  flex-direction: column;
+  justify-content: space-between;
+  contain: layout size style;
+  overflow: hidden;
+  z-index: 0;
+}
 .home{
   /*--background: #0088c1;*/
   color: white;
@@ -184,7 +202,139 @@ $colors: (
     width: 100%;
     color: #000;
   }
-}   
+}
+.boton-sig {
+  width: 55%;
+  background-color:#ff4081;
+}
+.mat-flat-button.mat-primary, .mat-raised-button.mat-primary, .mat-fab.mat-primary, .mat-mini-fab.mat-primary {
+  background-color: #ff4081;
+}
+.mat-flat-button.mat-accent, .mat-raised-button.mat-accent, .mat-fab.mat-accent, .mat-mini-fab.mat-accent {
+  background-color: #ff4081;
+}
+.mat-input-element:disabled, .mat-form-field-type-mat-native-select.mat-form-field-disabled .mat-form-field-infix::after {
+  color: rgba(0,0,0,.38);
+}
+//rgba(0,0,0,.38)
+.mat-form-field-appearance-outline.mat-form-field-disabled .mat-form-field-outline {
+  color: rgba(0,0,0,.38);
+}
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  color: rgba(0,0,0,.12);
+}
+/*card del calendario*/
+.mat-card {
+  background: #fff;
+  color: rgba(0,0,0,.87);
+}
+.mat-card-subtitle {
+  color: rgba(0,0,0,.54);
+}
+.fecha-card {
+  font: normal normal normal 16px Roboto;
+  letter-spacing: 0.14px;
+  color: #000000DE;
+  opacity: 1;
+  padding-left: 16px;
+  margin-bottom: 8px;
+}
+/* .mat-form-field-appearance-outline.mat-form-field-disabled .mat-form-field-outline {
+  color: #fff;
+} */
+.texto-1{
+  font-size: 0.875em;
+  color: #0000008A;
+  
+}
+ion-toolbar{
+  --background: #673AB7;
+  --color: #fff;
+}
+/* home */
+.text-avatar{
+  font-family: 'Roboto';
+  letter-spacing: 0.15px;
+  color: #000000DE;
+  font-size: 1em;
+  margin-bottom: 0;
+}
+.subtext-avatar{
+  font-family: 'Roboto';
+  letter-spacing: 0.25px;
+  color: #00000099;
+  font-size: 0.875em;
+  margin-bottom: 0;
+}
+.texto{
+  color: #000000DE;
+  letter-spacing: 0.1pt;
+  font-size: 14pt;
+  font-weight: 500;
+}
+/* ordenes */
+.text-avatar-1{
+  color:#000000DE;
+  font-size: 16pt;
+  letter-spacing: 0.5pt;
+  margin-top: 12px;
+}
+.subtext-avatar-1{
+  color:#00000099;
+  font-size: 14pt;
+  letter-spacing: 0.25pt;
+  margin-bottom: 12px;
+}
+.text-solicitud{
+  color:#000000DE;
+  font-size: 12pt;
+  letter-spacing: 0.4pt;
+  margin-top: 12px;
+}
+  /* home */
+  .no-tiene-antecedentes{
+    height: 70px;
+    width: 100%;
+    padding-top: 15px;
+    font-size: 16pt;
+    letter-spacing: 0.5pt;
+    color: #0000008A;
+    text-align: center;
+    background-color: #FAF9FA;
+  }
+  .texto-item{
+    color: #00000099;
+    font-size: 14px;
+  }
+  .text-avatar-1{
+    color:#000000DE;
+    font-size: 16pt;
+    letter-spacing: 0.5pt;
+    margin-top: 12px;
+}
+/* pag resulttados */
+.subtext-avatar-1{
+    color:#00000099;
+    font-size: 14pt;
+    letter-spacing: 0.25pt;
+    margin-bottom: 12px;
+}
+.text-solicitud{
+    color:#000000DE;
+    font-size: 12pt;
+    letter-spacing: 0.4pt;
+    margin-top: 12px;
+}
+.text-h5{
+    font-size: 14pt;
+    color:#000000DE;
+    letter-spacing: 0.1pt;
+    font-weight: 500;
+    margin-top: 24px;
+    margin-left: 16px;
+    margin-bottom: 16px;
+}
+  
 
 @media (prefers-color-scheme: dark) {
   /*
@@ -256,6 +406,156 @@ $colors: (
     --ion-color-light-shade: #1e2023;
     --ion-color-light-tint: #383a3e;
   }
+  /* background global */
+  .back-app{
+    --background: #000000;
+  }
+  ion-toolbar{
+      --background: #000;
+      --color: #fff;
+  }
+
+  /* button material stroked */
+  .mat-button.mat-primary, .mat-icon-button.mat-primary, .mat-stroked-button.mat-primary {
+    border-style: solid;
+    border-width: 1px;
+    border-color: #ffffff;
+    color: #ffffff;
+  }
+  .mat-flat-button.mat-primary, .mat-raised-button.mat-primary, .mat-fab.mat-primary, .mat-mini-fab.mat-primary {
+    background-color: #673AB7;
+  }
+  .mat-flat-button.mat-accent, .mat-raised-button.mat-accent, .mat-fab.mat-accent, .mat-mini-fab.mat-accent {
+    background-color: #673AB7;
+  }
+  .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline-thick {
+    color: #fff;
+  }
+  .mat-flat-button.mat-primary[disabled], .mat-flat-button.mat-accent[disabled], .mat-flat-button.mat-warn[disabled], .mat-flat-button[disabled][disabled], .mat-raised-button.mat-primary[disabled], .mat-raised-button.mat-accent[disabled], .mat-raised-button.mat-warn[disabled], .mat-raised-button[disabled][disabled], .mat-fab.mat-primary[disabled], .mat-fab.mat-accent[disabled], .mat-fab.mat-warn[disabled], .mat-fab[disabled][disabled], .mat-mini-fab.mat-primary[disabled], .mat-mini-fab.mat-accent[disabled], .mat-mini-fab.mat-warn[disabled], .mat-mini-fab[disabled][disabled] {
+    background-color: gray;
+    color: #fff;
+  }
+  .mat-input-element:disabled, .mat-form-field-type-mat-native-select.mat-form-field-disabled .mat-form-field-infix::after {
+    color: #fff;
+  }
+  .mat-form-field-appearance-outline.mat-form-field-disabled .mat-form-field-outline {
+    color: #fff;
+  }
+  .mat-form-field-appearance-outline .mat-form-field-outline {
+    color: #fff;
+  }
+  /* card del calendario */
+  .mat-card {
+    background: #1d1d1d;
+    color: #fff;
+  }
+  .mat-card-subtitle {
+    color: #fff;
+  }
+  .fecha-card {
+    font: normal normal normal 16px Roboto;
+    letter-spacing: 0.14px;
+    color: #fff;
+    opacity: 1;
+    padding-left: 16px;
+    margin-bottom: 8px;
+  }
+
+  .boton-sig {
+    width: 55%;
+    background-color:#673AB7;
+  }
+
+  .texto-1{
+    font-size: 0.875em;
+    color: #fff;
+    
+  }
+  /* ordenes */
+  .text-avatar-1{
+    color:#fff;
+    font-size: 16pt;
+    letter-spacing: 0.5pt;
+    margin-top: 12px;
+}
+.subtext-avatar-1{
+    color:#fff;
+    font-size: 14pt;
+    letter-spacing: 0.25pt;
+    margin-bottom: 12px;
+}
+.text-solicitud{
+    color:#fff;
+    font-size: 12pt;
+    letter-spacing: 0.4pt;
+    margin-top: 12px;
+}
+/* pag resulttados */
+.subtext-avatar-1{
+  color:#fff;
+  font-size: 14pt;
+  letter-spacing: 0.25pt;
+  margin-bottom: 12px;
+}
+.text-h5{
+  font-size: 14pt;
+  color:#fff;
+  letter-spacing: 0.1pt;
+  font-weight: 500;
+  margin-top: 24px;
+  margin-left: 16px;
+  margin-bottom: 16px;
+}
+
+  /* material input */
+  mat-label, mat-form-field, mat-error {
+    color:#fff;
+  }
+  .mat-error{
+    color:#fff;
+  }
+  .mat-form-field-label{
+    color: #fff;
+  }
+
+  /* menu */
+  .text-avatar {
+    font-family: "Roboto";
+    letter-spacing: 0.15px;
+    color: #fff;
+    font-size: 1em;
+    margin-bottom: 0;
+  }
+
+  .subtext-avatar {
+    font-family: "Roboto";
+    letter-spacing: 0.25px;
+    color: #fff;
+    font-size: 0.875em;
+    margin-bottom: 0;
+  }
+  .texto{
+    color: #fff;
+    letter-spacing: 0.1pt;
+    font-size: 14pt;
+    font-weight: 500;
+  }
+  /* home */
+  .no-tiene-antecedentes{
+    height: 70px;
+    width: 100%;
+    padding-top: 15px;
+    font-size: 16pt;
+    letter-spacing: 0.5pt;
+    color: #fff;
+    text-align: center;
+    background-color: #000;
+  }
+  .texto-item{
+    color: #fff;
+    font-size: 14px;
+  }
+
 
   /*
    * iOS Dark Theme

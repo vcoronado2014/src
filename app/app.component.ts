@@ -47,7 +47,9 @@ export class AppComponent {
             console.log('NO HAY INTERNET');
           }
           else{
-            this.notificacion.buscarCitasTodas();
+            //lo comentamos hasta implementar correctamente
+            //this.notificacion.buscarCitasTodas();
+            this.notificacion.buscarCitasTodasLocales();
             await this.utiles.obtenerParametrosApp(environment.production);
             await this.utiles.crearTokenPlano();
             this.fcmService.initFCM();
@@ -57,7 +59,9 @@ export class AppComponent {
         });
       }
       else{
-        this.notificacion.buscarCitasTodas();
+        //lo comentamos hasta implementar correctamente
+        //this.notificacion.buscarCitasTodas();
+        this.notificacion.buscarCitasTodasLocales();
         await this.utiles.obtenerParametrosApp(environment.production);
         await this.utiles.crearTokenPlano();
         this.fcmService.initFCM();

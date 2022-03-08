@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="primary" mode="md">
+  <ion-toolbar mode="md">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/pre-ordenes" class="fcw"></ion-back-button>
     </ion-buttons>
@@ -11,7 +11,7 @@
       <ion-icon class="fcw" slot="icon-only" name="search"></ion-icon>
     </ion-buttons> 
   </ion-toolbar>
-  <ion-toolbar color="primary" *ngIf="mostrarBusqueda">
+  <ion-toolbar  *ngIf="mostrarBusqueda">
     <ion-searchbar placeholder="Nombre examen" (ionInput)="filterList($event)"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
@@ -20,7 +20,7 @@
 <!--SI HAY ORDENES -->
 <app-progress [mostrar]="estaCargando" titulo="Cargando exámenes"></app-progress>
 <div [hidden]="estaCargando" style="padding-top: 24px;">
-  <ion-item lines="none" style="--background:#FAF9FA; padding-bottom: 24px;">
+  <ion-item lines="none" style="padding-bottom: 24px;">
     <!-- poner avatar -->
     <ion-avatar slot="start">
       <img *ngIf="usuarioAps.UrlImagen != ''" src={{usuarioAps.UrlImagen}}>
@@ -83,7 +83,7 @@
 </ion-card>   -->
 <!-- NO HAY ORDENES -->
 <div [hidden]="estaCargando" *ngIf="tiene == false" style="position: relative; height: 30vh;">
-  <div style="position: absolute; display: table; height: 100%; font-size: 16pt; color:#0000008A; text-align: center;width: 100%;letter-spacing: 0.5pt;">
+  <div style="position: absolute; display: table; height: 100%; font-size: 16pt; text-align: center;width: 100%;letter-spacing: 0.5pt;">
     <p style="display: table-cell; vertical-align: middle">No tiene exámenes  <br>registrados
     </p>
   </div>

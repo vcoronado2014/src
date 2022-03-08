@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar [style.--background]="miColor" mode="md">
+  <ion-toolbar mode="md">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home" class="fcw"></ion-back-button>
     </ion-buttons>
@@ -18,7 +18,7 @@
 
   <ion-grid>
     <ion-row>
-      <ion-col size="1" class="ion-no-margin ion-no-padding" [style.background]="miColor" [style.color]="textColor">
+      <ion-col size="1" class="ion-no-margin ion-no-padding">
         <ion-icon name="chevron-back-outline" style="font-size: 2em;padding-top: 10px;" *ngIf="indiceActual > 0" (click)="onClickCambiarSemana('ant')"></ion-icon>
       </ion-col>
       <ion-col class="ion-no-margin ion-no-padding">

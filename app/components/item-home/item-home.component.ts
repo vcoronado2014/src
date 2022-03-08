@@ -37,8 +37,10 @@ export class ItemHomeComponent implements OnInit {
       this.navCtrl.navigateRoot('error');
     }
     else{
+      //guardamos el modulo para saber en cual estamos ingresando
+      sessionStorage.setItem('MODULO_ACTUAL', modulo);
       var pageName = modulo.toLowerCase();
-      if (modulo == 'EXAMENES'){
+      if (modulo == 'EXAMENES' || modulo == 'CALENDARIO'){
         pageName = 'pre-ordenes';
       }
       //registramos movimiento

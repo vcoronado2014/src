@@ -411,8 +411,14 @@ export class PreTiposatencionPage implements OnInit {
         var accion = data.data.accion;
         //obtenemos la pagina actual
         //aca debemos revisar a donde nos vamos
-        this.navCtrl.navigateRoot('calendario');
+        //this.navCtrl.navigateRoot('calendario');
         //console.log(accion);        
+        const navigationExtras: NavigationExtras = {
+          queryParams: {
+            idUsp: this.idConsultar
+          }
+        };
+        this.navCtrl.navigateBack(['calendario'], navigationExtras);
       }
     });
     return await modal.present();
@@ -424,6 +430,14 @@ export class PreTiposatencionPage implements OnInit {
       }
     };
     this.navCtrl.navigateRoot(['busqueda-avanzada'], navigationExtras);
+  }
+  irAHome(){
+    const navigationExtras: NavigationExtras = {
+      queryParams: {
+        idUsp: this.idConsultar
+      }
+    };
+    this.navCtrl.navigateBack(['calendario'], navigationExtras);
   }
 
 }

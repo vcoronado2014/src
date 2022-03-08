@@ -17,6 +17,7 @@ import { ModalDetalleCitaPage } from '../modal-detalle-cita/modal-detalle-cita.p
 import { MomentPipe } from '../../app/pipes/fecha.pipe';
 import { MatCard } from '@angular/material/card';
 
+
 @Component({
   selector: 'app-calendario',
   templateUrl: './calendario.page.html',
@@ -82,7 +83,7 @@ export class CalendarioPage implements OnInit {
   estaCargando = false;
   tituloLoading = '';
   //para infinity scroll
-  topLimit: number = 50;
+  topLimit: number = 100;
   citasVerticalTodasTop: any = [];
   //para poner la linea en la fecha actual
   fechaActual = '';
@@ -92,6 +93,9 @@ export class CalendarioPage implements OnInit {
   tieneEventosHoy = false;
   tieneEventosFuturos = false;
   fechaParaHoy;
+  //mostrar los usuarios antes
+  public usuarioApsFamilia=[];
+  public listadoUsuario=[];
   //data local
   EVENTOS_LOCAL = [
     {
@@ -510,6 +514,11 @@ export class CalendarioPage implements OnInit {
       "indice": 0
     }
   ];
+  //proccesamiento de datos conforme a grupos de eventos
+  categoriasEventos: any = [];
+  filtroDefecto = 'Atención Realizada';
+
+
   constructor(
     public navCtrl: NavController,
     public toast: ToastController,
@@ -531,47 +540,187 @@ export class CalendarioPage implements OnInit {
     moment().locale('es');
     this.fechaActual = this.transformDate(moment(), 'YYYY-MM-DD');
     this.anioActual = this.transformDate(moment(), 'YYYY');
-    //console.log(this.fechaActual);
-    //this.miColor = this.utiles.entregaMiColor();
-    if (sessionStorage.UsuarioAps) {
-      this.usuarioAps = JSON.parse(sessionStorage.UsuarioAps);
-      if (this.usuarioAps) {
-        this.miColor = this.utiles.entregaColor(this.usuarioAps);
-        this.usuarioAps.UrlImagen = environment.URL_FOTOS + this.usuarioAps.UrlImagen;
-        this.runPaciente = this.utiles.insertarGuion(this.usuarioAps.Rut);
-        this.codigoDeis = this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
-        this.nodId = this.usuarioAps.ConfiguracionNodo.NodId;
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (params && params.idUsp) {
+        this.usuarioAps = this.utiles.entregaUsuario(params.idUsp);
+        if (this.usuarioAps) {
+          this.miColor = this.utiles.entregaColor(this.usuarioAps);
+          this.usuarioAps.UrlImagen = environment.URL_FOTOS + this.usuarioAps.UrlImagen;
+          this.runPaciente = this.utiles.insertarGuion(this.usuarioAps.Rut);
+          this.codigoDeis = this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
+          this.nodId = this.usuarioAps.ConfiguracionNodo.NodId;
+
+          //mes seleccionado
+          this.mesActualSeleccionado = moment().month() + 1 + ',' + moment().year();
+          let diasSemana = new Array("domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado");
+          let meses = new Array("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre");
+          this.diaSem = diasSemana[new Date().getDay()];
+          this.hoy = new Date().getDate();
+          this.meses = meses[new Date().getMonth()];
+          this.anio = new Date().getFullYear();
+          this.tratamientoMeses();
+
+          this.cargarTodosLosEventosApiUsuario(this.usuarioAps);
+
+        }
       }
-    }
-    //mes seleccionado
-    this.mesActualSeleccionado = moment().month() + 1 + ',' + moment().year();
-    let diasSemana = new Array("domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado");
-    let meses = new Array("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre");
-    this.diaSem = diasSemana[new Date().getDay()];
-    this.hoy = new Date().getDate();
-    this.meses = meses[new Date().getMonth()];
-    this.anio = new Date().getFullYear();
-    //estos parametros estan en el ready
-    //lamada para citas vertical
-    var annoActual = moment().year();
+    });
+  }
 
-    var mesActual = moment().month() + 1;
-    //var mesActual = this.mesActualSeleccionado;
-    //console.log(mesActual);
-    //***************************** */
-    this.tratamientoMeses();
-    //prueba de implementacion api management
-    //this.cargarTodosLosEventosApi();
-    //implementacion nueva
-    if (this.parametrosApp.USA_API_MANAGEMENT()) {
-      this.cargarTodosLosEventosApi();
+  //************** implementación con listado de usuarios */
+  construirCategorias(eventosArr){
+    this.categoriasEventos = [];
+    if (eventosArr && eventosArr.length > 0){
+      eventosArr.forEach(lista => {
+        //recorremos los eventos de la lista
+        lista.Eventos.forEach(evento => {
+          if (evento.DetalleEventoMes){
+            console.log(evento.DetalleEventoMes.Titulo);
+            var titulo = evento.DetalleEventoMes.Titulo;
+            if (titulo != 'Nada planificado para hoy') {
+              //verificamos si existe o no el titulo ya en la lista
+              var existe = this.categoriasEventos.filter(e => e == titulo)[0] != null ? true : false;
+              if (!existe) {
+                this.categoriasEventos.push(titulo);
+              }
+            }
+          }
+        });
+      });
     }
-    else {
-      this.cargarTodosLosEventos();
+    //debemos seleccionar la categoria por defecto, puede ser que no se encuentre la categoria por defecto
+    //y se tenga que seleccionar otra
+    var existe = this.categoriasEventos.filter(c=>c == this.filtroDefecto)[0] != null ? true : false;
+    if (!existe){
+      this.filtroDefecto = this.categoriasEventos[0];
     }
+    console.log(this.categoriasEventos);
+    console.log('filtro dedfecto: ' + this.filtroDefecto);
+  }
+  filtrarCategorias(event){
 
+    if (event.value){
+      this.estaCargando = true;
+      this.tituloLoading = 'Buscando ' + event.value;
+      //console.log(this.citasVerticalTodasTop);
+      this.filtroDefecto = event.value;
+      console.log(this.filtroDefecto);
+      if (this.citasVerticalTodasTop){
+        if (this.citasVerticalTodasTop && this.citasVerticalTodasTop.length > 0){
+          this.citasVerticalTodasTop.forEach(lista => {
+            //recorremos los eventos de la lista
+            var eventosEliminados = 0;
+            lista.Eventos.forEach(evento => {
+              if (evento.DetalleEventoMes.Titulo != 'Nada planificado para hoy'){
+                if (evento.DetalleEventoMes){
+                  console.log(evento.DetalleEventoMes.Titulo);
+                  if (evento.DetalleEventoMes.Titulo == this.filtroDefecto){
+                    evento.DetalleEventoMes.Mostrar = true;
+                  }
+                  else{
+                    evento.DetalleEventoMes.Mostrar = false;
+                    eventosEliminados++;
+                  }
+                }
+                //si la cantidad de eventos eliminados es igual a la cantidad de eventos
+                //existentes en esa fecha se marca también toda la card como mostrar = false
+                if (eventosEliminados == lista.Eventos.length){
+                  lista.Mostrar = false;
+                }
+                else{
+                  lista.Mostrar = true;
+                }
+              }
+            });
+            //aca termina la lista
+            console.log(lista);
+          });
+        }
+      }
+      this.estaCargando = false;
+      this.tituloLoading = '';
+      this.scrollListVisible();
+    }
+  }
+
+  async cargarTodosLosEventosApiUsuario(usuario) {
+    console.log(usuario);
+    //usar citasVerticalTodas
+    this.citasVerticalTodas = [];
+    this.citasVerticalMostrar = [];
+    var fechaActual = moment();
+
+    var mesActual = {
+      mes: fechaActual.month() + 1,
+      anno: fechaActual.year()
+    };
+
+    this.estaCargando = true;
+    this.tituloLoading = 'Obteniendo calendario';
+
+      if (!this.utiles.isAppOnDevice()) {
+        //pruebas forkjoin
+        this.cita.entregaPorMesNuevoApiListadoFork(usuario.Id, usuario.IdRyf, usuario.NodId, mesActual.mes, mesActual.anno)
+          .subscribe(async (responseList:any)=>{
+            //console.log(responseList);
+            //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
+            this.citasVerticalTodas = responseList[0];
+            this.citasVerticalTodas = this.citasVerticalTodas.concat(responseList[1]);
+            this.procesarArregloCitasTodas();
+            this.citasVerticalMostrar = this.citasVerticalTodas.filter(e => e.Mostrar == true);
+            this.citasVerticalMostrar.sort((a: any, b: any) => { return this.getTime(a.FechaCompleta) - this.getTime(b.FechaCompleta) });
+            //guardamos la variable de ordenamiento
+            sessionStorage.setItem('ORDEN_EVENTOS', 'descendente');
+            //debemos generar las categorias
+            this.construirCategorias(this.citasVerticalMostrar);
+            //creamos top limit al nuevo arreglo de citas
+            this.citasVerticalTodasTop = this.citasVerticalMostrar.slice(0, this.topLimit);
+            //filtro por defecto
+            this.filtrarCategorias({ value: this.filtroDefecto });
+            //console.log(this.citasVerticalTodasTop);
+            //console.log(this.tieneEventosFuturos);
+            //loader.dismiss();
+            this.estaCargando = false;
+            this.tituloLoading = '';
+          }, error=>{
+            this.estaCargando = false;
+            this.tituloLoading = '';
+          })
+      }
+      else {
+        //llamada nativa
+        this.cita.entregaPorMesNuevoApiListadoNativeFork(usuario.Id, usuario.IdRyf, usuario.NodId, mesActual.mes, mesActual.anno).subscribe(async (responseList:any)=>{
+          console.log(responseList);
+          //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
+          this.citasVerticalTodas = JSON.parse(responseList[0].data);
+          this.citasVerticalTodas = this.citasVerticalTodas.concat(JSON.parse(responseList[1].data));
+          this.procesarArregloCitasTodas();
+          this.citasVerticalMostrar = this.citasVerticalTodas.filter(e => e.Mostrar == true);
+          this.citasVerticalMostrar.sort((a: any, b: any) => { return this.getTime(a.FechaCompleta) - this.getTime(b.FechaCompleta) });
+          //guardamos la variable de ordenamiento
+          sessionStorage.setItem('ORDEN_EVENTOS', 'descendente');
+          //debemos generar las categorias
+          this.construirCategorias(this.citasVerticalMostrar);
+          //creamos top limit al nuevo arreglo de citas
+          this.citasVerticalTodasTop = this.citasVerticalMostrar.slice(0, this.topLimit);
+          //filtro por defecto
+          this.filtrarCategorias({ value: this.filtroDefecto });
+          //console.log(this.citasVerticalTodasTop);
+          console.log(this.tieneEventosFuturos);
+          //loader.dismiss();
+          this.estaCargando = false;
+          this.tituloLoading = '';
+        }, error=>{
+          this.estaCargando = false;
+          this.tituloLoading = '';
+        })
+      }
 
   }
+
+
+  //***************************** fin  ********************/
+
   private getTime(date?: Date) {
     return date != null ? new Date(date).getTime() : 0;
   }
@@ -781,6 +930,9 @@ export class CalendarioPage implements OnInit {
     this.acceso.logout();
     this.navCtrl.navigateRoot('nuevo-login');
   }
+  irHome(){
+    this.navCtrl.navigateRoot('home');
+  }
   procesarArregloCitas() {
     var contador = 0;
     for (var s in this.citasVertical) {
@@ -867,8 +1019,8 @@ export class CalendarioPage implements OnInit {
         var fechaEvento = moment(fechaHora, 'YYYY-MM-DD').toDate();
         var fechaHoy = moment().toDate();
 
-        console.log('Evento: ' + fechaEvento);
-        console.log('Hoy:' + fechaHoy);
+        //console.log('Evento: ' + fechaEvento);
+        //console.log('Hoy:' + fechaHoy);
         if (moment(fechaHoy).format('DD-MM-YYYY') == moment(fechaEvento).format('DD-MM-YYYY')){
           this.tieneEventosHoy = true;
         }
@@ -876,11 +1028,13 @@ export class CalendarioPage implements OnInit {
           this.tieneEventosFuturos = true;
         }
         this.fechaParaHoy = moment(fechaHoy).format('DD') + ' de ' + moment(fechaHoy).format('MMMM');
-        console.log(this.fechaParaHoy);
+        //console.log(this.fechaParaHoy);
         
         contador++;
 
         if (this.citasVerticalTodas[s].Eventos[t]) {
+          //los mostramos todos
+          this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Mostrar = true;
 
           if (this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Subtitulo == 'Próxima Cita') {
             this.citasVerticalTodas[s].Eventos[t].Imagen = 'agendar_citas.svg';
@@ -968,7 +1122,8 @@ export class CalendarioPage implements OnInit {
             Lugar: '',
             NombrePaciente: '',
             Subtitulo: 'Nada planificado para hoy',
-            Titulo: 'Nada planificado para hoy'
+            Titulo: 'Nada planificado para hoy',
+            Mostrar: true
           }
         }]
       }
@@ -1145,7 +1300,8 @@ agregarUnElemento(fechaHoy){
           this.utiles.presentToast('Cita anulada con éxito!!', 'bottom', 3000);
         }
         if (this.parametrosApp.USA_API_MANAGEMENT()) {
-          this.cargarTodosLosEventosApi();
+          //this.cargarTodosLosEventosApi();
+          this.cargarTodosLosEventosApiUsuario(this.usuarioAps);
         }
         else {
           this.cargarTodosLosEventos();
@@ -1229,11 +1385,6 @@ agregarUnElemento(fechaHoy){
       var idPaciente = usuarioCita.Rut;
       var idCita = evento.DetalleEventoMes.IdElemento;
       var accion = boton.Operacion;
-      //original
-      /*       let loader = await this.loading.create({
-              message: 'Procesado...<br>Información',
-              duration: 20000
-            }); */
       let loader = await this.loading.create({
         cssClass: 'loading-vacio',
         showBackdrop: false,
@@ -1295,7 +1446,8 @@ agregarUnElemento(fechaHoy){
           this.utiles.presentToast('Cita anulada con éxito!!', 'bottom', 3000);
         }
         if (this.parametrosApp.USA_API_MANAGEMENT()) {
-          this.cargarTodosLosEventosApi();
+          //this.cargarTodosLosEventosApi();
+          this.cargarTodosLosEventosApiUsuario(this.usuarioAps);
         }
         else {
           this.cargarTodosLosEventos();
@@ -1316,25 +1468,18 @@ agregarUnElemento(fechaHoy){
     }
     loader.dismiss();
   }
-  //abrir pagina de reservar hora
-  openReservarHoraPage() {
-    var tieneFamilia = this.utiles.tieneFamilia();
-    //si tiene familia hay que enviarlo a la pagina de los miembros de la familia
-    if (tieneFamilia) {
-      this.navCtrl.navigateRoot('seleccion-usuario');
-    }
-    else {
-      //si no tiene hay que enviarlo a buscar disponibilidad directo
-      //pasando id
-      const navigationExtras: NavigationExtras = {
-        queryParams: {
-          Id: this.usuarioAps.Id
-        }
-      };
-      this.navCtrl.navigateRoot(['pre-tiposatencion'], navigationExtras);
-    }
 
+  openReservarHoraPage() {
+    //si no tiene hay que enviarlo a buscar disponibilidad directo
+    //pasando id
+    const navigationExtras: NavigationExtras = {
+      queryParams: {
+        Id: this.usuarioAps.Id
+      }
+    };
+    this.navCtrl.navigateRoot(['pre-tiposatencion'], navigationExtras);
   }
+
   revisaEstado(item) {
     var retorno = false;
     if (item.DetalleEventoMes) {
@@ -1366,8 +1511,6 @@ agregarUnElemento(fechaHoy){
           dif = dif * -1;
         }
         this.citasVerticalTodasTop[i].DiferenciaFechas = dif;
-        /*         //console.log(dif);
-                //console.log(this.citasVerticalTodasTop[i]); */
       }
 
     }
@@ -1389,10 +1532,7 @@ agregarUnElemento(fechaHoy){
       if (min) {
         var entidad = this.citasVerticalTodasTop.filter(p => p.DiferenciaFechas == min)[0];
         if (entidad) {
-          //var elemento = this.min();
-          //console.log(min);
-          //console.log(entidad);
-          let yOffset = document.getElementById(entidad.DiferenciaFechas.toString()).offsetTop;
+          let yOffset = document.getElementById(entidad.DiferenciaFechas.toString())?.offsetTop;
           if (yOffset != null) {
             this.content.scrollToPoint(0, yOffset, 600);
           }

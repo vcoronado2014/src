@@ -306,8 +306,6 @@ export class CuposDisponiblesPage implements OnInit {
         });
       });
     }
-    //this.objetoCita = nuevoObjeto;
-    //this.citasAgrupadas = Object.entries(this.objetoCita);
     cuposAgrupados = Object.entries(nuevoObjeto);
     //console.log(this.objetoCita);
     //console.log(this.citasAgrupadas);
@@ -315,12 +313,6 @@ export class CuposDisponiblesPage implements OnInit {
   }
   crearTiposAtencion(tiposAtencion) {
     var arr = [];
-    /*     var entidadInicial = {
-          Texto: 'Todos',
-          Valor: 0,
-          Selected: true
-        }
-        arr.push(entidadInicial); */
     if (tiposAtencion && tiposAtencion.length > 0) {
       tiposAtencion.forEach(tipo => {
         var contador = 1;
@@ -426,7 +418,6 @@ export class CuposDisponiblesPage implements OnInit {
     if (event.detail.value) {
       this.comboSeleccionado = event.detail.value;
       //console.log(this.comboSeleccionado);
-      //this.seleccionarCuposAgrupados(this.itemSelected);
       this.filtrarTiposAtencion();
     }
   }
@@ -515,9 +506,6 @@ export class CuposDisponiblesPage implements OnInit {
           pag = parseInt(sessionStorage.getItem('NUMERO_PAGINA'));
         }
         this.construyeSemanaBuscar(pag, null);
-        //revisar esto NO FUNCIONA
-        //this.seleccionarCuposAgrupados(this.itemSelected);
-
       }
     });
     return await modal.present();

@@ -359,6 +359,9 @@ export class ContactabilidadPage implements OnInit {
     });
 
   }
+  irAHome() {
+    this.navCtrl.navigateRoot('home');
+  }
 
   get f() { return this.forma.controls; }
 

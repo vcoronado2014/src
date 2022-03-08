@@ -1,10 +1,10 @@
 <ion-header>
   <!-- <ion-toolbar [style.--background]="miColor" mode="md"> -->
-  <ion-toolbar color="primary" mode="md">
+  <ion-toolbar mode="md">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home" class="fcw"></ion-back-button>
     </ion-buttons>
-    <ion-title class="fcw">Exámenes</ion-title>
+    <ion-title class="fcw">{{titulo}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -17,7 +17,7 @@
 
   <div style="padding-top: 12px;" [hidden]="estaCargando">
     <h5 class="texto m-16">Selecciona un integrante de tu familia</h5>
-    <div *ngFor="let item of listadoUsuario" (click)="goToDetails(item)">
+    <div *ngFor="let item of listadoUsuario" (click)="goToDetailsModulo(item)">
       <!-- poner avatar -->
       <app-avatar [lines]="linesAvatar" [urlImagen] = "item.UrlImagen" [nombreCompleto]="item.Nombres + ' ' + item.ApellidoPaterno + ' ' + item.ApellidoMaterno" [parentezco]="item.Parentezco.Nombre"></app-avatar>
     </div>

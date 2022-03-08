@@ -53,7 +53,7 @@ export class DetailUsuarioPage implements OnInit {
   familiares = [];
   personales = [];
   //card mediciones
-  arrMediciones=[];
+  arrMediciones = [];
   tituloProgress = '';
   //2 partes para los datos del usuario
   arrMedicionesParteUno = [];
@@ -71,9 +71,9 @@ export class DetailUsuarioPage implements OnInit {
   tieneMorbidosPersonales = false;
   tieneMorbidosFamiliares = false;
   //variables para insertar en local storage
-  arrMedicionesL=[];
-  arrAlergias=[];
-  arrMorbidos=[];
+  arrMedicionesL = [];
+  arrAlergias = [];
+  arrMorbidos = [];
   constructor(
     public navCtrl: NavController,
     public toast: ToastController,
@@ -113,25 +113,81 @@ export class DetailUsuarioPage implements OnInit {
         }
         this.userImagen = this.usuario.UrlImagen;
         this.miColor = this.utiles.entregaColor(this.usuario);
+        //nueva implementacion, solo una llamada
+        this.entregaAntecedentesCompleto(this.usuario.Id);
+
         //obtiene los datos del usuario incluyendo la presión
         //este desencadena las 3 llamadas
         //await this.construirArregloValores(this.usuario.Id);
 
-        await this.construirArregloValoresIndividual(this.usuario.Id);
-        await this.construirArregloAlergiasIndividual(this.usuario.Id);
-        await this.construirArregloMorbidosIndividual(this.usuario.Id);
- 
+        /*         await this.construirArregloValoresIndividual(this.usuario.Id);
+                await this.construirArregloAlergiasIndividual(this.usuario.Id);
+                await this.construirArregloMorbidosIndividual(this.usuario.Id); */
+
       }
     });
   }
+  //nuevo metodo que envuelve las 3 llamadas
+  //no se verificcará fecha de actualización
+  //se realizarn siempre
+  async entregaAntecedentesCompleto(uspId) {
+    this.arrMediciones = [];
+    this.alergias = [];
+
+    this.estaCargando = true;
+    this.tituloProgress = 'Buscando datos del paciente';
+    //el lodaer tambien esta demás
+    if (!this.utiles.isAppOnDevice()) {
+      //llamada web
+      this.info.entregaAntecedentesFork(uspId).subscribe((responseList: any) => {
+        //0 = indicadores, 1 = alergias, 2 = antecedentes (morbidos)
+        var dataIndicadores = responseList[0];
+        this.procesarNuevoArregloValoresIndependienteSinLoader(dataIndicadores);
+        var dataAlergias = responseList[1];
+        this.procesarAlergiasIndividualSinLoader(dataAlergias);
+        var dataAntecedentes = responseList[2];
+        this.procesarAntecedentesIndividualSinLoader(dataAntecedentes);
+
+        this.estaCargando = false;
+        this.tituloProgress = '';
+      }, error => {
+        console.log(error);
+        this.estaCargando = false;
+        this.tituloProgress = '';
+      })
+    }
+    else {
+      //llamada nativa
+      this.info.entregaAntecedentesNativeFork(uspId).subscribe((responseList: any) => {
+        //0 = indicadores, 1 = alergias, 2 = antecedentes (morbidos) this.citasVerticalTodas = JSON.parse(responseList[0].data);
+        var dataIndicadores = JSON.parse(responseList[0].data);
+        this.procesarNuevoArregloValoresIndependienteSinLoader(dataIndicadores);
+        var dataAlergias = JSON.parse(responseList[1].data);
+        this.procesarAlergiasIndividualSinLoader(dataAlergias);
+        var dataAntecedentes = JSON.parse(responseList[2].data);
+        this.procesarAntecedentesIndividualSinLoader(dataAntecedentes);
+
+        this.estaCargando = false;
+        this.tituloProgress = '';
+
+      }, error => {
+        console.log(error);
+        this.estaCargando = false;
+        this.tituloProgress = '';
+      })
+    }
+
+
+  }
+
   procesarAntecedentes(data, loader) {
     this.antecedentes = data;
     console.log(this.antecedentes);
     this.familiares = [];
     this.personales = [];
-    if (this.antecedentes.Antecedentes){
-      if (this.antecedentes.Antecedentes.Familiares){
-        if (this.antecedentes.Antecedentes.Familiares.Antecedente && this.antecedentes.Antecedentes.Familiares.Antecedente.length > 0){
+    if (this.antecedentes.Antecedentes) {
+      if (this.antecedentes.Antecedentes.Familiares) {
+        if (this.antecedentes.Antecedentes.Familiares.Antecedente && this.antecedentes.Antecedentes.Familiares.Antecedente.length > 0) {
           let arr = this.antecedentes.Antecedentes.Familiares.Antecedente;
           arr.forEach(ante => {
             let entidad = {
@@ -141,8 +197,8 @@ export class DetailUsuarioPage implements OnInit {
           });
         }
       }
-      if (this.antecedentes.Antecedentes.Personales){
-        if (this.antecedentes.Antecedentes.Personales.Antecedente && this.antecedentes.Antecedentes.Personales.Antecedente.length > 0){
+      if (this.antecedentes.Antecedentes.Personales) {
+        if (this.antecedentes.Antecedentes.Personales.Antecedente && this.antecedentes.Antecedentes.Personales.Antecedente.length > 0) {
           let arr = this.antecedentes.Antecedentes.Personales.Antecedente;
           arr.forEach(perso => {
             let entidad = {
@@ -185,14 +241,14 @@ export class DetailUsuarioPage implements OnInit {
     this.presiones = data.PresionesUsp;
     if (this.presiones && this.presiones.length > 0) {
       var arrPresiones = this.presiones.sort((a: any, b: any) => { return this.getTime(moment(b.FechaPresion).toDate()) - this.getTime(moment(a.FechaPresion).toDate()) });
-      if (arrPresiones && arrPresiones.length > 0){
+      if (arrPresiones && arrPresiones.length > 0) {
         console.log('tiene presion');
         console.log(arrPresiones);
         //el primer elemento es el más nuevo
         this.valorPresion = arrPresiones[0].ValorPresion;
         this.fechaPresion = moment(arrPresiones[0].FechaPresion).format('DD-MM-YYYY HH:mm');
       }
-      else{
+      else {
         console.log('no tiene presion');
         this.valorPresion = 'N/A';
         this.fechaPresion = 'N/A';
@@ -264,7 +320,7 @@ export class DetailUsuarioPage implements OnInit {
       arreglo = response.IndicadorValorUsp;
     }
     ///altura
-    var arrAltura = arreglo.filter(p => p.Descripcion.includes('Altura') || p.Descripcion.includes('Talla'));
+    var arrAltura = arreglo?.filter(p => p.Descripcion.includes('Altura') || p.Descripcion.includes('Talla'));
     if (arrAltura && arrAltura.length > 0) {
       console.log('tiene altura');
       //fecha mas actualizada
@@ -279,7 +335,7 @@ export class DetailUsuarioPage implements OnInit {
       this.arrMediciones.push(entidad);
     }
     //peso
-    var arrPeso = arreglo.filter(p => p.Descripcion.includes('Peso'));
+    var arrPeso = arreglo?.filter(p => p.Descripcion.includes('Peso'));
     if (arrPeso && arrPeso.length > 0) {
       console.log('tiene peso');
       //fecha mas actualizada
@@ -294,7 +350,7 @@ export class DetailUsuarioPage implements OnInit {
       this.arrMediciones.push(entidad);
     }
     //imc
-    var arrImc = arreglo.filter(p => p.Descripcion.includes('I.M.C.'));
+    var arrImc = arreglo?.filter(p => p.Descripcion.includes('I.M.C.'));
     if (arrImc && arrImc.length > 0) {
       console.log('tiene imc');
       //fecha mas actualizada
@@ -309,7 +365,7 @@ export class DetailUsuarioPage implements OnInit {
       this.arrMediciones.push(entidad);
     }
     //glicemia
-    var arrGlicemia = arreglo.filter(p => p.Descripcion.includes('Glicemia'));
+    var arrGlicemia = arreglo?.filter(p => p.Descripcion.includes('Glicemia'));
     if (arrGlicemia && arrGlicemia.length > 0) {
       console.log('tiene glicemia');
       //fecha mas actualizada
@@ -325,7 +381,7 @@ export class DetailUsuarioPage implements OnInit {
       this.arrMediciones.push(entidad);
     }
     //sangre
-    var arrSangre = arreglo.filter(p => p.Descripcion.includes('Sanguineo'));
+    var arrSangre = arreglo?.filter(p => p.Descripcion.includes('Sanguineo'));
     if (arrSangre && arrSangre.length > 0) {
       let valor = '';
       console.log('tiene sangre');
@@ -360,7 +416,7 @@ export class DetailUsuarioPage implements OnInit {
     var valorDiast = '';
     var tienePresion = false;
     var fechaPresion = '';
-    var arrDiast = arreglo.filter(p => p.Descripcion.includes('Diastólica'));
+    var arrDiast = arreglo?.filter(p => p.Descripcion.includes('Diastólica'));
     if (arrDiast && arrDiast.length > 0) {
       console.log('tiene diastolica');
       //fecha mas actualizada
@@ -371,7 +427,7 @@ export class DetailUsuarioPage implements OnInit {
     }
     var valorSist = '';
     var tienePresionSis = false;
-    var arrSist = arreglo.filter(p => p.Descripcion.includes('Sistólica'));
+    var arrSist = arreglo?.filter(p => p.Descripcion.includes('Sistólica'));
     if (arrSist && arrSist.length > 0) {
       console.log('tiene sistolica');
       //fecha mas actualizada
@@ -397,12 +453,12 @@ export class DetailUsuarioPage implements OnInit {
     //console.log(this.arrMedicionesParteUno);
     //console.log(this.arrMedicionesParteDos);
     this.estaCargando = false;
-    this.tituloProgress = '';    
+    this.tituloProgress = '';
     loader.dismiss();
     //todo ok seguimos con las alergias
     await this.construirArregloAlergias(this.usuario.Id);
   }
-  async construirArregloValores(uspId){
+  async construirArregloValores(uspId) {
     this.arrMediciones = [];
     let loader = await this.loading.create({
       cssClass: 'loading-vacio',
@@ -418,7 +474,7 @@ export class DetailUsuarioPage implements OnInit {
           console.log(response);
           //correcto
           this.procesarNuevoArregloValores(response, loader);
-        },async error=>{
+        }, async error => {
           console.log(error.message);
           this.estaCargando = false;
           this.tituloProgress = '';
@@ -427,13 +483,13 @@ export class DetailUsuarioPage implements OnInit {
           await this.construirArregloAlergias(this.usuario.Id);
         });
       }
-      else{
+      else {
         //llamada nativa
         this.info.getIndicadorValorNativeApi(uspId).then((response: any) => {
           //this.procesarIndicadorValor(JSON.parse(response.data), loader);
           console.log(JSON.parse(response.data));
           this.procesarNuevoArregloValores(JSON.parse(response.data), loader);
-        }).catch(async error =>{
+        }).catch(async error => {
           console.log(error.message);
           this.estaCargando = false;
           this.tituloProgress = '';
@@ -446,7 +502,7 @@ export class DetailUsuarioPage implements OnInit {
 
     });
   }
-  async construirArregloAlergias(uspId){
+  async construirArregloAlergias(uspId) {
     let loader = await this.loading.create({
       cssClass: 'loading-vacio',
       showBackdrop: false,
@@ -461,25 +517,25 @@ export class DetailUsuarioPage implements OnInit {
           console.log(response);
           //correcto
           this.procesarAlergias(response, loader);
-        },async error=>{
+        }, async error => {
           console.log(error.message);
           this.tituloProgress = '';
-          this.estaCargando = false;          
+          this.estaCargando = false;
           loader.dismiss();
           //si hubo error continuamos con morbidos
           await this.construirArregloMorbidos(this.usuario.Id);
         });
       }
-      else{
+      else {
         //llamada nativa
         this.info.getAlergiasNativeApi(uspId).then((response: any) => {
           //this.procesarIndicadorValor(JSON.parse(response.data), loader);
           console.log(JSON.parse(response.data));
           this.procesarAlergias(JSON.parse(response.data), loader);
-        }).catch(async error =>{
+        }).catch(async error => {
           console.log(error.message);
           this.tituloProgress = '';
-          this.estaCargando = false;          
+          this.estaCargando = false;
           loader.dismiss();
           //si hubo error continuamos con morbidos
           await this.construirArregloMorbidos(this.usuario.Id);
@@ -489,7 +545,7 @@ export class DetailUsuarioPage implements OnInit {
 
     });
   }
-  async construirArregloMorbidos(uspId){
+  async construirArregloMorbidos(uspId) {
     let loader = await this.loading.create({
       cssClass: 'loading-vacio',
       showBackdrop: false,
@@ -504,20 +560,20 @@ export class DetailUsuarioPage implements OnInit {
           console.log(response);
           //correcto
           this.procesarAntecedentes(response, loader);
-        },error=>{
+        }, error => {
           console.log(error.message);
           this.estaCargando = false;
           this.tituloProgress = '';
           loader.dismiss();
         });
       }
-      else{
+      else {
         //llamada nativa
         this.info.postAntecedentesNativeApi(uspId).then((response: any) => {
           //this.procesarIndicadorValor(JSON.parse(response.data), loader);
           console.log(JSON.parse(response.data));
           this.procesarAntecedentes(JSON.parse(response.data), loader);
-        }).catch(error =>{
+        }).catch(error => {
           console.log(error.message);
           this.estaCargando = false;
           this.tituloProgress = '';
@@ -528,22 +584,22 @@ export class DetailUsuarioPage implements OnInit {
 
     });
   }
-  porcesarIndicadorValorApi(data, loader){
+  porcesarIndicadorValorApi(data, loader) {
     //Glicemia mg/dl
     //Grupo Sanguineo  279: A
     //280: B
     //281: AB
     //252: 0
-    this.indicadorValor =[];
-    if (data){
-      this.indicadorValor =  data.IndicadorValorUsp;
+    this.indicadorValor = [];
+    if (data) {
+      this.indicadorValor = data.IndicadorValorUsp;
     }
-    
-    if (this.indicadorValor && this.indicadorValor.length > 0){
+
+    if (this.indicadorValor && this.indicadorValor.length > 0) {
       //ahora procesamos los valores
       //altura
-      var arrAltura = this.indicadorValor.filter(p=>p.Descripcion.includes('Altura') || p.Descripcion.includes('Talla'));
-      if (arrAltura && arrAltura.length > 0){
+      var arrAltura = this.indicadorValor.filter(p => p.Descripcion.includes('Altura') || p.Descripcion.includes('Talla'));
+      if (arrAltura && arrAltura.length > 0) {
         console.log('tiene altura');
         //fecha mas actualizada
         arrAltura.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
@@ -552,15 +608,15 @@ export class DetailUsuarioPage implements OnInit {
         this.valorAltura = arrAltura[0].Valor;
         this.fechaAltura = moment(arrAltura[0].Fecha).format('DD-MM-YYYY HH:mm');
       }
-      else{
+      else {
         console.log('no tiene altura');
         this.valorAltura = 'No informada';
         this.fechaAltura = 'No informada';
       }
       //fin altura
       //peso
-      var arrPeso = this.indicadorValor.filter(p=>p.Descripcion.includes('Peso'));
-      if (arrPeso && arrPeso.length > 0){
+      var arrPeso = this.indicadorValor.filter(p => p.Descripcion.includes('Peso'));
+      if (arrPeso && arrPeso.length > 0) {
         console.log('tiene peso');
         //fecha mas actualizada
         arrPeso.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
@@ -569,14 +625,14 @@ export class DetailUsuarioPage implements OnInit {
         this.valorPeso = arrPeso[0].Valor.toFixed(2);
         this.fechaPeso = moment(arrPeso[0].Fecha).format('DD-MM-YYYY HH:mm');
       }
-      else{
+      else {
         console.log('no tiene peso');
         this.valorPeso = 'No informado';
         this.fechaPeso = 'No informada';
       }
       //fin peso
-      var arrImc = this.indicadorValor.filter(p=>p.Descripcion.includes('I.M.C.'));
-      if (arrImc && arrImc.length > 0){
+      var arrImc = this.indicadorValor.filter(p => p.Descripcion.includes('I.M.C.'));
+      if (arrImc && arrImc.length > 0) {
         console.log('tiene imc');
         //fecha mas actualizada
         arrImc.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
@@ -585,14 +641,14 @@ export class DetailUsuarioPage implements OnInit {
         this.valorImc = arrImc[0].Valor.toFixed(2);
         this.fechaImc = moment(arrImc[0].Fecha).format('DD-MM-YYYY HH:mm');
       }
-      else{
+      else {
         console.log('no tiene imc');
         this.valorImc = 'No informado';
         this.fechaImc = 'No informada';
       }
       //fin imc
-      var arrGlicemia = this.indicadorValor.filter(p=>p.Descripcion.includes('Glicemia'));
-      if (arrGlicemia && arrGlicemia.length > 0){
+      var arrGlicemia = this.indicadorValor.filter(p => p.Descripcion.includes('Glicemia'));
+      if (arrGlicemia && arrGlicemia.length > 0) {
         console.log('tiene glicemia');
         //fecha mas actualizada
         arrGlicemia.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
@@ -601,38 +657,38 @@ export class DetailUsuarioPage implements OnInit {
         this.valorGlicemia = arrGlicemia[0].Valor;
         this.fechaGlicemia = moment(arrGlicemia[0].Fecha).format('DD-MM-YYYY HH:mm');
       }
-      else{
+      else {
         console.log('no tiene glicemia');
         this.valorGlicemia = 'No informada';
         this.fechaGlicemia = 'No informada';
       }
       //fin glicemia
-      var arrSangre = this.indicadorValor.filter(p=>p.Descripcion.includes('Sanguineo'));
-      if (arrSangre && arrSangre.length > 0){
+      var arrSangre = this.indicadorValor.filter(p => p.Descripcion.includes('Sanguineo'));
+      if (arrSangre && arrSangre.length > 0) {
         console.log('tiene sangre');
         //fecha mas actualizada
         arrSangre.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
         console.log(arrSangre);
         //el primer elemento es el más nuevo
-        if (arrSangre[0].Valor == 279){
+        if (arrSangre[0].Valor == 279) {
           this.valorGrupoSangre = "A";
         }
-        else if (arrSangre[0].Valor == 280){
+        else if (arrSangre[0].Valor == 280) {
           this.valorGrupoSangre = "B";
         }
-        else if (arrSangre[0].Valor == 281){
+        else if (arrSangre[0].Valor == 281) {
           this.valorGrupoSangre = "AB";
         }
-        else if (arrSangre[0].Valor == 252){
+        else if (arrSangre[0].Valor == 252) {
           this.valorGrupoSangre = "O";
         }
-        else{
+        else {
           this.valorGrupoSangre = "";
         }
-        
+
         this.fechaGrupoSangre = moment(arrSangre[0].Fecha).format('DD-MM-YYYY HH:mm');
       }
-      else{
+      else {
         console.log('no tiene sangre');
         this.valorGrupoSangre = 'No informada';
         this.fechaGrupoSangre = 'No informada';
@@ -722,22 +778,17 @@ export class DetailUsuarioPage implements OnInit {
     //para progress
     this.estaCargando = false;
   }
-  /*   doRefresh(event) {
-      console.log('Begin async operation');
-  
-      setTimeout(() => {
-        console.log('Async operation has ended');
-        this.loadData(this.usuario.Id);
-        event.target.complete();
-      }, 2000);
-    } */
+
   logout() {
     this.acceso.logout();
-    this.navCtrl.navigateRoot('login');
+    this.navCtrl.navigateRoot('login', { animated: true, animationDirection: 'back' });
+  }
+  volver() {
+    this.navCtrl.navigateRoot('antecedentes', { animated: true, animationDirection: 'back' });
   }
 
   //pruebas de carga individual
-  async construirArregloValoresIndividual(uspId){
+  async construirArregloValoresIndividual(uspId) {
     this.arrMediciones = [];
     let loader = await this.loading.create({
       cssClass: 'loading-vacio',
@@ -748,7 +799,7 @@ export class DetailUsuarioPage implements OnInit {
     this.tituloProgressDatosUsuario = 'Buscando datos del paciente';
     await loader.present().then(async () => {
       //validamos si necesita actualizar
-      if (this.utiles.necesitaActualizarDatosPaciente(uspId) == false){
+      if (this.utiles.necesitaActualizarDatosPaciente(uspId) == false) {
         var datos = this.utiles.entregaArregloDatosPaciente(uspId);
         this.procesarNuevoArregloValoresIndependiente(datos, loader, this.usuario, false);
       }
@@ -785,22 +836,7 @@ export class DetailUsuarioPage implements OnInit {
 
     });
   }
-  async procesarNuevoArregloValoresIndependiente(response, loader, usuarioAps, guardaLocalStorage) {
-    //procesamos los datos en el local storage
-    if (guardaLocalStorage) {
-      var entidad = {
-        UsuarioAps: usuarioAps,
-        Mediciones: null,
-      }
-      entidad.Mediciones = response;
-      this.arrMedicionesL = [];
-      if (localStorage.getItem('ANTECEDENTES')){
-        this.arrMedicionesL = JSON.parse(localStorage.getItem('ANTECEDENTES'));
-      }
-      this.arrMedicionesL.push(entidad);
-      localStorage.setItem('ANTECEDENTES', JSON.stringify(this.arrMedicionesL));
-      localStorage.setItem('FECHA_ACTUALIZACION_ANTECEDENTES', moment().format('YYYY-MM-DD HH:mm'));
-    }
+  async procesarNuevoArregloValoresIndependienteSinLoader(response) {
     //fin proceso ********************************
     this.arrMediciones = [];
     this.arrMedicionesParteUno = [];
@@ -810,7 +846,7 @@ export class DetailUsuarioPage implements OnInit {
       arreglo = response.IndicadorValorUsp;
     }
     ///altura
-    var arrAltura = arreglo.filter(p => p.Descripcion.includes('Altura') || p.Descripcion.includes('Talla'));
+    var arrAltura = arreglo?.filter(p => p.Descripcion.includes('Altura') || p.Descripcion.includes('Talla'));
     if (arrAltura && arrAltura.length > 0) {
       console.log('tiene altura');
       //fecha mas actualizada
@@ -825,7 +861,7 @@ export class DetailUsuarioPage implements OnInit {
       this.arrMediciones.push(entidad);
     }
     //peso
-    var arrPeso = arreglo.filter(p => p.Descripcion.includes('Peso'));
+    var arrPeso = arreglo?.filter(p => p.Descripcion.includes('Peso'));
     if (arrPeso && arrPeso.length > 0) {
       console.log('tiene peso');
       //fecha mas actualizada
@@ -840,7 +876,7 @@ export class DetailUsuarioPage implements OnInit {
       this.arrMediciones.push(entidad);
     }
     //imc
-    var arrImc = arreglo.filter(p => p.Descripcion.includes('I.M.C.'));
+    var arrImc = arreglo?.filter(p => p.Descripcion.includes('I.M.C.'));
     if (arrImc && arrImc.length > 0) {
       console.log('tiene imc');
       //fecha mas actualizada
@@ -855,7 +891,7 @@ export class DetailUsuarioPage implements OnInit {
       this.arrMediciones.push(entidad);
     }
     //glicemia
-    var arrGlicemia = arreglo.filter(p => p.Descripcion.includes('Glicemia'));
+    var arrGlicemia = arreglo?.filter(p => p.Descripcion.includes('Glicemia'));
     if (arrGlicemia && arrGlicemia.length > 0) {
       console.log('tiene glicemia');
       //fecha mas actualizada
@@ -871,7 +907,7 @@ export class DetailUsuarioPage implements OnInit {
       this.arrMediciones.push(entidad);
     }
     //sangre
-    var arrSangre = arreglo.filter(p => p.Descripcion.includes('Sanguineo'));
+    var arrSangre = arreglo?.filter(p => p.Descripcion.includes('Sanguineo'));
     if (arrSangre && arrSangre.length > 0) {
       let valor = '';
       console.log('tiene sangre');
@@ -906,7 +942,7 @@ export class DetailUsuarioPage implements OnInit {
     var valorDiast = '';
     var tienePresion = false;
     var fechaPresion = '';
-    var arrDiast = arreglo.filter(p => p.Descripcion.includes('Diastólica'));
+    var arrDiast = arreglo?.filter(p => p.Descripcion.includes('Diastólica'));
     if (arrDiast && arrDiast.length > 0) {
       console.log('tiene diastolica');
       //fecha mas actualizada
@@ -917,7 +953,166 @@ export class DetailUsuarioPage implements OnInit {
     }
     var valorSist = '';
     var tienePresionSis = false;
-    var arrSist = arreglo.filter(p => p.Descripcion.includes('Sistólica'));
+    var arrSist = arreglo?.filter(p => p.Descripcion.includes('Sistólica'));
+    if (arrSist && arrSist.length > 0) {
+      console.log('tiene sistolica');
+      //fecha mas actualizada
+      arrSist.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      console.log(arrSist);
+      valorSist = arrSist[0].Valor;
+      fechaPresion = moment(arrSist[0].Fecha).format('DD MMM YYYY');
+      tienePresionSis = true;
+    }
+    if (tienePresion && tienePresionSis) {
+      let entidad = {
+        Nombre: 'Presión',
+        Valor: valorSist.toString() + '/' + valorDiast.toString(),
+        Fecha: fechaPresion,
+        Medida: ''
+      }
+      this.arrMediciones.push(entidad);
+    }
+    console.log(this.arrMediciones);
+    //aca partimos el arreglo
+    this.arrMedicionesParteUno = this.arrMediciones.slice(0, 3);
+    this.arrMedicionesParteDos = this.arrMediciones.slice(3, 6);
+    if (this.arrMediciones && this.arrMediciones.length > 0) {
+      this.tieneDatosUsuario = true;
+    }
+  }
+  async procesarNuevoArregloValoresIndependiente(response, loader, usuarioAps, guardaLocalStorage) {
+    //procesamos los datos en el local storage
+    if (guardaLocalStorage) {
+      var entidad = {
+        UsuarioAps: usuarioAps,
+        Mediciones: null,
+      }
+      entidad.Mediciones = response;
+      this.arrMedicionesL = [];
+      if (localStorage.getItem('ANTECEDENTES')) {
+        this.arrMedicionesL = JSON.parse(localStorage.getItem('ANTECEDENTES'));
+      }
+      this.arrMedicionesL.push(entidad);
+      localStorage.setItem('ANTECEDENTES', JSON.stringify(this.arrMedicionesL));
+      localStorage.setItem('FECHA_ACTUALIZACION_ANTECEDENTES', moment().format('YYYY-MM-DD HH:mm'));
+    }
+    //fin proceso ********************************
+    this.arrMediciones = [];
+    this.arrMedicionesParteUno = [];
+    this.arrMedicionesParteDos = [];
+    var arreglo = [];
+    if (response) {
+      arreglo = response.IndicadorValorUsp;
+    }
+    ///altura
+    var arrAltura = arreglo?.filter(p => p.Descripcion.includes('Altura') || p.Descripcion.includes('Talla'));
+    if (arrAltura && arrAltura.length > 0) {
+      console.log('tiene altura');
+      //fecha mas actualizada
+      arrAltura.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      console.log(arrAltura);
+      let entidad = {
+        Nombre: 'Altura',
+        Valor: arrAltura[0].Valor.toFixed(0),
+        Fecha: moment(arrAltura[0].Fecha).format('DD MMM YYYY'),
+        Medida: 'cm'
+      }
+      this.arrMediciones.push(entidad);
+    }
+    //peso
+    var arrPeso = arreglo?.filter(p => p.Descripcion.includes('Peso'));
+    if (arrPeso && arrPeso.length > 0) {
+      console.log('tiene peso');
+      //fecha mas actualizada
+      arrPeso.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      console.log(arrPeso);
+      let entidad = {
+        Nombre: 'Peso',
+        Valor: arrPeso[0].Valor.toFixed(0),
+        Fecha: moment(arrPeso[0].Fecha).format('DD MMM YYYY'),
+        Medida: 'kg'
+      }
+      this.arrMediciones.push(entidad);
+    }
+    //imc
+    var arrImc = arreglo?.filter(p => p.Descripcion.includes('I.M.C.'));
+    if (arrImc && arrImc.length > 0) {
+      console.log('tiene imc');
+      //fecha mas actualizada
+      arrImc.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      console.log(arrImc);
+      let entidad = {
+        Nombre: 'IMC',
+        Valor: arrImc[0].Valor.toFixed(0),
+        Fecha: moment(arrImc[0].Fecha).format('DD MMM YYYY'),
+        Medida: ''
+      }
+      this.arrMediciones.push(entidad);
+    }
+    //glicemia
+    var arrGlicemia = arreglo?.filter(p => p.Descripcion.includes('Glicemia'));
+    if (arrGlicemia && arrGlicemia.length > 0) {
+      console.log('tiene glicemia');
+      //fecha mas actualizada
+      arrGlicemia.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      console.log(arrGlicemia);
+      //el primer elemento es el más nuevo
+      let entidad = {
+        Nombre: 'Glicemia',
+        Valor: arrGlicemia[0].Valor.toFixed(0),
+        Fecha: moment(arrGlicemia[0].Fecha).format('DD MMM YYYY'),
+        Medida: 'mg/dl'
+      }
+      this.arrMediciones.push(entidad);
+    }
+    //sangre
+    var arrSangre = arreglo?.filter(p => p.Descripcion.includes('Sanguineo'));
+    if (arrSangre && arrSangre.length > 0) {
+      let valor = '';
+      console.log('tiene sangre');
+      //fecha mas actualizada
+      arrSangre.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      console.log(arrSangre);
+      //el primer elemento es el más nuevo
+      if (arrSangre[0].Valor == 279) {
+        valor = "A";
+      }
+      else if (arrSangre[0].Valor == 280) {
+        valor = "B";
+      }
+      else if (arrSangre[0].Valor == 281) {
+        valor = "AB";
+      }
+      else if (arrSangre[0].Valor == 252) {
+        valor = "O";
+      }
+      else {
+        valor = "";
+      }
+      let entidad = {
+        Nombre: 'Grupo Sangre',
+        Valor: valor,
+        Fecha: moment(arrSangre[0].Fecha).format('DD MMM YYYY'),
+        Medida: ''
+      }
+      this.arrMediciones.push(entidad);
+    }
+    //presion diastolica
+    var valorDiast = '';
+    var tienePresion = false;
+    var fechaPresion = '';
+    var arrDiast = arreglo?.filter(p => p.Descripcion.includes('Diastólica'));
+    if (arrDiast && arrDiast.length > 0) {
+      console.log('tiene diastolica');
+      //fecha mas actualizada
+      arrDiast.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      console.log(arrDiast);
+      valorDiast = arrDiast[0].Valor;
+      tienePresion = true;
+    }
+    var valorSist = '';
+    var tienePresionSis = false;
+    var arrSist = arreglo?.filter(p => p.Descripcion.includes('Sistólica'));
     if (arrSist && arrSist.length > 0) {
       console.log('tiene sistolica');
       //fecha mas actualizada
@@ -944,12 +1139,12 @@ export class DetailUsuarioPage implements OnInit {
     //console.log(this.arrMedicionesParteDos);
     this.estaCargandoDatosUsuario = false;
     this.tituloProgressDatosUsuario = '';
-    if (this.arrMediciones && this.arrMediciones.length > 0){
+    if (this.arrMediciones && this.arrMediciones.length > 0) {
       this.tieneDatosUsuario = true;
-    }    
+    }
     loader.dismiss();
   }
-  async construirArregloAlergiasIndividual(uspId){
+  async construirArregloAlergiasIndividual(uspId) {
     let loader = await this.loading.create({
       cssClass: 'loading-vacio',
       showBackdrop: false,
@@ -958,7 +1153,7 @@ export class DetailUsuarioPage implements OnInit {
     this.estaCargandoAlergias = true;
     this.tituloProgressAlergias = 'Buscando alergias del paciente';
     await loader.present().then(async () => {
-      if (this.utiles.necesitaActualizarAlergiasPacientes(uspId) == false){
+      if (this.utiles.necesitaActualizarAlergiasPacientes(uspId) == false) {
         var datos = this.utiles.entregaArregloAlergiasPaciente(uspId);
         this.procesarAlergiasIndividual(datos, loader, this.usuario, false);
       }
@@ -1002,7 +1197,7 @@ export class DetailUsuarioPage implements OnInit {
       }
       entidad.Alergias = data;
       this.arrAlergias = [];
-      if (localStorage.getItem('ALERGIAS')){
+      if (localStorage.getItem('ALERGIAS')) {
         this.arrAlergias = JSON.parse(localStorage.getItem('ALERGIAS'));
       }
       this.arrAlergias.push(entidad);
@@ -1020,12 +1215,26 @@ export class DetailUsuarioPage implements OnInit {
     }
     this.estaCargandoAlergias = false;
     this.tituloProgressAlergias = '';
-    if (this.alergias && this.alergias.length > 0){
+    if (this.alergias && this.alergias.length > 0) {
       this.tieneAlergias = true;
     }
     loader.dismiss();
   }
-  async construirArregloMorbidosIndividual(uspId){
+  async procesarAlergiasIndividualSinLoader(data) {
+    this.alergias = data.AlergiasUsp;
+    if (this.alergias) {
+      if (this.alergias.length == 1) {
+        this.title = "Alergia";
+      } else {
+        this.title = "Alergias";
+      }
+    }
+    this.tituloProgressAlergias = '';
+    if (this.alergias && this.alergias.length > 0) {
+      this.tieneAlergias = true;
+    }
+  }
+  async construirArregloMorbidosIndividual(uspId) {
     let loader = await this.loading.create({
       cssClass: 'loading-vacio',
       showBackdrop: false,
@@ -1034,7 +1243,7 @@ export class DetailUsuarioPage implements OnInit {
     this.estaCargandoMorbidos = true;
     this.tituloProgressMorbidos = 'Buscando otros datos del paciente';
     await loader.present().then(async () => {
-      if (this.utiles.necesitaActualizarMorbidosPacientes(uspId) == false){
+      if (this.utiles.necesitaActualizarMorbidosPacientes(uspId) == false) {
         var datos = this.utiles.entregaArregloMorbidosPaciente(uspId);
         this.procesarAntecedentesIndividual(datos, loader, null, false);
       }
@@ -1069,6 +1278,7 @@ export class DetailUsuarioPage implements OnInit {
       }
     });
   }
+
   procesarAntecedentesIndividual(data, loader, usuarioAps, guardaLocalStorage) {
     //procesamos los datos en el local storage
     if (guardaLocalStorage) {
@@ -1078,7 +1288,7 @@ export class DetailUsuarioPage implements OnInit {
       }
       entidad.Morbidos = data;
       this.arrMorbidos = [];
-      if (localStorage.getItem('MORBIDOS')){
+      if (localStorage.getItem('MORBIDOS')) {
         this.arrMorbidos = JSON.parse(localStorage.getItem('MORBIDOS'));
       }
       this.arrMorbidos.push(entidad);
@@ -1090,9 +1300,9 @@ export class DetailUsuarioPage implements OnInit {
     console.log(this.antecedentes);
     this.familiares = [];
     this.personales = [];
-    if (this.antecedentes.Antecedentes){
-      if (this.antecedentes.Antecedentes.Familiares){
-        if (this.antecedentes.Antecedentes.Familiares.Antecedente && this.antecedentes.Antecedentes.Familiares.Antecedente.length > 0){
+    if (this.antecedentes.Antecedentes) {
+      if (this.antecedentes.Antecedentes.Familiares) {
+        if (this.antecedentes.Antecedentes.Familiares.Antecedente && this.antecedentes.Antecedentes.Familiares.Antecedente.length > 0) {
           let arr = this.antecedentes.Antecedentes.Familiares.Antecedente;
           arr.forEach(ante => {
             let entidad = {
@@ -1102,8 +1312,8 @@ export class DetailUsuarioPage implements OnInit {
           });
         }
       }
-      if (this.antecedentes.Antecedentes.Personales){
-        if (this.antecedentes.Antecedentes.Personales.Antecedente && this.antecedentes.Antecedentes.Personales.Antecedente.length > 0){
+      if (this.antecedentes.Antecedentes.Personales) {
+        if (this.antecedentes.Antecedentes.Personales.Antecedente && this.antecedentes.Antecedentes.Personales.Antecedente.length > 0) {
           let arr = this.antecedentes.Antecedentes.Personales.Antecedente;
           arr.forEach(perso => {
             let entidad = {
@@ -1115,14 +1325,52 @@ export class DetailUsuarioPage implements OnInit {
       }
     }
     //if (this.personales.length > 0 || this.familiares.len)
-    if (this.personales && this.personales.length > 0){
+    if (this.personales && this.personales.length > 0) {
       this.tieneMorbidosPersonales = true;
     }
-    if (this.familiares && this.familiares.length > 0){
+    if (this.familiares && this.familiares.length > 0) {
       this.tieneMorbidosFamiliares = true;
     }
     this.estaCargandoMorbidos = false;
     this.tituloProgressMorbidos = '';
     loader.dismiss();
+  }
+  procesarAntecedentesIndividualSinLoader(data) {
+    this.antecedentes = data;
+    console.log(this.antecedentes);
+    this.familiares = [];
+    this.personales = [];
+    if (this.antecedentes.Antecedentes) {
+      if (this.antecedentes.Antecedentes.Familiares) {
+        if (this.antecedentes.Antecedentes.Familiares.Antecedente && this.antecedentes.Antecedentes.Familiares.Antecedente.length > 0) {
+          let arr = this.antecedentes.Antecedentes.Familiares.Antecedente;
+          arr.forEach(ante => {
+            let entidad = {
+              Nombre: ante
+            }
+            this.familiares.push(entidad);
+          });
+        }
+      }
+      if (this.antecedentes.Antecedentes.Personales) {
+        if (this.antecedentes.Antecedentes.Personales.Antecedente && this.antecedentes.Antecedentes.Personales.Antecedente.length > 0) {
+          let arr = this.antecedentes.Antecedentes.Personales.Antecedente;
+          arr.forEach(perso => {
+            let entidad = {
+              Nombre: perso
+            }
+            this.personales.push(entidad);
+          });
+        }
+      }
+    }
+    //if (this.personales.length > 0 || this.familiares.len)
+    if (this.personales && this.personales.length > 0) {
+      this.tieneMorbidosPersonales = true;
+    }
+    if (this.familiares && this.familiares.length > 0) {
+      this.tieneMorbidosFamiliares = true;
+    }
+
   }
 }

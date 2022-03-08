@@ -85,20 +85,18 @@ export class BusquedaAvanzadaPage implements OnInit {
   }
   ngOnInit() {
     moment.locale('es');
-    if (sessionStorage.UsuarioAps) {
-      this.usuarioAps = JSON.parse(sessionStorage.UsuarioAps);
-      if (this.usuarioAps) {
-        //this.usuarioAps.UrlImagen = this.utiles.entregaMiImagen();
-        this.usuarioAps.UrlImagen = this.utiles.entregaImagen(this.usuarioAps);
-        this.miColor = this.utiles.entregaColor(this.usuarioAps);
-        this.runPaciente = this.utiles.insertarGuion(this.usuarioAps.Rut);
-        this.codigoDeis = this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
-        this.nodId = this.usuarioAps.ConfiguracionNodo.NodId;
-      }
-    }
     this.activatedRoute.queryParams.subscribe(async params => {
       if (params && params.Id) {
         this.idUsuario = params.Id
+        this.usuarioAps = this.utiles.entregaUsuario(params.Id);
+        if (this.usuarioAps) {
+          //this.usuarioAps.UrlImagen = this.utiles.entregaMiImagen();
+          this.usuarioAps.UrlImagen = this.utiles.entregaImagen(this.usuarioAps);
+          this.miColor = this.utiles.entregaColor(this.usuarioAps);
+          this.runPaciente = this.utiles.insertarGuion(this.usuarioAps.Rut);
+          this.codigoDeis = this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
+          this.nodId = this.usuarioAps.ConfiguracionNodo.NodId;
+        }
       }
     });
     //creamos tipo atencion inicial
@@ -265,8 +263,14 @@ export class BusquedaAvanzadaPage implements OnInit {
         var accion = data.data.accion;
         //obtenemos la pagina actual
         //aca debemos revisar a donde nos vamos
-        this.navCtrl.navigateRoot('calendario');
+        //this.navCtrl.navigateRoot('calendario');
         //console.log(accion);        
+        const navigationExtras: NavigationExtras = {
+          queryParams: {
+            idUsp: this.idUsuario
+          }
+        };
+        this.navCtrl.navigateBack(['calendario'], navigationExtras);
       }
     });
     return await modal.present();

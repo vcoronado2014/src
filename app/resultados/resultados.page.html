@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="primary" mode="md">
+  <ion-toolbar mode="md">
     <ion-buttons slot="start">
       <ion-back-button (click)="volver()" defaultHref="/" class="fcw"></ion-back-button>
     </ion-buttons>
@@ -10,7 +10,7 @@
 <ion-content class="back-app">
 
   <div>
-    <h5 class="text-h5">Exámenes de {{nombreExamen}}</h5>
+    <h5 class="text-h5" style="padding-right: 16px;">Exámenes de {{nombreExamen}}</h5>
   </div>
   
   <ion-item lines="full"  *ngFor="let exa of resultados">
@@ -23,7 +23,7 @@
           <div class="text-solicitud" style="float: right;">{{exa.Resultado}} {{exa.Um}}</div>
         </ion-col>
       </ion-row>
-      <ion-row>
+      <ion-row *ngIf="exa.ValoresReferencia != ' - '">
         <ion-col>
           <div class="subtext-avatar-1">[{{exa.ValoresReferencia}}]</div>
         </ion-col>

@@ -1,5 +1,5 @@
 <ion-header class="back-app">
-  <ion-toolbar color="primary" mode="md">
+  <ion-toolbar mode="md">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home" class="fcw"></ion-back-button>
     </ion-buttons>
@@ -11,11 +11,11 @@
   <app-progress [mostrar]="estaCargando" [titulo]="tituloProgress"></app-progress>
 
   <div [hidden]="estaCargando">
-<!--     <div class="ion-padding">
-      <p class="texto-item">
-        Puede activar o desactivar a los miembros de la familia deslizando el check de cada unos de ellos.
+    <div class="ion-padding">
+      <p class="texto-item"  style="font-size: 14pt;letter-spacing: 0.25pt;line-height: 20pt;">
+        A continuación puedes activar o desactivar a los integrantes de tu familia, solo visualizaras la información clínica de los integrantes activos.
       </p>
-    </div> -->
+    </div>
   
     <div *ngIf="familiaAsociar.length > 0" style="padding-top: 24px;">
       <div *ngFor="let item of familiaAsociar">

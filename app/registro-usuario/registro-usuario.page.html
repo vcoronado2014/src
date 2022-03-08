@@ -1,9 +1,9 @@
 <ion-header class="back-app">
   <!-- <ion-toolbar color="primary" mode="md" style="height: 160px;"> -->
-  <ion-toolbar color="primary" mode="md">
+  <ion-toolbar mode="md">
     <ion-buttons slot="start">
       <ion-back-button [hidden]="estaEditando || estaAgregandoFamilia" (click)="salirRegistro()" defaultHref="/" class="fcw"></ion-back-button>
-      <ion-back-button [hidden]="!estaEditando" defaultHref="/home" class="fcw"></ion-back-button>
+      <ion-back-button [hidden]="!estaEditando" (click)="irAHome()" defaultHref="/home" class="fcw"></ion-back-button>
     </ion-buttons>
     <ion-title class="fcw">Ajustes de la cuenta</ion-title>
   </ion-toolbar>

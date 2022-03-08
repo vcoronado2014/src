@@ -518,4 +518,148 @@ export class ServicioNotificaciones{
         return arr;
     }
 
+    //falta definir cuales serán las notificaciones locales y cuales serán las push
+    //por lo pronto sólo se dejará cuando haya familia por aceptar
+    construyeNotificacionesLocales(todas){
+        var arr = [];
+        var indice = 1;
+        //familia por aceptar
+        if (localStorage.getItem('FAMILIA-POR-ACEPTAR')) {
+            let arrFam = JSON.parse(localStorage.getItem('FAMILIA-POR-ACEPTAR'));
+            arrFam.forEach(familia => {
+                let entidad = {
+                    Titulo: 'Miembro de la familia',
+                    Subtitulo: familia.NombreCompleto,
+                    Contenido: 'Tienes a ' + familia.NombreCompleto + ' que podrías aceptar y ver su información de salud',
+                    Id: familia.Id,
+                    Indice: indice,
+                    IrA: 'asociar-familia'
+                }
+                arr.push(entidad);
+                indice++;
+            });
+        }
+        if (todas && todas.length > 0) {
+            for (var i = 0; i < todas.length; i++){
+                if (todas[i].Eventos && todas[i].Eventos.length > 0){
+                    //foreach a LOS EVENTOS
+                    for(var s = 0; s < todas[i].Eventos.length; s++){
+                        var fecha = moment(todas[i].Eventos[s].DetalleEventoMes.FechaHora).format("DD-MM-YYYY");
+                        var hora = todas[i].Eventos[s].HoraInicioFin;
+                        var lugar = todas[i].Eventos[s].DetalleEventoMes.Lugar;
+                        var id = todas[i].Eventos[s].DetalleEventoMes.IdElemento;
+                        var titulo = todas[i].Eventos[s].DetalleEventoMes.Titulo;
+                        var texto = fecha + ' ' + hora + '\n' + todas[i].Eventos[s].DetalleEventoMes.DescripcionPrincipal + '\n' + todas[i].Eventos[s].DetalleEventoMes.DescripcionSecundaria + '\n' + lugar;
+                        //para obtener al paciente
+                        var paciente = this.utiles.entregaUsuarioRut(todas[i].Eventos[s].DetalleEventoMes.NombrePaciente);
+                        var nombrePaciente = paciente != null ? paciente.Nombres + ' ' + paciente.ApellidoPaterno + ' ' + paciente.ApellidoMaterno : '';
+                        let entidad = {
+                            Titulo: titulo,
+                            Subtitulo: nombrePaciente,
+                            Contenido: texto,
+                            Id: id,
+                            Indice: indice,
+                            IrA: null
+                        }
+                        arr.push(entidad);
+                        indice++;
+
+                    }
+                }
+            }
+        }
+        return arr;
+    }
+
+    crearNotificacionesCitas(todas){
+        var indice = 1000;
+        if (todas && todas.length > 0) {
+            for (var i = 0; i < todas.length; i++){
+                if (todas[i].Eventos && todas[i].Eventos.length > 0){
+                    //foreach a LOS EVENTOS
+                    for(var s = 0; s < todas[i].Eventos.length; s++){
+                        var fecha = moment(todas[i].Eventos[s].DetalleEventoMes.FechaHora).format("DD-MM-YYYY");
+                        var hora = todas[i].Eventos[s].HoraInicioFin;
+                        var lugar = todas[i].Eventos[s].DetalleEventoMes.Lugar;
+                        var id = todas[i].Eventos[s].DetalleEventoMes.IdElemento;
+                        var titulo = todas[i].Eventos[s].DetalleEventoMes.Titulo;
+                        var texto = fecha + ' ' + hora + '\n' + todas[i].Eventos[s].DetalleEventoMes.DescripcionPrincipal + '\n' + todas[i].Eventos[s].DetalleEventoMes.DescripcionSecundaria + '\n' + lugar;
+                        //para obtener al paciente
+                        var paciente = this.utiles.entregaUsuarioRut(todas[i].Eventos[s].DetalleEventoMes.NombrePaciente);
+                        var nombrePaciente = paciente != null ? paciente.Nombres + ' ' + paciente.ApellidoPaterno + ' ' + paciente.ApellidoMaterno : '';
+
+                        this.agregarEntidadLocal(todas[i].Eventos[s].DetalleEventoMes.Titulo, nombrePaciente,
+                            indice, id, texto);
+                        indice++;
+                        this.crearNotificacion(id, titulo, texto);
+
+                    }
+                }
+            }
+        }
+    }
+
+    buscarCitasTodasLocales(){
+        var indice = 1000;
+        var annoConsultar = 0;
+        var mesConsultar = 0;
+        this.citasArr = [];
+        var fechaActual = moment();
+        var fechaEvaluar = moment().add(5, 'days');
+        var mesActual = {
+          mes: fechaActual.month() + 1,
+          anno: fechaActual.year()
+        };
+        var mesEvaluar = {
+            mes: fechaEvaluar.month() + 1,
+            anno: fechaEvaluar.year()
+        };
+        //debemos ver si en los 5 dias de diferencia hay dos meses o un mes
+        if (mesActual.mes == mesEvaluar.mes && mesActual.anno == mesEvaluar.anno){
+            //es le mismo mes
+            mesConsultar = mesActual.mes;
+            annoConsultar = mesActual.anno;
+        }
+        else{
+            //hay diferencia, por tanto se toma el ultimo mes
+            mesConsultar = mesEvaluar.mes;
+            annoConsultar = mesEvaluar.anno;
+        }
+
+        var ruts = this.entregaArregloRuts();
+        if (ruts){
+            if (!this.utiles.isAppOnDevice()){
+                //web
+                this.citas.postCitasWebFuturas(ruts).subscribe((response:any)=>{
+                    var todas = response;
+                    this.crearNotificacionesCitas(todas);
+                })
+            }
+            else{
+                //nativa
+                this.citas.postCitasWebFuturasNative(ruts).then((response:any)=>{
+                    var todas = JSON.parse(response.data);
+                    this.crearNotificacionesCitas(todas);
+                })
+            }
+        }
+    }
+
+    //por lo pronto generaremos esta búsqueda para traernos las citas locales
+    //y no ir de nuevo al mes api liviano
+    //ya que dicho método consume muchos recursos
+    //se debe implementar esto con un servicio de windows
+    entregaArregloRuts(){
+        var usuarios = this.utiles.entregaArregloUsuarios();
+        //de los usuarios necesitamos sus respectivos ids
+        var arrRuts = [];
+        if (usuarios && usuarios.length > 0){
+            usuarios.forEach(usuario => {
+                arrRuts.push(usuario.Rut);
+            });
+        }
+        console.log(arrRuts.toString());
+        return arrRuts.toString();
+    }
+
 }

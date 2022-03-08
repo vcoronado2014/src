@@ -5,6 +5,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { ServicioUtiles } from './ServicioUtiles';
 import * as moment from 'moment';
+import { forkJoin } from 'rxjs';
+//import { map } from 'jquery';
 
 @Injectable()
 export class ServicioCitas{
@@ -723,7 +725,7 @@ export class ServicioCitas{
     
         return this.http.post(url, {}, {});
       }
-      entregaPorMesNuevoApi(uspId, idRyf, nodId, numeroMes, annoConsulta) {
+    entregaPorMesNuevoApi(uspId, idRyf, nodId, numeroMes, annoConsulta) {
         const body = JSON.stringify({
             UspId: uspId.toString(),
             IdRyf: idRyf.toString(),
@@ -801,6 +803,175 @@ export class ServicioCitas{
         };
 
         let url = environment.API_ENDPOINT + 'MesNuevoLivianoApi';
+        this.http.setDataSerializer('json');
+
+
+        return this.http.post(url, body, {});
+    }
+    //** implementación por usuario de un listado */
+    entregaPorMesNuevoApiListado(uspId, idRyf, nodId, numeroMes, annoConsulta) {
+        const body = JSON.stringify({
+            UspId: uspId.toString(),
+            IdRyf: idRyf.toString(),
+            NodId: nodId.toString(),
+            NumeroMes: numeroMes.toString(),
+            AnnoConsulta: annoConsulta.toString()
+        });
+
+        let url = environment.API_ENDPOINT + 'MesNuevoApi';
+        let httpHeaders = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+        });
+        httpHeaders.set('Access-Control-Allow-Origin', '*');
+        httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+        httpHeaders.set("Access-Control-Allow-Headers", "*");
+
+        let options = { headers: httpHeaders };
+
+        let data = this.httpClient.post(url, body, options);
+        return data;
+    }
+    entregaPorMesNuevoApiListadoNative(uspId, idRyf, nodId, numeroMes, annoConsulta) {
+        //realizar la llamada post nativa
+        const headers = new Headers;
+        const body =
+        {
+            "UspId": uspId.toString(),
+            "IdRyf": idRyf.toString(),
+            "NodId": nodId.toString(),
+            "NumeroMes": numeroMes.toString(),
+            "AnnoConsulta": annoConsulta.toString()
+        };
+
+        let url = environment.API_ENDPOINT + 'MesNuevoApi';
+        this.http.setDataSerializer('json');
+
+
+        return this.http.post(url, body, {});
+    }
+    entregaVacunasApi(uspId) {
+        const body = JSON.stringify({
+            UspId: uspId.toString(),
+        });
+
+        let url = environment.API_ENDPOINT + 'VacunasApi';
+        let httpHeaders = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+        });
+        httpHeaders.set('Access-Control-Allow-Origin', '*');
+        httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+        httpHeaders.set("Access-Control-Allow-Headers", "*");
+
+        let options = { headers: httpHeaders };
+
+        let data = this.httpClient.post(url, body, options);
+        return data;
+    }
+    entregaVacunasApiNative(uspId) {
+        //realizar la llamada post nativa
+        const headers = new Headers;
+        const body =
+        {
+            "UspId": uspId.toString()
+        };
+
+        let url = environment.API_ENDPOINT + 'VacunasApi';
+        this.http.setDataSerializer('json');
+
+
+        return this.http.post(url, body, {});
+    }
+    //2 llamadas en una
+    entregaPorMesNuevoApiListadoFork(uspId, idRyf, nodId, numeroMes, annoConsulta) {
+        const body = JSON.stringify({
+            UspId: uspId.toString(),
+            IdRyf: idRyf.toString(),
+            NodId: nodId.toString(),
+            NumeroMes: numeroMes.toString(),
+            AnnoConsulta: annoConsulta.toString()
+        });
+
+        let url = environment.API_ENDPOINT + 'MesNuevoApi';
+        let httpHeaders = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+        });
+        httpHeaders.set('Access-Control-Allow-Origin', '*');
+        httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+        httpHeaders.set("Access-Control-Allow-Headers", "*");
+
+        let options = { headers: httpHeaders };
+
+        let data = this.httpClient.post(url, body, options);
+
+        //llamada a las vacunas
+        let urlVac = environment.API_ENDPOINT + 'VacunasApi';
+        const bodyVac = JSON.stringify({
+            UspId: uspId.toString(),
+        });
+
+        let dataVac = this.httpClient.post(urlVac, bodyVac, options);
+
+
+        return forkJoin([data, dataVac]);
+    }
+    entregaPorMesNuevoApiListadoNativeFork(uspId, idRyf, nodId, numeroMes, annoConsulta) {
+        //realizar la llamada post nativa
+        const headers = new Headers;
+        const body =
+        {
+            "UspId": uspId.toString(),
+            "IdRyf": idRyf.toString(),
+            "NodId": nodId.toString(),
+            "NumeroMes": numeroMes.toString(),
+            "AnnoConsulta": annoConsulta.toString()
+        };
+
+        const bodyVac =
+        {
+            "UspId": uspId.toString(),
+        };
+
+        let url = environment.API_ENDPOINT + 'MesNuevoApi';
+        //llamada a las vacunas
+        let urlVac = environment.API_ENDPOINT + 'VacunasApi';
+        this.http.setDataSerializer('json');
+
+        let data = this.http.post(url, body, {});
+        let dataVac = this.http.post(urlVac, bodyVac, {});
+
+        return forkJoin([data, dataVac]);
+
+        //return this.http.post(url, body, {});
+    }
+    postCitasWebFuturas(ruts) {
+        const body = JSON.stringify({ ruts: ruts });
+
+        let url = environment.API_ENDPOINT + 'CitaWeb';
+        let httpHeaders = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+        });
+        httpHeaders.set('Access-Control-Allow-Origin', '*');
+        httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+        httpHeaders.set("Access-Control-Allow-Headers", "*");
+
+        let options = { headers: httpHeaders };
+
+        let data = this.httpClient.post(url, body, options);
+        return data;
+    }
+    postCitasWebFuturasNative(ruts) {
+        //realizar la llamada post nativa
+        const headers = new Headers;
+        const body =
+        {
+            "ruts": ruts
+        };
+
+        let url = environment.API_ENDPOINT + 'CitaWeb';
         this.http.setDataSerializer('json');
 
 

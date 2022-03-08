@@ -7,11 +7,11 @@ const routes: Routes = [
     path: 'home',
     loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
   },
-  {
+/*   {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
-  },
+  }, */
   {
     path: 'antecedentes',
     loadChildren: () => import('./antecedentes/antecedentes.module').then( m => m.AntecedentesPageModule)

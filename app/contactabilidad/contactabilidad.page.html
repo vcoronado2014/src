@@ -1,7 +1,8 @@
 <ion-header class="back-app">
-  <ion-toolbar color="primary" mode="md">
+  <ion-toolbar mode="md">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/familia" class="fcw"></ion-back-button>
+      <!-- <ion-back-button defaultHref="/familia" class="fcw"></ion-back-button> -->
+      <ion-back-button (click)="irAHome()" defaultHref="/familia" class="fcw"></ion-back-button>
     </ion-buttons>
     <ion-title class="fcw">Configurar integrante</ion-title>
   </ion-toolbar>

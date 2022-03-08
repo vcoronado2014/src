@@ -1,29 +1,23 @@
 <ion-header class="back-app">
-  <ion-toolbar color="primary" mode="md">
+  <ion-toolbar mode="md">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home" class="fcw"></ion-back-button>
     </ion-buttons>
-    <ion-title class="fcw">Configurar familia</ion-title>
+    <ion-title class="fcw">Actualizar datos</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="back-app">
-  <!-- lo comentamos hasta tener la nueva funcionalidad -->
-<!--   <ion-fab vertical="bottom" horizontal="end" slot="fixed" color="danger">
-    <ion-fab-button (click)="irValidacion()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab> -->
   <app-progress [mostrar]="estaCargando" titulo="Buscando familia"></app-progress>
   <!-- si no hay registros -->
-  <div [hidden]="estaCargando" *ngIf="hayInfo == false" style="padding-top: 162px; padding-left: 16px; padding-right: 16px; font-size: 30px; color:#BDBDBD; text-align: center;"><p>No hay familiares para mostrar  <br>
+  <div [hidden]="estaCargando" *ngIf="hayInfo == false" style="padding-top: 162px; padding-left: 16px; padding-right: 16px; font-size: 30px; text-align: center;"><p>No hay familiares para mostrar  <br>
     <ion-icon name="information-circle" style="font-size: 60px;"></ion-icon></p>
   </div>
 
   <div [hidden]="estaCargando" *ngIf="listadoUsuario.length > 0" style="padding-top: 16px;">
     <div class="ion-padding">
-      <p class="texto-item" style="color: #0000008A; font-size: 14pt;letter-spacing: 0.25pt;line-height: 20pt;">
-        Modifica la imagen del avatar, el telefono o el e-mail de los miembros de tu familia.
+      <p class="texto-item" style="font-size: 14pt;letter-spacing: 0.25pt;line-height: 20pt;">
+        Modifica la imagen del avatar, el telefono o el e-mail de los miembros de tu familia en el centro de salud.
       </p>
     </div>
     <div *ngFor="let item of listadoUsuario">
@@ -38,16 +32,6 @@
           <div class="subtext-avatar">{{item.Parentezco.Nombre}}</div>
         </ion-row>
       </ion-item>
-    </div>
-    <div *ngIf="mostrarAgregarQuitar">
-      <ion-list style="margin-top: 24px; padding-top: 0;">
-        <ion-list-header style="background-color: #faf9fa;padding-right: 16px;padding-bottom: 16px;">
-          <div style="color: #0000008A; font-size: 14pt;letter-spacing: 0.25pt;line-height: 20pt;">A continuación puedes activar o desactivar a los integrantes de tu familia, solo visualizaras la información clínica de los integrantes activos.</div>
-        </ion-list-header>
-        <ion-item button class="lista-alergias" detail (click)="irQuitarAgregar()">
-          <ion-label class="ion-text-wrap" style="color:#000000DE;font-size: 16pt;">Activar o desactivar integrantes</ion-label>
-        </ion-item>
-      </ion-list>
     </div>
   </div>
 

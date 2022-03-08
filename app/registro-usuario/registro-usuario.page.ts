@@ -227,7 +227,8 @@ export class RegistroUsuarioPage implements OnInit {
     }
   }
   irAHome() {
-    this.navCtrl.navigateRoot('home');
+    //this.navCtrl.navigateRoot('home');
+    this.navCtrl.navigateBack('home');
   }
 
   async autentificarse(userName, password) {
@@ -279,7 +280,8 @@ export class RegistroUsuarioPage implements OnInit {
   }
   async salirRegistro() {
     var titulo = '';
-    this.navCtrl.navigateRoot('inicio');
+    //this.navCtrl.navigateRoot('inicio');
+    this.navCtrl.navigateBack('inicio');
   }
 
   async onSubmit() {

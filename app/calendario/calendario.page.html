@@ -1,11 +1,18 @@
 <ion-header>
-  <!-- esto lo comentamos ya que se decidió no usar color de header personalizado -->
-  <!-- <ion-toolbar [style.--background]="miColor" mode="md"> -->
-  <ion-toolbar color="primary" mode="md">
+  <ion-toolbar mode="md">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home" class="fcw"></ion-back-button>
+      <!-- <ion-back-button defaultHref="/home" class="fcw"></ion-back-button> -->
+      <ion-back-button (click)="irHome()" defaultHref="/" class="fcw"></ion-back-button>
     </ion-buttons>
     <ion-title class="fcw">Calendario</ion-title>
+  </ion-toolbar>
+  <ion-toolbar color="light">
+    <mat-form-field appearance="outline" class="field-tipo-atencion-calendar">
+      <mat-label>Tipo evento</mat-label>
+      <mat-select [disabled]="estaCargando" [(ngModel)]="filtroDefecto" (selectionChange)="filtrarCategorias($event)">
+        <mat-option *ngFor="let tipo of categoriasEventos" [value]="tipo">{{tipo}}</mat-option>
+      </mat-select>
+    </mat-form-field>
   </ion-toolbar>
 </ion-header>
 
@@ -42,18 +49,16 @@
     </ion-grid>
     </div>
   <div style="position: absolute; display: table; height: 90%;font-size: 16px; color:rgba(0, 0, 0, 0.54); text-align: center; width: -webkit-fill-available;" class="ion-padding">
-<!--     <p style="display: table-cell; vertical-align: middle">No hay eventos para mostrar  <br>
-    <ion-icon name="information-circle" style="font-size: 50px;"></ion-icon></p> -->
     <p style="display: table-cell; vertical-align: middle">No tiene actividades  <br>
       programadas para el futuro</p>
   </div>
  </div>
  <div *ngIf="tiene">
-  <div [hidden]="estaCargando" *ngFor="let item of citasVerticalTodasTop">
+   <div [hidden]="estaCargando" *ngFor="let item of citasVerticalTodasTop">
     <ion-grid *ngIf="item.Mostrar">
       <app-card-calendario [fechaActual]="fechaActual" [item]="item" [anioActual]="anioActual"></app-card-calendario>
       <ion-row class="ion-no-padding ion-no-margin row-card" *ngIf="item.Eventos[0].NombrePrincipal != 'Nada planificado para hoy'">
-        <mat-card *ngFor="let evento of item.Eventos" color="light" style="margin-bottom: 8px;" id="myListCard">
+        <mat-card *ngFor="let evento of item.Eventos" color="light" style="margin-bottom: 8px;" id="myListCard" [hidden]="evento.DetalleEventoMes.Mostrar == false">
           <mat-card-header (click)="goToDetalleCita(evento)">
             
               <mat-card-subtitle *ngIf="evento.DetalleEventoMes.Titulo != 'Vacuna administrada'" class="hora">{{evento.HoraInicioFin}}</mat-card-subtitle>

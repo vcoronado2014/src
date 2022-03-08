@@ -22,9 +22,10 @@
      <ion-list>
        <ion-item *ngFor="let p of pages" (click)="openPage(p)" class="listItem" button lines="none" [ngStyle]="{'margin-left': p.esSubMenu ? '16px' : '0px'}">
          <ion-icon name={{p.icon}} slot="start"></ion-icon>
-         <ion-label>
-           {{p.title}}
-         </ion-label>
+        <ion-label>
+          {{p.title}}
+          <p *ngIf="p.parrafo">{{p.parrafo}}</p>
+        </ion-label>
        </ion-item>
        <!-- ajustes de la cuenta -->
        <ion-item button lines="none" (click)="abrirEditar()" class="listItem">
@@ -44,10 +45,22 @@
      </ion-list>
  
    </ion-content>
+   <ion-footer class="ion-no-border">
+    <ion-toolbar  color="light">
+      <ion-title style="text-align: center;">
+        <ion-note>
+          {{infoApp.Ambiente}} -
+        </ion-note>
+        <ion-note>
+          Versión: {{infoApp.Version}}
+        </ion-note>
+      </ion-title>
+    </ion-toolbar>
+  </ion-footer>
  </ion-menu>
  
  <ion-header class="home header">
-   <ion-toolbar  class="toolbar" color="primary">
+   <ion-toolbar  class="toolbar">
      <ion-buttons slot="start">
        <ion-menu-button class="home"></ion-menu-button>
      </ion-buttons>
@@ -63,26 +76,6 @@
    </ion-toolbar>
  </ion-header>
  <ion-content class="card-background-page-home back-app" id="content">
-   <!-- notificaciones lo comentamos para usar un modal -->
-<!--    <ion-slides [hidden]="muestraNotificaciones == false" pager="true" [options]="slideOpts" #mySlider class="slides-back">
-     <ion-slide *ngFor="let info of notificaciones">
-       <div class="slide-content-padding">
-         <app-content-slide [titulo]="info.Titulo" [subTitulo]="info.Subtitulo" [contenido]="info.Contenido" [modulo]="info.IrA"></app-content-slide>
-       </div>
-       <div class="slide-buttons-padding">
-         <ion-grid>
-           <ion-row>
-             <ion-col size="6">
-               <button [hidden]="info.IrA == null" mat-flat-button (click)="openNotificacion(info.IrA)">Ir...</button>
-             </ion-col>
-             <ion-col size="6">
-               <button mat-raised-button color="accent" class="boton" (click)="moverSlide(info.Indice)">SIGUIENTE</button>
-             </ion-col>
-           </ion-row>
-         </ion-grid>
-       </div>
-     </ion-slide>
-   </ion-slides> -->
    <ion-grid>
      <app-progress [mostrar]="estaCargando" titulo="Buscando preferencias"></app-progress>
      <ion-row [hidden]="estaCargando" class="ion-padding-top">

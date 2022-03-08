@@ -19,6 +19,9 @@ export class PreOrdenesPage implements OnInit {
   linesAvatar='inset';
 
   estaCargando = false;
+  //para el modulo
+  moduloActual = '';
+  titulo = '';
   constructor(
     public navCtrl: NavController,
     public toast: ToastController,
@@ -35,6 +38,14 @@ export class PreOrdenesPage implements OnInit {
     this.cargarDatosInciales();
   }
   async cargarDatosInciales() {
+    //agregado para determinar que ventana levantar
+    this.moduloActual = sessionStorage.getItem('MODULO_ACTUAL');
+    if (this.moduloActual == 'CALENDARIO'){
+      this.titulo = 'Calendario';
+    }
+    else{
+      this.titulo = 'Exámenes';
+    }
 
     this.estaCargando = true;
     let loader = await this.loading.create({
@@ -107,6 +118,25 @@ export class PreOrdenesPage implements OnInit {
       }
     };
     this.navCtrl.navigateRoot(['ordenes'], navigationExtras);
+  }
+  goToDetailsModulo(usuario) {
 
+    //this.navCtrl.navigateRoot(['ordenes'], navigationExtras);
+    if (this.moduloActual == 'CALENDARIO'){
+      const navigationExtras: NavigationExtras = {
+        queryParams: {
+          idUsp: usuario.Id
+        }
+      };
+      this.navCtrl.navigateForward(['calendario'], navigationExtras);
+    }
+    else{
+      const navigationExtras: NavigationExtras = {
+        queryParams: {
+          usuario: JSON.stringify(usuario)
+        }
+      };
+      this.navCtrl.navigateForward(['ordenes'], navigationExtras);
+    }
   }
 }

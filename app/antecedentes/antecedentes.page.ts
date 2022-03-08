@@ -109,6 +109,9 @@ export class AntecedentesPage implements OnInit {
     this.navCtrl.navigateRoot(['detail-usuario'], navigationExtras);
 
   }
+  irAHome(){
+    this.navCtrl.navigateBack('home');
+  }
   logout(){
     this.acceso.logout();
     this.navCtrl.navigateRoot('login');

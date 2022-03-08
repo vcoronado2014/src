@@ -110,6 +110,8 @@ export class AjustesFamiliaPage implements OnInit {
                 nuevoUsuarioAps.UrlImagen = data;
                 //debemos guardar el objeto serializado
                 sessionStorage.setItem('UsuarioAps', JSON.stringify(nuevoUsuarioAps));
+                //gurdamos mi imagen en local storage
+                localStorage.setItem('MI_IMAGEN', data);
               }
               else {
                 //si no es el mismo hay que buscarlo en la lista de familia y cambiarlo
