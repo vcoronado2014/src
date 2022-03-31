@@ -37,6 +37,9 @@ export class OrdenesPage implements OnInit {
   tituloProgress: string;
   lineAvatar = 'none';
   mostrarBusqueda = false;
+  //actualiza
+  actualiza = 'false';
+
   constructor(
     public navCtrl: NavController,
     public toast: ToastController,
@@ -57,12 +60,20 @@ export class OrdenesPage implements OnInit {
     this.activatedRoute.queryParams.subscribe(params => {
       if (params && params.usuario) {
         this.usuarioAps = JSON.parse(params.usuario);
+        this.actualiza = params.actualiza;
         //console.log(this.usuarioAps);
       }
     });
     //this.loadInicio();
-    this.loadInicioCompleto();
+    if (this.actualiza == 'true'){
+      //this.loadInicioCompleto();
+      this.loadInicioAllCompleto();
+    }
+    else{
+      this.loadInicioLocal();
+    }
   }
+
   async filterList(event){
     console.log(event.srcElement.value);
     this.listadoExamenesCompleto = this.listadoExamenesCompletoBackUp;
@@ -88,10 +99,218 @@ export class OrdenesPage implements OnInit {
       this.mostrarBusqueda = false;
     }
   }
+
+  async loadInicioLocal(){
+    this.estaCargando = true;
+    this.tituloProgress = 'Cargando información...';
+    //BUSCAMOS LAS ORDENES LOCALES
+    this.listadoOrdenesCompleto = sessionStorage.getItem('ORDENES_COMPLETO') ? JSON.parse(sessionStorage.getItem('ORDENES_COMPLETO')): [];
+    this.listadoOrdenesCompleto = this.listadoOrdenesCompleto.filter(p=>p.UspId == this.usuarioAps.Id);
+
+    var todosLosExamenes = sessionStorage.getItem('EXAMENES_COMPLETO') ? JSON.parse(sessionStorage.getItem('EXAMENES_COMPLETO')): [];
+
+    if (this.listadoOrdenesCompleto.length == 0) {
+      this.tiene = false;
+    }
+    //puede que traiga un elemento
+    if (this.listadoOrdenesCompleto && this.listadoOrdenesCompleto.length == 1){
+      if (this.listadoOrdenesCompleto[0].Estado == "No hay Información"){
+        this.tiene = false;
+      }
+    }
+
+    if (this.listadoOrdenesCompleto && this.listadoOrdenesCompleto.length > 0){
+      for(var t in this.listadoOrdenesCompleto){
+        //este id hay que buscarlo en el listado de examenes
+        var oalaId = this.listadoOrdenesCompleto[t].Id;
+
+        var data = todosLosExamenes.filter(e=>e.IdOrden == oalaId);
+        console.log(data);
+
+        for (var s in data) {
+/*           let fecha = moment(data[s].FechaRegistro).format('DD-MM-YYYY');
+          let fechaMuestra = moment(data[s].FechaMuestra).format('DD-MM-YYYY');
+          let fechaSolicitud = moment(data[s].FechaSolicitud).format('DD-MM-YYYY');
+          let fechaResultado = moment(data[s].FechaResultado).format('DD-MM-YYYY');
+          data[s].Fecha = fecha;
+          data[s].FechaMuestra = fechaMuestra;
+          data[s].FechaSolicitud = fechaSolicitud;
+          data[s].FechaResultado = fechaResultado; */
+          this.listadoOrdenesCompleto[t].Examenes.push(data[s]);
+          this.listadoExamenesCompleto.push(data[s]);
+        }
+        if (this.listadoExamenesCompleto.length > 0){
+          this.tiene = true;
+        }
+        this.listadoExamenesCompletoBackUp = this.listadoExamenesCompleto;
+        this.estaCargando = false;
+        this.tituloProgress = '';
+
+      }
+    }
+
+  }
+
+  async loadInicioAllCompleto(){
+    this.listadoOrdenesCompleto = [];
+    this.listadoExamenesCompleto = [];
+    if (this.usuarioAps) {
+      this.estaCargando = true;
+      this.tituloProgress = 'Cargando información...';
+
+        if (!this.utiles.isAppOnDevice()) {
+          //llamada web
+          this.lab.getOrdenesApi(this.usuarioAps.Id).subscribe((response: any) => {
+            let listado = response;
+            if (listado){
+              for (var s in listado) {
+                let fecha = moment(listado[s].FechaRegistro).format('DD-MM-YYYY');
+                listado[s].Fecha = fecha;
+                listado[s].UrlImagen = this.usuarioAps.UrlImagen;
+                listado[s].Parentezco = this.usuarioAps.Parentezco.Nombre;
+                let entidad = {
+                  Estado: listado[s].Estado,
+                  Fecha: fecha,
+                  Id: listado[s].Id,
+                  IdEstado: listado[s].IdEstado,
+                  UrlImagen: this.usuarioAps.UrlImagen,
+                  Parentezco: this.usuarioAps.Parentezco.Nombre,
+                  NombreUsuario: listado[s].NombreUsuario,
+                  UspId: listado[s].UspId,
+                  Examenes: []
+                };
+
+                //procesamos los examenes
+                if (listado[s].Examenes){
+                  listado[s].Examenes.forEach(exa => {
+                    let fecha = moment(listado[s].FechaRegistro).format('DD-MM-YYYY');
+                    let fechaMuestra = moment(exa.FechaMuestra).format('DD-MM-YYYY');
+                    let fechaSolicitud = moment(exa.FechaSolicitud).format('DD-MM-YYYY');
+                    let fechaResultado = moment(exa.FechaResultado).format('DD-MM-YYYY');
+
+                    exa.Fecha = fecha;
+                    exa.FechaMuestra = fechaMuestra;
+                    exa.FechaSolicitud = fechaSolicitud;
+                    exa.FechaResultado = fechaResultado;
+
+                    entidad.Examenes.push(exa);
+                    this.listadoExamenesCompleto.push(exa);
+                  });
+                }
+
+                this.listadoOrdenesCompleto.push(entidad);
+                this.listadoExamenesCompletoBackUp = this.listadoExamenesCompleto;
+              }
+              //guardamos
+              //guardaremos en la sesion estos resultados para no volver a actualizarlos cuando el usuario vuelva atrás
+              sessionStorage.setItem('ORDENES_COMPLETO', JSON.stringify(this.listadoOrdenesCompleto));
+              sessionStorage.setItem('EXAMENES_COMPLETO', JSON.stringify(this.listadoExamenesCompleto));
+              //**************************************************************************************************** */
+
+              if (this.listadoOrdenesCompleto.length == 0) {
+                this.tiene = false;
+              }
+              //puede que traiga un elemento
+              if (this.listadoOrdenesCompleto && this.listadoOrdenesCompleto.length == 1){
+                if (this.listadoOrdenesCompleto[0].Estado == "No hay Información"){
+                  this.tiene = false;
+                }
+              }
+              this.listadoOrdenesCompletoBackup = this.listadoOrdenesCompleto;
+              console.log(this.listadoOrdenesCompletoBackup);
+
+            }
+            this.estaCargando = false;
+            this.tituloProgress = '';
+          },error=>{
+            console.log(error.message);
+            this.estaCargando = false;
+            this.tituloProgress = '';
+
+          });
+        }
+        else {
+          //llamada native
+          this.lab.getOrdenesApiNative(this.usuarioAps.Id).then((response: any) => {
+            let listado = JSON.parse(response.data);
+            if (listado){
+              for (var s in listado) {
+                let fecha = moment(listado[s].FechaRegistro).format('DD-MM-YYYY');
+                listado[s].Fecha = fecha;
+                listado[s].UrlImagen = this.usuarioAps.UrlImagen;
+                listado[s].Parentezco = this.usuarioAps.Parentezco.Nombre;
+                let entidad = {
+                  Estado: listado[s].Estado,
+                  Fecha: fecha,
+                  Id: listado[s].Id,
+                  IdEstado: listado[s].IdEstado,
+                  UrlImagen: this.usuarioAps.UrlImagen,
+                  Parentezco: this.usuarioAps.Parentezco.Nombre,
+                  NombreUsuario: listado[s].NombreUsuario,
+                  UspId: listado[s].UspId,
+                  Examenes: []
+                };
+
+                //procesamos los examenes
+                if (listado[s].Examenes){
+                  listado[s].Examenes.forEach(exa => {
+                    let fecha = moment(listado[s].FechaRegistro).format('DD-MM-YYYY');
+                    let fechaMuestra = moment(exa.FechaMuestra).format('DD-MM-YYYY');
+                    let fechaSolicitud = moment(exa.FechaSolicitud).format('DD-MM-YYYY');
+                    let fechaResultado = moment(exa.FechaResultado).format('DD-MM-YYYY');
+
+                    exa.Fecha = fecha;
+                    exa.FechaMuestra = fechaMuestra;
+                    exa.FechaSolicitud = fechaSolicitud;
+                    exa.FechaResultado = fechaResultado;
+
+                    entidad.Examenes.push(exa);
+                    this.listadoExamenesCompleto.push(exa);
+                  });
+                }
+
+                this.listadoOrdenesCompleto.push(entidad);
+                this.listadoExamenesCompletoBackUp = this.listadoExamenesCompleto;
+              }
+              //guardamos
+              //guardaremos en la sesion estos resultados para no volver a actualizarlos cuando el usuario vuelva atrás
+              sessionStorage.setItem('ORDENES_COMPLETO', JSON.stringify(this.listadoOrdenesCompleto));
+              sessionStorage.setItem('EXAMENES_COMPLETO', JSON.stringify(this.listadoExamenesCompleto));
+              //**************************************************************************************************** */
+
+              if (this.listadoOrdenesCompleto.length == 0) {
+                this.tiene = false;
+              }
+              //puede que traiga un elemento
+              if (this.listadoOrdenesCompleto && this.listadoOrdenesCompleto.length == 1){
+                if (this.listadoOrdenesCompleto[0].Estado == "No hay Información"){
+                  this.tiene = false;
+                }
+              }
+              this.listadoOrdenesCompletoBackup = this.listadoOrdenesCompleto;
+              console.log(this.listadoOrdenesCompletoBackup);
+
+            }
+            this.estaCargando = false;
+            this.tituloProgress = '';
+          }).catch(error=>{
+            console.log(error.message);
+            this.estaCargando = false;
+            this.tituloProgress = '';
+
+          });
+        }
+
+
+    }
+
+  }
+
   async loadInicioCompleto(){
     this.listadoOrdenesCompleto = [];
     if (this.usuarioAps) {
       this.estaCargando = true;
+      this.tituloProgress = 'Cargando información...';
       let loader = await this.loading.create({
         cssClass: 'loading-vacio',
         showBackdrop: false,
@@ -100,21 +319,25 @@ export class OrdenesPage implements OnInit {
       await loader.present().then(async () => {
         if (!this.utiles.isAppOnDevice()) {
           //llamada web
-          this.lab.getOrdenes(this.usuarioAps.Id).subscribe((response: any) => {
+          //this.lab.getOrdenes(this.usuarioAps.Id).subscribe((response: any) => {
+          this.lab.getOrdenesApi(this.usuarioAps.Id).subscribe((response: any) => {
             this.porocesarListaCompleto(response, loader);
           },error=>{
             console.log(error.message);
             this.estaCargando = false;
+            this.tituloProgress = '';
             loader.dismiss();
           });
         }
         else {
           //llamada nativa
-          this.lab.getOrdenesNative(this.usuarioAps.Id).then((response: any) => {
+          //this.lab.getOrdenesNative(this.usuarioAps.Id).then((response: any) => {
+          this.lab.getOrdenesApiNative(this.usuarioAps.Id).then((response: any) => {
             this.porocesarListaCompleto(JSON.parse(response.data), loader);
           }).catch(error=>{
             console.log(error.message);
             this.estaCargando = false;
+            this.tituloProgress = '';
             loader.dismiss();
           });
         }
@@ -140,13 +363,15 @@ export class OrdenesPage implements OnInit {
       await loader.present().then(async () => {
         if (!this.utiles.isAppOnDevice()) {
           //llamada web
-          this.lab.getOrdenes(this.usuarioAps.Id).subscribe((response: any) => {
+          //this.lab.getOrdenes(this.usuarioAps.Id).subscribe((response: any) => {
+          this.lab.getOrdenesApi(this.usuarioAps.Id).subscribe((response: any) => {
             this.porocesarLista(response, loader);
           });
         }
         else {
           //llamada nativa
-          this.lab.getOrdenesNative(this.usuarioAps.Id).then((response: any) => {
+          //this.lab.getOrdenesNative(this.usuarioAps.Id).then((response: any) => {
+          this.lab.getOrdenesApiNative(this.usuarioAps.Id).then((response: any) => {
             this.porocesarLista(JSON.parse(response.data), loader);
           });
         }
@@ -195,6 +420,9 @@ export class OrdenesPage implements OnInit {
       }
       //vamos a filtrar los resultados de acuerdo a la consulta
       this.listadoOrdenesCompleto = this.listadoOrdenesCompleto.filter(p=>p.UspId == this.usuarioAps.Id);
+      //guardaremos en la sesion estos resultados para no volver a actualizarlos cuando el usuario vuelva atrás
+      sessionStorage.setItem('ORDENES_COMPLETO', JSON.stringify(this.listadoOrdenesCompleto));
+      //**************************************************************************************************** */
 
       if (this.listadoOrdenesCompleto.length == 0) {
         this.tiene = false;
@@ -205,21 +433,19 @@ export class OrdenesPage implements OnInit {
           this.tiene = false;
         }
       }
-      this.estaCargando = false;
-      loader.dismiss();
+      //this.estaCargando = false;
+      //loader.dismiss();
       //aca hacer foreach para traer los examenes
       if (this.listadoOrdenesCompleto && this.listadoOrdenesCompleto.length > 0){
         for(var t in this.listadoOrdenesCompleto){
-          let loaderUno = await this.loading.create({
-            cssClass: 'loading-vacio',
-            showBackdrop: false,
-            spinner: null,
-          });
+
           this.estaCargando = true;
-          await loaderUno.present().then(async () => {
+          this.tituloProgress = 'Cargando información...';
+
             if (!this.utiles.isAppOnDevice()) {
               //llamada web
-              this.lab.getExamenes(this.listadoOrdenesCompleto[t].Id).subscribe((response: any) => {
+              //this.lab.getExamenes(this.listadoOrdenesCompleto[t].Id).subscribe((response: any) => {
+              this.lab.getExamenesApi(this.listadoOrdenesCompleto[t].Id).subscribe((response: any) => {
                 //this.porocesarLista(response, loader);
                 var data = response;
                 if (data){
@@ -239,23 +465,29 @@ export class OrdenesPage implements OnInit {
                     this.tiene = true;
                   }
                   this.listadoExamenesCompletoBackUp = this.listadoExamenesCompleto;
+                  //guardaremos en la sesion estos resultados para no volver a actualizarlos cuando el usuario vuelva atrás
+                  sessionStorage.setItem('EXAMENES_COMPLETO', JSON.stringify(this.listadoExamenesCompleto));
+                  //**************************************************************************************************** */
                   this.estaCargando = false;
-                  loaderUno.dismiss();
+                  loader.dismiss();
                 }
                 else{
                   this.estaCargando = false;
-                  loaderUno.dismiss();
+                  loader.dismiss();
+                  
                 }
               }, error => {
                 console.log(error.message);
                 this.estaCargando = false;
-                loaderUno.dismiss();
+                loader.dismiss();
+                
     
               });
             }
             else{
               //llamada nativa
-              this.lab.getExamenesNative(this.listadoOrdenesCompleto[t].Id).then((response: any) => {
+              //this.lab.getExamenesNative(this.listadoOrdenesCompleto[t].Id).then((response: any) => {
+              this.lab.getExamenesApiNative(this.listadoOrdenesCompleto[t].Id).then((response: any) => {
                 var data = JSON.parse(response.data);
                 if (data){
                   for (var s in data) {
@@ -274,21 +506,24 @@ export class OrdenesPage implements OnInit {
                     this.tiene = true;
                   }
                   this.listadoExamenesCompletoBackUp = this.listadoExamenesCompleto;
+                  //guardaremos en la sesion estos resultados para no volver a actualizarlos cuando el usuario vuelva atrás
+                  sessionStorage.setItem('EXAMENES_COMPLETO', JSON.stringify(this.listadoExamenesCompleto));
+                  //**************************************************************************************************** */
                   this.estaCargando = false;
-                  loaderUno.dismiss();
+                  loader.dismiss();
                 }
                 else{
                   this.estaCargando = false;
-                  loaderUno.dismiss();
+                  loader.dismiss();
                 }
 
               }).catch(error=>{
                 console.log(error.message);
                 this.estaCargando = false;
-                loaderUno.dismiss();
+                loader.dismiss();
               });
             }
-          });
+          
 
         }
       }

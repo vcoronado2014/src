@@ -35,7 +35,8 @@ export class NuevoLoginPage implements OnInit {
   patternOnlyLetter = '[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$';
   expCelular = /^(\+?56)?(\s?)(0?9)(\s?)[9876543]\d{7}$/gm;
   expPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{4,8}$/gm;
-  expEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/gm;
+  //expEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/gm;
+  expEmail = /^((\w[^\W]+)[\.\-]?){1,}\@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/gm
   isLogged: boolean;
   loggedIn: boolean;
   CodigoMensaje: any;
@@ -646,10 +647,28 @@ export class NuevoLoginPage implements OnInit {
     //vamos a obtener las notificaciones push en esta pantalla
     this.recordarme = localStorage.getItem('RECORDARME') && localStorage.getItem('RECORDARME').toLowerCase() == 'true' ? true : false;
     //this.servNotificaciones.buscarCitasTodas();
-    this.servNotificaciones.buscarCitasTodasLocales();
+    //esto lo comentamos debido a que ahora las notificaciones llegan por push, sprint 2 28-03-2022
+    //this.servNotificaciones.buscarCitasTodasLocales();
     //this.servNotificaciones.;
     this.usaEnrolamiento = this.parametrosApp.USA_LOGIN_ENROLAMIENTO();
     this.cargarForma();
+    //acca realizaremos un proceso con el fin de reenviar al calendario
+    //cuando vengan los datos de una notificación
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (params && params.user && params.password && params.idUsp && params.url) {
+        //iniciar proceso de autologin
+        //y enviar al modulo que se necesita
+        console.log(params);
+
+        let pass = params.password ? params.password : '';
+        let user = params.user ? params.user : '';
+        let uspId = params.idUsp ? params.idUsp : 0;
+        let url = params.url ? params.url : '';
+        console.log('ir al calendario automaticamente');
+        this.loguearseRegistroDirecto(user, pass, uspId, url);
+
+      }
+    });
   }
   abrirAsistente() {
     const navigationExtras: NavigationExtras = {
@@ -664,7 +683,8 @@ export class NuevoLoginPage implements OnInit {
     console.log(this.recordarme);
     this.forma = new FormGroup({
       'run': new FormControl('', [Validators.required]),
-      'email': new FormControl('', [Validators.required, Validators.pattern(this.expEmail)]),
+      /* 'email': new FormControl('', [Validators.required, Validators.pattern(this.expEmail)]), */
+      'email': new FormControl('', [Validators.required, Validators.email]),
       'clave': new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(10)]),
       //'recordarme': new FormControl(this.recordarme)
     });
@@ -872,9 +892,17 @@ export class NuevoLoginPage implements OnInit {
       if (!this.utiles.isAppOnDevice()) {
         //llamada web
         setTimeout(() => {
-          this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data) => {
+          this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data: any) => {
             if (data) {
               let respuesta = data;
+              //falta agregar esto *********
+              if (respuesta.Activo == 0 && respuesta.Eliminado == 1){
+                //esta eliminado
+                this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
+                this.estaCargandoHome = false;
+                return;
+              }
+              //************************** */
               localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
               localStorage.setItem('TIENE_REGISTRO', 'true');
               //nueva funcionalidad
@@ -901,9 +929,17 @@ export class NuevoLoginPage implements OnInit {
       else {
         //llamada nativa
         setTimeout(() => {
-          this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data) => {
+          this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data:any) => {
             let respuesta = JSON.parse(data.data);
             if (respuesta) {
+              //falta agregar esto *********
+              if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
+                //esta eliminado
+                this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
+                this.estaCargandoHome = false;
+                return;
+              }
+              //************************** */
               localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
               localStorage.setItem('TIENE_REGISTRO', 'true');
               //nueva funcionalidad
@@ -933,24 +969,26 @@ export class NuevoLoginPage implements OnInit {
   async loguearseRegistroRecordarme(correo, password) {
     //ahora guardamos
     this.estaCargandoHome = true;
-    let loader = await this.loading.create({
-      cssClass: 'loading-vacio',
-      showBackdrop: false,
-      spinner: null,
-    });
-    await loader.present().then(async () => {
+
       if (!this.utiles.isAppOnDevice()) {
         //llamada web
         setTimeout(() => {
-          this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data) => {
+          this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data:any) => {
             if (data) {
               let respuesta = data;
+              //falta agregar esto *********
+              if (respuesta.Activo == 0 && respuesta.Eliminado == 1){
+                //esta eliminado
+                this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
+                this.estaCargandoHome = false;
+                return;
+              }
+              //************************** */
               localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
               localStorage.setItem('TIENE_REGISTRO', 'true');
               //nueva funcionalidad
               this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
               //************** */
-              loader.dismiss();
               let registro = JSON.parse(localStorage.getItem('REGISTRO'));
   
               this.autentificarse(registro.Run, password);
@@ -958,7 +996,6 @@ export class NuevoLoginPage implements OnInit {
             else {
               this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
               this.estaCargandoHome = false;
-              loader.dismiss();
               return;
             }
   
@@ -966,7 +1003,6 @@ export class NuevoLoginPage implements OnInit {
             //console.log(error.message);
             //this.utiles.presentToast("Error de conexión.", "middle", 3000);
             this.estaCargandoHome = false;
-            loader.dismiss();
             this.procesoLocal();
           })
         }, 5000);
@@ -974,22 +1010,28 @@ export class NuevoLoginPage implements OnInit {
       else {
         //llamada nativa
         setTimeout(() => {
-          this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data) => {
+          this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data:any) => {
             let respuesta = JSON.parse(data.data);
             if (respuesta) {
+            //falta agregar esto *********
+            if (respuesta.Activo == 0 && respuesta.Eliminado == 1){
+              //esta eliminado
+              this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
+              this.estaCargandoHome = false;
+              return;
+            }
+            //************************** */
               localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
               localStorage.setItem('TIENE_REGISTRO', 'true');
               //nueva funcionalidad
-              this.utiles.guardarLogin(correo, password, this.recordarme);
+              this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
               //************** */
-              loader.dismiss();
               let registro = JSON.parse(localStorage.getItem('REGISTRO'));
               this.autentificarse(registro.Run, password);
             }
             else {
               this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
               this.estaCargandoHome = false;
-              loader.dismiss();
               return;
             }
   
@@ -997,12 +1039,88 @@ export class NuevoLoginPage implements OnInit {
             //console.log(error.message);
             //this.utiles.presentToast("Error de conexión.", "middle", 3000);
             this.estaCargandoHome = false;
-            loader.dismiss();
             this.procesoLocal();
           })
         }, 5000);
       }
-    })
+    
+  }
+
+  async loguearseRegistroDirecto(correo, password, uspId, url) {
+    //ahora guardamos
+    this.estaCargandoHome = true;
+
+      if (!this.utiles.isAppOnDevice()) {
+        //llamada web
+        setTimeout(() => {
+          this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data:any) => {
+            if (data) {
+              let respuesta = data;
+              //falta agregar esto *********
+              if (respuesta.Activo == 0 && respuesta.Eliminado == 1){
+                //esta eliminado
+                this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
+                this.estaCargandoHome = false;
+                return;
+              }
+              //************************** */
+              localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
+              localStorage.setItem('TIENE_REGISTRO', 'true');
+              //nueva funcionalidad
+              this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
+              //************** */
+              let registro = JSON.parse(localStorage.getItem('REGISTRO'));
+  
+              this.autentificarseDirecto(registro.Run, password, uspId, url);
+            }
+            else {
+              this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
+              this.estaCargandoHome = false;
+              return;
+            }
+  
+          }, error => {
+            this.estaCargandoHome = false;
+          })
+        }, 5000);
+      }
+      else {
+        //llamada nativa
+        setTimeout(() => {
+          this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data:any) => {
+            let respuesta = JSON.parse(data.data);
+            if (respuesta) {
+            //falta agregar esto *********
+            if (respuesta.Activo == 0 && respuesta.Eliminado == 1){
+              //esta eliminado
+              this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
+              this.estaCargandoHome = false;
+              return;
+            }
+            //************************** */
+              localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
+              localStorage.setItem('TIENE_REGISTRO', 'true');
+              //nueva funcionalidad
+              this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
+              //************** */
+              let registro = JSON.parse(localStorage.getItem('REGISTRO'));
+              this.autentificarseDirecto(registro.Run, password, uspId, url);
+            }
+            else {
+              this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
+              this.estaCargandoHome = false;
+              return;
+            }
+  
+          }).catch(error => {
+            //console.log(error.message);
+            //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+            this.estaCargandoHome = false;
+            this.procesoLocal();
+          })
+        }, 5000);
+      }
+    
   }
 
   async loguearseEnrolamiento() {
@@ -1099,10 +1217,39 @@ export class NuevoLoginPage implements OnInit {
       else {
         //llamada nativa
         this.acceso.loginWebNative(f).then((response: any) => {
-          //NUEVOS CAMBIOS, GUARDAREMOS LOS DATOS DEL LOGIN
-          this.utiles.guardarLogin(userName, this.utiles.desencriptar(password), this.recordarme);
-          //********** */
           this.procesarLogin(JSON.parse(response.data));
+        },
+          (error) => {
+            this.utiles.presentToast('Ocurrió un error de autentificación', 'bottom', 4000);
+            this.estaCargandoHome = false;
+            return;
+          }
+        );
+      }
+
+  }
+  async autentificarseDirecto(userName, password, uspId, url) {
+    //en este caso ya el user name es el email
+
+    let f = { UserName: userName, Password: password, UsaEnrolamiento: this.usaEnrolamiento, TokenFCM: this.utiles.entregaTokenFCM() };
+
+    this.estaCargandoHome = true;
+
+
+      if (!this.utiles.isAppOnDevice()) {
+        //llamada web
+        this.acceso.loginWebDirecto(f).subscribe((response: any) => {
+          this.procesarLoginDirecto(response, uspId, url);
+        },
+          (error) => {
+            this.estaCargandoHome = false;
+            return;
+          });
+      }
+      else {
+        //llamada nativa
+        this.acceso.loginWebNative(f).then((response: any) => {
+          this.procesarLoginDirecto(JSON.parse(response.data), uspId, url);
         },
           (error) => {
             this.utiles.presentToast('Ocurrió un error de autentificación', 'bottom', 4000);
@@ -1150,6 +1297,40 @@ export class NuevoLoginPage implements OnInit {
     /*     this.fcmService.initFCM();
         this.fcmService.receiveMessage(true); */
   }
+
+  async llamadaObtenerPacienteRayen() {
+    //obtenemos los usuarios
+    var pacientesRayen = [];
+    var usuarios = this.utiles.entregaArregloUsuarios();
+    if (usuarios && usuarios.length > 0) {
+      await usuarios.forEach(usu => {
+        if (!this.utiles.isAppOnDevice()) {
+          //llamada web
+          this.servicioGeo.postPersonaRayen(usu.Id).subscribe((data: any) => {
+            var datos = data;
+            console.log(datos);
+            pacientesRayen.push(datos);
+            localStorage.setItem('FECHA_ACTUALIZACION_DATOS_RAYEN', moment().format('YYYY-MM-DD HH:mm'));
+          }, error => {
+            console.log(error);
+          })
+        }
+        else {
+          //llamada nativa
+          this.servicioGeo.postPersonaRayenNative(usu.Id).then((data: any) => {
+            var datos = JSON.parse(data);
+            console.log(datos);
+            pacientesRayen.push(datos);
+            localStorage.setItem('FECHA_ACTUALIZACION_DATOS_RAYEN', moment().format('YYYY-MM-DD HH:mm'));
+          }, error => {
+            console.log(error);
+          })
+        }
+      });
+    }
+    console.log(pacientesRayen);
+  }
+
   procesarLogin(response) {
     var retorno = response;
     let tieneUsuario = false;
@@ -1189,10 +1370,90 @@ export class NuevoLoginPage implements OnInit {
         if (!tieneUsuario) {
           this.utiles.presentToast("Tiene registro correcto, pero no cuenta con información en la red de salud.", "middle", 3000);
         }
+        //llamada a obtener los datos de rayen
+        //lo comentamos por mientras para crear la apk del jueves
+        //OJO CON EL TOKEN, NO LO ESTA ACTUALIZANDO EN LA PERSISTENCIA
+        //this.llamadaObtenerPacienteRayen();
         this.crearToken();
         //guardamos el registro de session
         this.registrarEntrada();
         this.irAHome();
+      }
+      else {
+        this.loggedIn = false;
+        this.CodigoMensaje = retorno.RespuestaBase.CodigoMensaje;
+        this.Mensaje = retorno.RespuestaBase.Mensaje;
+        this.loggedIn = true;
+        this.estaCargandoHome = false;
+        this.utiles.presentToast(this.Mensaje, 'middle', 4000);
+        return;
+      }
+
+    }
+    else {
+      //error también
+      this.loggedIn = false;
+      this.CodigoMensaje = 1000;
+      this.Mensaje = 'Error de llamada Http;';
+      this.loggedIn = true;
+      this.estaCargandoHome = false;
+      this.utiles.presentToast(this.Mensaje, 'middle', 4000);
+      return;
+    }
+  }
+  procesarLoginDirecto(response, uspId, url) {
+    var retorno = response;
+    let tieneUsuario = false;
+    if (retorno.RespuestaBase) {
+      if (retorno.RespuestaBase.CodigoMensaje == 0) {
+        //esta todo ok
+        var user;
+        var userFamilia;
+        if (retorno.UsuarioAps) {
+          user = JSON.stringify(retorno.UsuarioAps);
+          //antes debemos validar si tiene entidad contratante
+          if (user.NodId && this.parametrosApp.USA_ENTIDAD_CONTRATANTE()) {
+            //usa entidad contratante y tiene nodo
+            if (retorno.UsuarioAps.EntidadContratante && retorno.UsuarioAps.EntidadContratante.length > 0) {
+              //tiene entidad contratante
+              tieneUsuario = true;
+              this.setDatosUsuario(retorno, user, userFamilia);
+              this.estaCargandoHome = false;
+            }
+            else {
+              //no tiene entidad contratante
+              this.utiles.presentToast("No tiene entidad contratante asociada", "middle", 3000);
+              this.estaCargandoHome = false;
+              return;
+            }
+          }
+          else {
+            //no usa entidad contratante
+            tieneUsuario = true;
+            this.setDatosUsuario(retorno, user, userFamilia);
+            this.estaCargandoHome = false;
+          }
+
+        }
+
+        //si tiene usuario está valido
+        if (!tieneUsuario) {
+          this.utiles.presentToast("Tiene registro correcto, pero no cuenta con información en la red de salud.", "middle", 3000);
+        }
+        //lo comentamos por mientras para generar apk
+        //this.llamadaObtenerPacienteRayen();
+        this.crearToken();
+        //guardamos el registro de session
+        this.registrarEntrada();
+        if (url == 'calendario'){
+          //this.irCalendario(uspId);
+          this.irAHome();
+        }
+        else{
+          //acá implementar otras derivaciones
+          //por ejemplo a examenes, etc
+        }
+        
       }
       else {
         this.loggedIn = false;
@@ -1226,6 +1487,17 @@ export class NuevoLoginPage implements OnInit {
     this.navCtrl.navigateRoot('home', { animated: true, animationDirection: 'forward' });
 
   }
+  irCalendario(idUsp) {
+    if (this.estaCargandoHome){
+      this.estaCargandoHome = false;
+    }
+    const navigationExtras: NavigationExtras = {
+        queryParams: {
+            idUsp: idUsp
+        }
+    };
+    this.navCtrl.navigateRoot(['calendario'], navigationExtras);
+}
   irRecuperarClave() {
     this.navCtrl.navigateRoot('recuperar-clave');
   }
@@ -1239,7 +1511,7 @@ export class NuevoLoginPage implements OnInit {
         //guardar los valores en varibales locales
         this.utiles.guardarLogin(email, pass, this.recordarme);
         //set
-        if (this.utiles.tieneUsuarioYPassword) {
+        if (this.utiles.tieneUsuarioYPassword()) {
           this.nombreCompleto = this.utiles.getMiNombre();
           this.forma.setValue({
             run: '',

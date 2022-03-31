@@ -119,6 +119,7 @@ export class ModalOperacionCitaPage implements OnInit {
     var idPaciente = this.cita.IdPaciente;
     var idCita = this.cita.IdCita;
     var accion = boton.Operacion;
+    var origenCita = this.cita.OrigenCita;
     let loader = await this.loading.create({
       cssClass: 'loading-vacio',
       showBackdrop: false,
@@ -131,14 +132,14 @@ export class ModalOperacionCitaPage implements OnInit {
       var retorno = null;
       if (!this.utiles.isAppOnDevice()) {
         //llamada web
-        this.agendar.getOperacionCita(idCita, idPaciente, accion).subscribe((response: any) => {
+        this.agendar.getOperacionCita(idCita, idPaciente, accion, origenCita).subscribe((response: any) => {
           this.procesarRespuesta(response, loader, accion);
         })
       }
       else {
         //llamada nativa
         //this.cargarDatosNative(mesConsultar, annoConsultar, loader);
-        this.agendar.getOperacionCitaNative(idCita, idPaciente, accion).then((responseData: any) => {
+        this.agendar.getOperacionCitaNative(idCita, idPaciente, accion, origenCita).then((responseData: any) => {
           var response = JSON.parse(responseData.data);
           this.procesarRespuesta(response, loader, accion);
         })

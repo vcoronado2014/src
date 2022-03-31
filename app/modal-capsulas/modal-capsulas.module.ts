@@ -6,26 +6,24 @@ import { IonicModule } from '@ionic/angular';
 
 import { RouterModule } from '@angular/router';
 
-import { OrdenesPage } from './ordenes.page';
-import { TextAvatarModule } from '../../directives/text-avatar/index'
+import { ModalCapsulasPage } from './modal-capsulas.page';
+import { MatButtonModule } from '@angular/material/button'
 import { ComponentsModule } from '../components/components.module';
-import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    TextAvatarModule,
-    MatIconModule,
+    MatButtonModule,
     ComponentsModule,
     RouterModule.forChild([
       {
         path: '',
-        component: OrdenesPage
+        component: ModalCapsulasPage
       }
     ])
   ],
-  declarations: [OrdenesPage]
+  declarations: [ModalCapsulasPage]
 })
-export class OrdenesPageModule {}
+export class ModalCapsulasPageModule {}

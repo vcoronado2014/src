@@ -112,6 +112,7 @@ $colors: (
 /* background global */
 .back-app{
   --background: #FAF9FA;
+  background: #FAF9FA;
 }
 /* esto es importante porque en el login se extiende el alto demasiado */
 .ion-page {
@@ -219,9 +220,28 @@ $colors: (
 //rgba(0,0,0,.38)
 .mat-form-field-appearance-outline.mat-form-field-disabled .mat-form-field-outline {
   color: rgba(0,0,0,.38);
+  background-color: #fff;
 }
 .mat-form-field-appearance-outline .mat-form-field-outline {
   color: rgba(0,0,0,.12);
+}
+.mat-form-field-appearance-fill.mat-form-field-disabled .mat-form-field-flex {
+  background-color: #fff;
+}
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  display: flex;
+  position: absolute;
+  top: 0.25em;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background-color: #fff;
+}
+.mat-form-field-appearance-fill .mat-form-field-flex {
+  border-radius: 4px 4px 0 0;
+  padding: 0.75em 0.75em 0 0.75em;
+  background: #fff;
 }
 /*card del calendario*/
 .mat-card {
@@ -269,7 +289,7 @@ ion-toolbar{
 .texto{
   color: #000000DE;
   letter-spacing: 0.1pt;
-  font-size: 14pt;
+  font-size: 16pt;
   font-weight: 500;
 }
 /* ordenes */
@@ -334,305 +354,20 @@ ion-toolbar{
     margin-left: 16px;
     margin-bottom: 16px;
 }
-  
-
-@media (prefers-color-scheme: dark) {
-  /*
-   * Dark Colors
-   * -------------------------------------------
-   */
-
-  body {
-    --ion-color-primary: #428cff;
-    --ion-color-primary-rgb: 66,140,255;
-    --ion-color-primary-contrast: #ffffff;
-    --ion-color-primary-contrast-rgb: 255,255,255;
-    --ion-color-primary-shade: #FF4081;
-    --ion-color-primary-tint: #5598ff;
-
-    --ion-color-secondary: #50c8ff;
-    --ion-color-secondary-rgb: 80,200,255;
-    --ion-color-secondary-contrast: #ffffff;
-    --ion-color-secondary-contrast-rgb: 255,255,255;
-    --ion-color-secondary-shade: #46b0e0;
-    --ion-color-secondary-tint: #62ceff;
-
-    --ion-color-tertiary: #6a64ff;
-    --ion-color-tertiary-rgb: 106,100,255;
-    --ion-color-tertiary-contrast: #ffffff;
-    --ion-color-tertiary-contrast-rgb: 255,255,255;
-    --ion-color-tertiary-shade: #5d58e0;
-    --ion-color-tertiary-tint: #7974ff;
-
-    --ion-color-success: #2fdf75;
-    --ion-color-success-rgb: 47,223,117;
-    --ion-color-success-contrast: #000000;
-    --ion-color-success-contrast-rgb: 0,0,0;
-    --ion-color-success-shade: #29c467;
-    --ion-color-success-tint: #44e283;
-
-    --ion-color-warning: #ffd534;
-    --ion-color-warning-rgb: 255,213,52;
-    --ion-color-warning-contrast: #000000;
-    --ion-color-warning-contrast-rgb: 0,0,0;
-    --ion-color-warning-shade: #e0bb2e;
-    --ion-color-warning-tint: #ffd948;
-
-    --ion-color-danger: #ff4961;
-    --ion-color-danger-rgb: 255,73,97;
-    --ion-color-danger-contrast: #ffffff;
-    --ion-color-danger-contrast-rgb: 255,255,255;
-    --ion-color-danger-shade: #e04055;
-    --ion-color-danger-tint: #ff5b71;
-
-    --ion-color-dark: #f4f5f8;
-    --ion-color-dark-rgb: 244,245,248;
-    --ion-color-dark-contrast: #000000;
-    --ion-color-dark-contrast-rgb: 0,0,0;
-    --ion-color-dark-shade: #d7d8da;
-    --ion-color-dark-tint: #f5f6f9;
-
-    --ion-color-medium: #989aa2;
-    --ion-color-medium-rgb: 152,154,162;
-    --ion-color-medium-contrast: #000000;
-    --ion-color-medium-contrast-rgb: 0,0,0;
-    --ion-color-medium-shade: #86888f;
-    --ion-color-medium-tint: #a2a4ab;
-
-    --ion-color-light: #222428;
-    --ion-color-light-rgb: 34,36,40;
-    --ion-color-light-contrast: #ffffff;
-    --ion-color-light-contrast-rgb: 255,255,255;
-    --ion-color-light-shade: #1e2023;
-    --ion-color-light-tint: #383a3e;
-  }
-  /* background global */
-  .back-app{
-    --background: #000000;
-  }
-  ion-toolbar{
-      --background: #000;
-      --color: #fff;
-  }
-
-  /* button material stroked */
-  .mat-button.mat-primary, .mat-icon-button.mat-primary, .mat-stroked-button.mat-primary {
-    border-style: solid;
-    border-width: 1px;
-    border-color: #ffffff;
-    color: #ffffff;
-  }
-  .mat-flat-button.mat-primary, .mat-raised-button.mat-primary, .mat-fab.mat-primary, .mat-mini-fab.mat-primary {
-    background-color: #673AB7;
-  }
-  .mat-flat-button.mat-accent, .mat-raised-button.mat-accent, .mat-fab.mat-accent, .mat-mini-fab.mat-accent {
-    background-color: #673AB7;
-  }
-  .mat-form-field-appearance-outline.mat-form-field-invalid.mat-form-field-invalid .mat-form-field-outline-thick {
-    color: #fff;
-  }
-  .mat-flat-button.mat-primary[disabled], .mat-flat-button.mat-accent[disabled], .mat-flat-button.mat-warn[disabled], .mat-flat-button[disabled][disabled], .mat-raised-button.mat-primary[disabled], .mat-raised-button.mat-accent[disabled], .mat-raised-button.mat-warn[disabled], .mat-raised-button[disabled][disabled], .mat-fab.mat-primary[disabled], .mat-fab.mat-accent[disabled], .mat-fab.mat-warn[disabled], .mat-fab[disabled][disabled], .mat-mini-fab.mat-primary[disabled], .mat-mini-fab.mat-accent[disabled], .mat-mini-fab.mat-warn[disabled], .mat-mini-fab[disabled][disabled] {
-    background-color: gray;
-    color: #fff;
-  }
-  .mat-input-element:disabled, .mat-form-field-type-mat-native-select.mat-form-field-disabled .mat-form-field-infix::after {
-    color: #fff;
-  }
-  .mat-form-field-appearance-outline.mat-form-field-disabled .mat-form-field-outline {
-    color: #fff;
-  }
-  .mat-form-field-appearance-outline .mat-form-field-outline {
-    color: #fff;
-  }
-  /* card del calendario */
-  .mat-card {
-    background: #1d1d1d;
-    color: #fff;
-  }
-  .mat-card-subtitle {
-    color: #fff;
-  }
-  .fecha-card {
-    font: normal normal normal 16px Roboto;
-    letter-spacing: 0.14px;
-    color: #fff;
-    opacity: 1;
-    padding-left: 16px;
-    margin-bottom: 8px;
-  }
-
-  .boton-sig {
-    width: 55%;
-    background-color:#673AB7;
-  }
-
-  .texto-1{
-    font-size: 0.875em;
-    color: #fff;
-    
-  }
-  /* ordenes */
-  .text-avatar-1{
-    color:#fff;
-    font-size: 16pt;
-    letter-spacing: 0.5pt;
-    margin-top: 12px;
+.label-info{
+  font-size: 10px;
+  color:#00000099;
 }
-.subtext-avatar-1{
-    color:#fff;
-    font-size: 14pt;
-    letter-spacing: 0.25pt;
-    margin-bottom: 12px;
+.detalle-label-info{
+  font-size: 16px;
+  color:#000000DE;
 }
-.text-solicitud{
-    color:#fff;
-    font-size: 12pt;
-    letter-spacing: 0.4pt;
-    margin-top: 12px;
-}
-/* pag resulttados */
-.subtext-avatar-1{
-  color:#fff;
-  font-size: 14pt;
-  letter-spacing: 0.25pt;
-  margin-bottom: 12px;
-}
-.text-h5{
-  font-size: 14pt;
-  color:#fff;
-  letter-spacing: 0.1pt;
+.titulo-evento{
+  font-family: 'Roboto';
+  font-size: 20px;
   font-weight: 500;
-  margin-top: 24px;
-  margin-left: 16px;
-  margin-bottom: 16px;
+  color: #000000DE;
+  letter-spacing: 0.15px;
 }
 
-  /* material input */
-  mat-label, mat-form-field, mat-error {
-    color:#fff;
-  }
-  .mat-error{
-    color:#fff;
-  }
-  .mat-form-field-label{
-    color: #fff;
-  }
-
-  /* menu */
-  .text-avatar {
-    font-family: "Roboto";
-    letter-spacing: 0.15px;
-    color: #fff;
-    font-size: 1em;
-    margin-bottom: 0;
-  }
-
-  .subtext-avatar {
-    font-family: "Roboto";
-    letter-spacing: 0.25px;
-    color: #fff;
-    font-size: 0.875em;
-    margin-bottom: 0;
-  }
-  .texto{
-    color: #fff;
-    letter-spacing: 0.1pt;
-    font-size: 14pt;
-    font-weight: 500;
-  }
-  /* home */
-  .no-tiene-antecedentes{
-    height: 70px;
-    width: 100%;
-    padding-top: 15px;
-    font-size: 16pt;
-    letter-spacing: 0.5pt;
-    color: #fff;
-    text-align: center;
-    background-color: #000;
-  }
-  .texto-item{
-    color: #fff;
-    font-size: 14px;
-  }
-
-
-  /*
-   * iOS Dark Theme
-   * -------------------------------------------
-   */
-
-  .ios body {
-    --ion-background-color: #000000;
-    --ion-background-color-rgb: 0,0,0;
-
-    --ion-text-color: #ffffff;
-    --ion-text-color-rgb: 255,255,255;
-
-    --ion-color-step-50: #0d0d0d;
-    --ion-color-step-100: #1a1a1a;
-    --ion-color-step-150: #262626;
-    --ion-color-step-200: #333333;
-    --ion-color-step-250: #404040;
-    --ion-color-step-300: #4d4d4d;
-    --ion-color-step-350: #595959;
-    --ion-color-step-400: #666666;
-    --ion-color-step-450: #737373;
-    --ion-color-step-500: #808080;
-    --ion-color-step-550: #8c8c8c;
-    --ion-color-step-600: #999999;
-    --ion-color-step-650: #a6a6a6;
-    --ion-color-step-700: #b3b3b3;
-    --ion-color-step-750: #bfbfbf;
-    --ion-color-step-800: #cccccc;
-    --ion-color-step-850: #d9d9d9;
-    --ion-color-step-900: #e6e6e6;
-    --ion-color-step-950: #f2f2f2;
-
-    --ion-toolbar-background: #0d0d0d;
-
-    --ion-item-background: #000000;
-  }
-
-
-  /*
-   * Material Design Dark Theme
-   * -------------------------------------------
-   */
-
-  .md body {
-    --ion-background-color: #121212;
-    --ion-background-color-rgb: 18,18,18;
-
-    --ion-text-color: #ffffff;
-    --ion-text-color-rgb: 255,255,255;
-
-    --ion-border-color: #222222;
-
-    --ion-color-step-50: #1e1e1e;
-    --ion-color-step-100: #2a2a2a;
-    --ion-color-step-150: #363636;
-    --ion-color-step-200: #414141;
-    --ion-color-step-250: #4d4d4d;
-    --ion-color-step-300: #595959;
-    --ion-color-step-350: #656565;
-    --ion-color-step-400: #717171;
-    --ion-color-step-450: #7d7d7d;
-    --ion-color-step-500: #898989;
-    --ion-color-step-550: #949494;
-    --ion-color-step-600: #a0a0a0;
-    --ion-color-step-650: #acacac;
-    --ion-color-step-700: #b8b8b8;
-    --ion-color-step-750: #c4c4c4;
-    --ion-color-step-800: #d0d0d0;
-    --ion-color-step-850: #dbdbdb;
-    --ion-color-step-900: #e7e7e7;
-    --ion-color-step-950: #f3f3f3;
-
-    --ion-item-background: #1e1e1e;
-
-    --ion-toolbar-background: #1f1f1f;
-
-    --ion-tab-bar-background: #1f1f1f;
-  }
-}
+  

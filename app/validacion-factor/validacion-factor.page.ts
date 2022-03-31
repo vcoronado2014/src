@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { NavController, ToastController, Platform, ModalController, LoadingController, MenuController, IonList } from '@ionic/angular';
+import { NavController, ToastController, Platform, ModalController, LoadingController, MenuController, IonList, IonContent } from '@ionic/angular';
 import { FormGroup, Validators, FormBuilder, FormControl, ValidatorFn } from '@angular/forms';
 //parametros
 import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
@@ -34,6 +34,7 @@ export class ValidacionFactorPage implements OnInit {
   @ViewChild('codigo4', { static: true }) codigoCuatroInput: MatInput;
   @ViewChild('codigo5', { static: true }) codigoCincoInput: MatInput;
   @ViewChild('codigo6', { static: true }) codigoSeisInput: MatInput;
+  @ViewChild('content', { static: true }) content: IonContent;
   //@ViewChild('codigo1', {static: true}) codigoUnoInput: ElementRef;
   constructor(
     public navCtrl: NavController,
@@ -62,8 +63,39 @@ export class ValidacionFactorPage implements OnInit {
       this.codigoUnoInput.focus();
     }, 1000);
   }
+  onKeyDown(event:any){
+    if (event.keyCode == 8){
+      if (event.currentTarget.name == "codigoDos") {
+        setTimeout(() => {
+          this.codigoUnoInput.focus();
+        }, 100);
+      }
+      if (event.currentTarget.name == "codigoTres") {
+        setTimeout(() => {
+          this.codigoDosInput.focus();
+        }, 100);
+      }
+      if (event.currentTarget.name == "codigoCuatro") {
+        setTimeout(() => {
+          this.codigoTresInput.focus();
+        }, 100);
+      }
+      if (event.currentTarget.name == "codigoCinco") {
+        setTimeout(() => {
+          this.codigoCuatroInput.focus();
+        }, 100);
+      }
+      if (event.currentTarget.name == "codigoSeis") {
+        setTimeout(() => {
+          this.codigoCincoInput.focus();
+        }, 100);
+      }
+    }
+    
+
+  }
   onKeypressEvent(event: any) {
-    //console.log(event.target.value);
+    console.log(event);
     if (event.currentTarget) {
       if (event.currentTarget.name == "codigoUno") {
         setTimeout(() => {

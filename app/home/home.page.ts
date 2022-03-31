@@ -1,6 +1,8 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { NavController, ToastController, Platform, ModalController, LoadingController, MenuController, IonSlides } from '@ionic/angular';
 import { NavigationExtras } from '@angular/router';
+//inap
+import { InAppBrowser, InAppBrowserOptions } from '@ionic-native/in-app-browser/ngx';
 
 import { ServicioUtiles } from '../../app/services/ServicioUtiles';
 import { ServicioAcceso } from '../../app/services/ServicioAcceso';
@@ -13,6 +15,7 @@ import { ServicioInfoUsuario } from '../../app/services/ServicioInfoUsuario';
 import { environment } from 'src/environments/environment';
 //modal
 import { ModalAlertasPage } from '../modal-alertas/modal-alertas.page';
+import { ModalCapsulasPage } from '../modal-capsulas/modal-capsulas.page';
 //moment
 import * as moment from 'moment';
 
@@ -77,6 +80,16 @@ export class HomePage implements OnInit {
     EsProduccion: false,
     Nombre: '',
   }
+  //acepta CONDICIONES
+  rutaAceptoCondiciones;
+  options: InAppBrowserOptions = {
+    location: 'yes',
+  };  
+
+
+  //para las capsulas educativas
+  usaCapsulasEducativas = false;
+
   constructor(
     public navCtrl: NavController,
     public toast: ToastController,
@@ -91,11 +104,15 @@ export class HomePage implements OnInit {
     public parametrosApp: ServicioParametrosApp,
     public servicioNotLocales: ServicioNotificacionesLocales,
     public servNotificaciones: ServicioNotificaciones,
-    public info: ServicioInfoUsuario
+    public info: ServicioInfoUsuario,
+    public inap: InAppBrowser,
   ) { }
 
   ngOnInit() {
     moment.locale('es');
+    this.usaCapsulasEducativas = this.parametrosApp.USA_CAPSULAS_EDUCATIVAS();
+    //obtención ruta acepto condiciones
+    this.rutaAceptoCondiciones = this.parametrosApp.URL_ACEPTA_CONDICIONES();
     this.infoApp = this.utiles.entregaInfoApp();
     //this.miColor = this.utiles.entregaMiColor();
     this.usuarioAps = JSON.parse(sessionStorage.UsuarioAps);
@@ -272,6 +289,7 @@ export class HomePage implements OnInit {
   openPage(pages) {
     if (pages.src != '#') {
       //this.navCtrl.navigateRoot(pages.src);
+      this.menu.close();
       this.navCtrl.navigateForward(pages.src);
     }
   }
@@ -622,13 +640,34 @@ export class HomePage implements OnInit {
         }
       }
     );
-    modal.onDidDismiss().then((data) => {
+    modal.onDidDismiss().then((data: any) => {
+      if (data) {
+        console.log(data);
+        if (data?.data){
+          this.obtenerNotificacionesApiLocales();
+        }
+      }
+    });
+    return await modal.present();
+  }
+  async goToCapsulas() {
+    const modal = await this.modalCtrl.create(
+      {
+        component: ModalCapsulasPage,
+      }
+    );
+    modal.onDidDismiss().then((data: any) => {
       if (data) {
         console.log(data);
       }
     });
     return await modal.present();
   }
+
+  openCapsulasPage() {
+    this.navCtrl.navigateRoot('modal-capsulas');
+  }
+
   mostrarNotificaciones(mostrar) {
     this.slides.slideTo(0);
     if (this.muestraNotificaciones == true && mostrar == true) {
@@ -649,4 +688,18 @@ export class HomePage implements OnInit {
       this.slides.slideTo(0);
     }
   }
+  abrirTerminos() {
+    if (this.rutaAceptoCondiciones != '#'){
+      //abrir en una ventana nueva
+      if (this.utiles.isAppOnDevice()){
+        let target = "_system";
+        this.inap.create(encodeURI(this.rutaAceptoCondiciones), target, this.options);
+      }
+      else {
+        //web
+        window.open(encodeURI(this.rutaAceptoCondiciones), "_system", "location=yes");
+      }
+    }
+  }
+
 }

@@ -20,7 +20,7 @@
           <mat-label>Correo electrónico</mat-label>
           <input matInput placeholder="Correo electrónico" formControlName="correo" name="correo" required>
           <mat-error *ngIf="f.correo.errors && f.correo.errors.required">Correo requerido</mat-error>
-          <mat-error [hidden]="!(f.correo.errors && f.correo.errors.pattern)">Correo inválido</mat-error>
+          <mat-error [hidden]="!(f.correo.errors && f.correo.errors.email)">Correo inválido</mat-error>
         </mat-form-field>
       </ion-row>
       <ion-row class="mt-32">

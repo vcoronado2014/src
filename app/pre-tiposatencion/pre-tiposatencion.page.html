@@ -1,36 +1,58 @@
-<ion-header>
+<ion-header class="back-app">
   <ion-toolbar mode="md">
     <ion-buttons slot="start">
       <ion-back-button (click)="irAHome()" defaultHref="/calendario" class="fcw"></ion-back-button>
     </ion-buttons>
     <ion-title class="fcw">Reserva de horas</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <mat-form-field appearance="fill" class="field-tipo-atencion-prof">
+      <mat-label>Profesional</mat-label>
+      <input type="text" class="ion-text-capitalize" [disabled]="disabledCombo" placeholder="Profesional"
+        aria-label="Number" matInput [(ngModel)]="comboSeleccionadoProf" (keyup)="filterList($event)"
+        (ngModelChange)="changeProfesional()" [matAutocomplete]="auto">
+      <button mat-button *ngIf="comboSeleccionadoProf" matSuffix mat-icon-button aria-label="Clear"
+        (click)="limpiarProfesional()" [disabled]="disabledCombo">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+        <mat-option *ngFor="let option of profesionalesFiltrados" [value]="option.Texto">
+          {{option.Texto}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="field-tipo-atencion-tda">
+      <mat-label>Tipo atención</mat-label>
+      <mat-select [disabled]="disabledCombo" [(ngModel)]="comboSeleccionado">
+        <mat-option *ngFor="let tipo of tiposAtencion" [value]="tipo.Texto">{{tipo.Texto}}</mat-option>
+      </mat-select>
+    </mat-form-field>    
+  </ion-toolbar>
+  <ion-item lines="none" style="margin-top: 8px;" [hidden]="mostrarChips()">
+    <ion-chip *ngIf="comboSeleccionadoProf != ''">
+      <ion-label class="ion-text-capitalize">{{comboSeleccionadoProf}}</ion-label>
+    </ion-chip>
+    <ion-chip *ngIf="comboSeleccionado != 'Selecciona...'">
+      <ion-label class="ion-text-capitalize">{{comboSeleccionado}}</ion-label>
+    </ion-chip>
+  </ion-item>
+  <ion-item>
+    <a mat-raised-button style="margin:8px;" 
+    (click)="btnLimpiarFiltros()" slot="end">LIMPIAR</a>
+    <a mat-raised-button color="primary" slot="end" (click)="buscarCitasFiltro($event)">BUSCAR</a>
+  </ion-item>
+  <ion-item lines="none" style="padding-top: 15px;">
+    <app-avatar [style]="false" [urlImagen] = "usuarioAps.UrlImagen" [nombreCompleto]="usuarioAps.Nombres + ' ' + usuarioAps.ApellidoPaterno + ' ' + usuarioAps.ApellidoMaterno" [parentezco]="usuarioAps.Parentezco.Nombre"></app-avatar>
+  </ion-item>
 </ion-header>
 
 <ion-content class="back-app">
-  <!-- combo de reserva de horas -->
-    <mat-form-field appearance="outline" class="field-tipo-atencion">
-      <mat-label>Tipo atención</mat-label>
-      <mat-select [disabled]="disabledCombo" [(ngModel)]="comboSeleccionado" (selectionChange)="buscarCitas($event)">
-        <mat-option *ngFor="let tipo of tiposAtencion" [value]="tipo.Texto">{{tipo.Texto}}</mat-option>
-      </mat-select>
-    </mat-form-field>
-  
-  <!-- progress bar -->
-<!--   <div class="centrado" [hidden]="!mostrarProgress">
-    <ion-label class="titulo-item-2">Buscando citas</ion-label>
-    <ion-progress-bar type="indeterminate" class="ion-margin-top"></ion-progress-bar>
-  </div> -->
   <app-progress [mostrar]="mostrarProgress" titulo="Buscando citas"></app-progress>
-  <!-- progress bar buscando tipos de atencion  -->
-<!--   <div class="centradoDisp" [hidden]="!mostrarProgressDisp">
-    <ion-label class="titulo-item-2">Buscando tipos atención</ion-label>
-    <ion-progress-bar type="indeterminate" class="ion-margin-top"></ion-progress-bar>
-  </div> -->
   <app-progress [mostrar]="mostrarProgressDisp" titulo="Buscando tipos atención"></app-progress>
   <!-- resultados -->
   <div *ngIf="encontroCitas">
-    <div class="ion-padding-start ion-padding-end">
+    <div class="ion-padding-start ion-padding-end" style="padding-top: 12px;">
       <h6 class="titulo-item">
         Citas más próximas
       </h6>
@@ -40,7 +62,7 @@
     </div>
     <div class="ion-padding">
       <ion-grid class="ion-no-padding" *ngFor="let cita of citasFiltradas">
-        <ion-row class="ion-padding-bottom ion-padding-top linea-item" *ngIf="cita.indice <= 3" (click)="citaSelected(cita)">
+        <ion-row class="ion-padding-bottom ion-padding-top linea-item" *ngIf="cita.indice <= 6" (click)="citaSelected(cita)">
           <ion-col size="9" class="texto-item ion-text-capitalize">
             {{cita.Servicio.Nombre}}
           </ion-col>
@@ -50,29 +72,44 @@
           <ion-col size="12" class="titulo-fecha" class="ion-text-capitalize">
             {{transformDate(cita.FechaHoraInicio, 'dddd DD MMMM YYYY')}}
           </ion-col>
-          <ion-col class="texto-item ion-text-capitalize">
-            {{cita.NombresMedico.toLowerCase()}} {{cita.ApellidosMedico.toLowerCase()}}
+
+          <ion-col size="8" class="texto-item ion-text-capitalize" *ngIf="comboSeleccionado != 'Selecciona...' && comboSeleccionadoProf == ''">
+            <strong>{{cita.NombresMedico.toLowerCase()}} {{cita.ApellidosMedico.toLowerCase()}}</strong> 
           </ion-col>
+          <ion-col size="8" class="texto-item ion-text-capitalize" *ngIf="comboSeleccionadoProf != ''">
+            {{cita.NombresMedico.toLowerCase()}} {{cita.ApellidosMedico.toLowerCase()}}
+          </ion-col>  
+                 
+          <ion-col size="4" class="texto-item ion-text-capitalize" *ngIf="comboSeleccionado == 'Selecciona...'">
+            <strong>{{cita.TipoAtencion.toLowerCase()}}</strong>
+          </ion-col>
+
+          <ion-col size="8" class="texto-item ion-text-capitalize">
+            Sector: {{cita.Sector.toLowerCase()}}
+          </ion-col> 
         </ion-row>
       </ion-grid>
     </div>
     <!--pie de búsqueda -->
-    <div class="pl-24 pr-24">
+<!--     <div class="pl-24 pr-24">
       <p class="ion-text-wrap texto-item ion-text-left">
         Si no te sirven los cupos propuesto prueba con la búsqueda avanzada.
       </p>
-    </div>
+    </div> -->
     <!-- boton busqueda avanzada -->
-    <div class="ion-padding-top">
+<!--     <div class="ion-padding-top">
       <ion-button expand="full" fill="clear" (click)="openBusquedaAvanzada()">BÚSQUEDA AVANZADA</ion-button>
-    </div>
+    </div> -->
 
   </div>
   <div *ngIf="!encontroCitas && mostrarProgress == false && citasFiltradas.length > 0" class="ion-padding-start ion-padding-end centrado">
     <ion-label class="ion-text-center no-encontrado">No existen cupos con los criterios ingresados</ion-label>
   </div>
 
-
-  
-
 </ion-content>
+<ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="mostrarProgress == false && mostrarProgressDisp == false && encontroCitas" style="min-height: 48px;">
+  <ion-button color="secondary" (click)="openBusquedaAvanzada()" shape="round" style="min-height: 48px;">
+    <ion-icon slot="start" name="calendar-outline" style="font-size: 24px;margin-right: 12px;"></ion-icon>
+    <span class="botonReservar" style="font-size: 1em;">BÚSQUEDA AVANZADA</span>
+  </ion-button>
+</ion-fab>

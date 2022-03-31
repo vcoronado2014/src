@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header class="back-app">
   <ion-toolbar mode="md">
     <ion-buttons slot="start">
       <!-- <ion-back-button defaultHref="/home" class="fcw"></ion-back-button> -->
@@ -6,14 +6,17 @@
     </ion-buttons>
     <ion-title class="fcw">Calendario</ion-title>
   </ion-toolbar>
-  <ion-toolbar color="light">
-    <mat-form-field appearance="outline" class="field-tipo-atencion-calendar">
+  <ion-toolbar>
+    <mat-form-field appearance="fill" class="field-tipo-atencion-calendar">
       <mat-label>Tipo evento</mat-label>
       <mat-select [disabled]="estaCargando" [(ngModel)]="filtroDefecto" (selectionChange)="filtrarCategorias($event)">
         <mat-option *ngFor="let tipo of categoriasEventos" [value]="tipo">{{tipo}}</mat-option>
       </mat-select>
     </mat-form-field>
   </ion-toolbar>
+  <ion-item lines="none" style="padding-top: 15px;" [hidden]="estaCargando">
+    <app-avatar [style]="false" [urlImagen] = "usuarioAps.UrlImagen" [nombreCompleto]="usuarioAps.Nombres + ' ' + usuarioAps.ApellidoPaterno + ' ' + usuarioAps.ApellidoMaterno" [parentezco]="usuarioAps.Parentezco.Nombre"></app-avatar>
+  </ion-item>
 </ion-header>
 
 <ion-content class="back-app" style="--padding-bottom: 50px !important;" #content>
@@ -61,9 +64,10 @@
         <mat-card *ngFor="let evento of item.Eventos" color="light" style="margin-bottom: 8px;" id="myListCard" [hidden]="evento.DetalleEventoMes.Mostrar == false">
           <mat-card-header (click)="goToDetalleCita(evento)">
             
-              <mat-card-subtitle *ngIf="evento.DetalleEventoMes.Titulo != 'Vacuna administrada'" class="hora">{{evento.HoraInicioFin}}</mat-card-subtitle>
-              <mat-card-title>{{evento.DetalleEventoMes.Titulo}}</mat-card-title>
-              <mat-card-subtitle class="ion-text-capitalize">{{evento.DetalleEventoMes.NombrePaciente.toLowerCase()}}</mat-card-subtitle>
+              <mat-card-subtitle *ngIf="evento.DetalleEventoMes.Titulo != 'Vacuna administrada' || evento.HoraInicioFin == '00:00'" class="hora">{{evento.HoraInicioFin}}</mat-card-subtitle>
+              <mat-card-title class="ion-text-capitalize">{{evento.DetalleEventoMes.DescripcionPrincipal.toLowerCase()}}</mat-card-title>
+              <!-- <mat-card-subtitle class="ion-text-capitalize">{{evento.DetalleEventoMes.NombrePaciente.toLowerCase()}}</mat-card-subtitle> -->
+              <mat-card-subtitle class="ion-text-capitalize">{{evento.DetalleEventoMes.Titulo}}</mat-card-subtitle>
             
             <div class="img-card">
               <img class="example-header-image" src="./assets/imgs_svg/{{evento.Imagen}}">
@@ -95,7 +99,7 @@
 <!-- este es el fab para abrir reservar horas -->
 <ion-fab vertical="bottom" horizontal="end" slot="fixed" [hidden]="estaCargando" style="min-height: 48px;">
   <ion-button color="secondary" (click)="openReservarHoraPage()" shape="round" style="min-height: 48px;">
-    <ion-icon slot="start" name="add-outline" style="font-size: 24px;margin-right: 12px;"></ion-icon>
+    <ion-icon slot="start" name="calendar-outline" style="font-size: 24px;margin-right: 12px;"></ion-icon>
     <span class="botonReservar" style="font-size: 1em;">RESERVAR HORA</span>
   </ion-button>
 </ion-fab>

@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header class="back-app">
     <ion-toolbar mode="md">
       <ion-buttons slot="start">
        <!--  <ion-back-button defaultHref="/pre-tiposatencion" class="fcw"></ion-back-button> -->
@@ -6,18 +6,115 @@
       </ion-buttons>
       <ion-title class="fcw">Búsqueda avanzada</ion-title>
     </ion-toolbar>
+
+    <ion-toolbar>
+      <mat-form-field appearance="fill" class="field-tipo-atencion-prof">
+        <mat-label>Profesional</mat-label>
+        <input type="text" class="ion-text-capitalize" [disabled]="disabledCombo" placeholder="Profesional"
+          aria-label="Number" matInput [(ngModel)]="comboSeleccionadoProf" (keyup)="filterList($event)"
+          (ngModelChange)="changeProfesional()" [matAutocomplete]="auto">
+        <button mat-button *ngIf="comboSeleccionadoProf" matSuffix mat-icon-button aria-label="Clear"
+          (click)="limpiarProfesional()" [disabled]="disabledCombo">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+          <mat-option *ngFor="let option of profesionalesFiltrados" [value]="option.Texto">
+            {{option.Texto}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="field-tipo-atencion-tda">
+        <mat-label>Tipo atención</mat-label>
+        <mat-select [disabled]="disabledCombo" [(ngModel)]="comboSeleccionado">
+          <mat-option *ngFor="let tipo of tiposAtencion" [value]="tipo.Texto">{{tipo.Texto}}</mat-option>
+        </mat-select>
+      </mat-form-field>  
+      <!-- aca hay que poner los demas controles de busqueda -->
+
+      <!-- fecha inicio -->
+      <ion-item class="ion-padding-start ion-padding-end">
+        <ion-label>Fecha de inicio</ion-label>
+        <ion-datetime (ionChange)="changeFechaInicio($event)"
+          monthNames="enero, febrero, marzo, abril, mayo, junio, julio, agosto, septiembre, octubre, noviembre, diciembre"
+          monthShortNames="ene, feb, mar, abr, may, jun, jul, ago, sep, oct, nov, dic"
+          dayNames="lunes, martes, miércoles, jueves, viernes, sábado, domingo"
+          dayShortNames="lun, mar, mié, jue, vie, sáb, dom" displayFormat="MMMM, DD YYYY" doneText="Aceptar"
+          cancelText="Cancelar" [min]="fechaInicio" [max]="fechaTermino" [value]="fechaInicio">
+        </ion-datetime>
+      </ion-item>
+
+    <!-- horario -->
+    <ion-item class="ion-padding-start ion-padding-end">
+      <ion-label>Horario</ion-label>
+      <ion-select value="0" (ionChange)="changeHorario($event)" okText="Aceptar" cancelText="Cancelar">
+        <ion-select-option value="0">Todo el día</ion-select-option>
+        <ion-select-option value="1">Mañana</ion-select-option>
+        <ion-select-option value="2">Tarde</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- dias -->
+    <ion-item class="ion-padding-start ion-padding-end">
+      <ion-label>Días de la semana</ion-label>
+      <ion-select (ionChange)="changeDia($event)" multiple="true" [value]="['1','2','3','4','5','6','7']" okText="Aceptar" cancelText="Cancelar">
+        <ion-select-option value="1">Lu</ion-select-option>
+        <ion-select-option value="2">Ma</ion-select-option>
+        <ion-select-option value="3">Mi</ion-select-option>
+        <ion-select-option value="4">Ju</ion-select-option>
+        <ion-select-option value="5">Vi</ion-select-option>
+        <ion-select-option value="6">Sá</ion-select-option>
+        <ion-select-option value="7">Do</ion-select-option>
+      </ion-select>
+    </ion-item>    
+    
+    </ion-toolbar>
+
+    <!-- los chips -->
+    <ion-item lines="none" style="margin-top: 8px;" [hidden]="mostrarChips()">
+      <ion-row>
+        <ion-chip *ngIf="comboSeleccionadoProf != ''">
+          <ion-label class="ion-text-capitalize">{{comboSeleccionadoProf}}</ion-label>
+        </ion-chip>
+        <ion-chip *ngIf="comboSeleccionado != 'Selecciona...'">
+          <ion-label class="ion-text-capitalize">{{comboSeleccionado}}</ion-label>
+        </ion-chip>
+      </ion-row>
+      <ion-row>
+        <ion-chip *ngIf="comboSeleccionadoFecha != ''">
+          <ion-label class="ion-text-capitalize">{{comboSeleccionadoFecha}}</ion-label>
+        </ion-chip>
+      
+        <ion-chip *ngIf="comboSeleccionadoHorario != ''">
+          <ion-label class="ion-text-capitalize">{{comboSeleccionadoHorario}}</ion-label>
+        </ion-chip>
+      
+        <ion-chip *ngIf="comboSeleccionadoDias != ''">
+          <ion-label class="ion-text-capitalize">{{comboSeleccionadoDias}}</ion-label>
+        </ion-chip>
+      </ion-row>
+    </ion-item>
+    <ion-item>
+      <a mat-raised-button style="margin:8px;" 
+      (click)="limpiarFiltros()" slot="end">LIMPIAR</a>
+      <a mat-raised-button color="primary" slot="end" (click)="buscarCitasFiltro($event)">BUSCAR</a>
+    </ion-item>
+
+    <ion-item lines="none" style="padding-top: 15px;">
+      <app-avatar [style]="false" [urlImagen] = "usuarioAps.UrlImagen" [nombreCompleto]="usuarioAps.Nombres + ' ' + usuarioAps.ApellidoPaterno + ' ' + usuarioAps.ApellidoMaterno" [parentezco]="usuarioAps.Parentezco.Nombre"></app-avatar>
+    </ion-item>    
   </ion-header>
   
   <ion-content class="back-app">
-    <mat-form-field appearance="outline" class="field-tipo-atencion">
+<!--     <mat-form-field appearance="outline" class="field-tipo-atencion">
       <mat-label>Tipo atención</mat-label>
       <mat-select [disabled]="disabledCombo" [(ngModel)]="comboSeleccionado" (selectionChange)="buscarCitas($event)">
         <mat-option *ngFor="let tipo of tiposAtencion" [value]="tipo.Texto">{{tipo.Texto}}</mat-option>
       </mat-select>
-    </mat-form-field>
+    </mat-form-field> -->
 
     <!-- fecha inicio -->
-    <ion-item class="ion-padding-start ion-padding-end">
+<!--     <ion-item class="ion-padding-start ion-padding-end">
       <ion-label>Fecha de inicio</ion-label>
       <ion-datetime 
         (ionChange)="changeFechaInicio($event)"
@@ -32,18 +129,18 @@
         [max]="fechaTermino" 
         [value]="fechaInicio">
       </ion-datetime>
-    </ion-item>
+    </ion-item> -->
     <!-- horario -->
-    <ion-item class="ion-padding-start ion-padding-end">
+<!--     <ion-item class="ion-padding-start ion-padding-end">
       <ion-label>Horario</ion-label>
       <ion-select value="0" (ionChange)="changeHorario($event)" okText="Aceptar" cancelText="Cancelar">
         <ion-select-option value="0">Todo el día</ion-select-option>
         <ion-select-option value="1">Mañana</ion-select-option>
         <ion-select-option value="2">Tarde</ion-select-option>
       </ion-select>
-    </ion-item>
+    </ion-item> -->
     <!-- dias -->
-    <ion-item class="ion-padding-start ion-padding-end">
+<!--     <ion-item class="ion-padding-start ion-padding-end">
       <ion-label>Días de la semana</ion-label>
       <ion-select (ionChange)="changeDia($event)" multiple="true" [value]="['1','2','3','4','5','6','7']" okText="Aceptar" cancelText="Cancelar">
         <ion-select-option value="1">Lu</ion-select-option>
@@ -54,9 +151,9 @@
         <ion-select-option value="6">Sá</ion-select-option>
         <ion-select-option value="7">Do</ion-select-option>
       </ion-select>
-    </ion-item>
+    </ion-item> -->
     <!-- boton buscar -->
-    <ion-button class="mt-32 ion-padding-start" color="primary" (click)="buscarCitas($event)">BUSCAR</ion-button>
+    <!-- <ion-button class="mt-32 ion-padding-start" color="primary" (click)="buscarCitas($event)">BUSCAR</ion-button> -->
 
     <app-progress [mostrar]="mostrarProgress" titulo="Buscando citas"></app-progress>
     <!-- resultados -->
@@ -73,9 +170,24 @@
             <ion-col size="12" class="titulo-fecha" class="ion-text-capitalize">
               {{transformDate(cita.FechaHoraInicio, 'dddd DD MMMM YYYY')}}
             </ion-col>
-            <ion-col class="texto-item ion-text-capitalize">
+ <!--            <ion-col class="texto-item ion-text-capitalize">
               {{cita.NombresMedico.toLowerCase()}} {{cita.ApellidosMedico.toLowerCase()}}
+            </ion-col> -->
+
+            <ion-col size="8" class="texto-item ion-text-capitalize" *ngIf="comboSeleccionado != 'Selecciona...' && comboSeleccionadoProf == ''">
+              <strong>{{cita.NombresMedico.toLowerCase()}} {{cita.ApellidosMedico.toLowerCase()}}</strong> 
             </ion-col>
+            <ion-col size="8" class="texto-item ion-text-capitalize" *ngIf="comboSeleccionadoProf != ''">
+              {{cita.NombresMedico.toLowerCase()}} {{cita.ApellidosMedico.toLowerCase()}}
+            </ion-col>  
+                   
+            <ion-col size="4" class="texto-item ion-text-capitalize" *ngIf="comboSeleccionado == 'Selecciona...'">
+              <strong>{{cita.TipoAtencion.toLowerCase()}}</strong>
+            </ion-col>
+  
+            <ion-col size="8" class="texto-item ion-text-capitalize">
+              Sector: {{cita.Sector.toLowerCase()}}
+            </ion-col> 
           </ion-row>
         </ion-grid>
         <!-- pruebas con infinite scroll -->

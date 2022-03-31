@@ -27,6 +27,13 @@
           <p *ngIf="p.parrafo">{{p.parrafo}}</p>
         </ion-label>
        </ion-item>
+       <!-- términos y condiciones -->
+       <ion-item button lines="none" (click)="abrirTerminos()" class="listItem">
+        <ion-icon name="link" slot="start"></ion-icon>
+        <ion-label>
+          Términos y condiciones
+        </ion-label>
+      </ion-item>       
        <!-- ajustes de la cuenta -->
        <ion-item button lines="none" (click)="abrirEditar()" class="listItem">
          <ion-icon name="heart" slot="start"></ion-icon>
@@ -85,3 +92,23 @@
      </ion-row>
    </ion-grid>
  </ion-content>
+ <ion-footer class="ion-no-border" *ngIf="usaCapsulasEducativas">
+   <ion-grid class="ion-no-padding capsulas">
+     <ion-row class="ion-no-padding">
+      <ion-col class="ion-no-padding ion-padding-start">
+        <img src="./assets/img/logo-udla.png" style="max-height: 50px;">
+      </ion-col>
+      <ion-col class="ion-no-padding ion-padding-top">
+        <h5 class="h5-cpasula">Cápsulas Educativas</h5>
+      </ion-col>
+      <ion-col size="3" class="ion-no-padding" style="margin-top: 8px; padding-right: 5px;">
+        <button color="primary" mat-stroked-button 
+        (click)="openCapsulasPage()" style="float: right;">ACCEDER</button>
+      </ion-col>
+     </ion-row>
+   </ion-grid>
+<!--   <ion-toolbar class="capsulas">
+    <img src="./assets/img/logo-udla.png" style="max-height: 50px;">
+    <ion-title>Cápsulas Educativas</ion-title>
+  </ion-toolbar> -->
+</ion-footer>

@@ -107,5 +107,54 @@ export class ServicioAcceso{
         return this.loggedIn;
     }
 
+    //nuevos metodos para borrar registro
+    borrarRegistro(idRegistro){
+        let userName = localStorage.getItem('NOMBRE_USUARIO_LOGUEADO') && localStorage.getItem('NOMBRE_USUARIO_LOGUEADO') != '' ? localStorage.getItem('NOMBRE_USUARIO_LOGUEADO') : '';
+        let userPass = localStorage.getItem('PASS_USUARIO_LOGUEADO') && localStorage.getItem('PASS_USUARIO_LOGUEADO') != '' ? localStorage.getItem('PASS_USUARIO_LOGUEADO') : '';
+        
+        let objetoRegistro = {
+            IdRegistro : idRegistro.toString(),
+            UserName: userName,
+            Password: userPass
+        };
+
+        const body = JSON.stringify(objetoRegistro);
+
+        let url = environment.API_ENDPOINT + 'AccionesRegistro';
+        let httpHeaders = new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        });
+        httpHeaders.set('Access-Control-Allow-Origin', '*');
+        httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+        httpHeaders.set("Access-Control-Allow-Headers", "*");
+    
+        let options = { headers: httpHeaders };
+    
+        let data = this.httpClient.post(url, body, options);
+        return data;
+
+
+    }
+    borrarRegistroNative(idRegistro){
+        let userName = localStorage.getItem('NOMBRE_USUARIO_LOGUEADO') && localStorage.getItem('NOMBRE_USUARIO_LOGUEADO') != '' ? localStorage.getItem('NOMBRE_USUARIO_LOGUEADO') : '';
+        let userPass = localStorage.getItem('PASS_USUARIO_LOGUEADO') && localStorage.getItem('PASS_USUARIO_LOGUEADO') != '' ? localStorage.getItem('PASS_USUARIO_LOGUEADO') : '';
+
+        let objetoRegistro = {
+            IdRegistro : idRegistro.toString(),
+            UserName: userName,
+            Password: userPass
+        };
+        const body = objetoRegistro;
+    
+    
+        let url = environment.API_ENDPOINT + 'AccionesRegistro';
+        this.http.setDataSerializer('json');
+    
+    
+        return this.http.post(url, body, {});
+
+    }
+
 
 }

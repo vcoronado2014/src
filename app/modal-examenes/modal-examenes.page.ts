@@ -88,7 +88,8 @@ export class ModalExamenesPage implements OnInit {
       await loader.present().then(async () => {
         if (!this.utiles.isAppOnDevice()) {
           //llamada web
-          this.lab.getExamenes(this.oalaId).subscribe((response: any) => {
+          //this.lab.getExamenes(this.oalaId).subscribe((response: any) => {
+          this.lab.getExamenesApi(this.oalaId).subscribe((response: any) => {
             this.porocesarLista(response, loader);
           }, error => {
             console.log(error.message);
@@ -100,7 +101,8 @@ export class ModalExamenesPage implements OnInit {
         }
         else {
           //llamada nativa
-          this.lab.getExamenesNative(this.oalaId).then((response: any) => {
+          //this.lab.getExamenesNative(this.oalaId).then((response: any) => {
+          this.lab.getExamenesApiNative(this.oalaId).then((response: any) => {
             this.porocesarLista(JSON.parse(response.data), loader);
           }).catch(error=>{
             console.log(error.message);

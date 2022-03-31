@@ -4,6 +4,7 @@ import { HTTP } from '@ionic-native/http/ngx';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { ServicioUtiles } from './ServicioUtiles';
+import { ServicioParametrosApp } from './ServicioParametrosApp';
 import * as moment from 'moment';
 import { forkJoin } from 'rxjs';
 //import { map } from 'jquery';
@@ -29,6 +30,7 @@ export class ServicioCitas{
         private http: HTTP,
         private httpClient: HttpClient,
         private utiles: ServicioUtiles,
+        private parametros: ServicioParametrosApp
       ){ }
 
     entregaPorMes(uspId, idRyf, nodId, numeroMes, annoConsulta) {
@@ -679,13 +681,25 @@ export class ServicioCitas{
     //cancelled cancelar cita
     //noshow informar que el paciente no asistió a la cita
     //fulfilled informar que la cita se llevo a cabo
-    getOperacionCita(idCita, idPaciente, operacion){
-        let urlCorta = environment.API_ENDPOINT + 'ReservarCita' +'?idAppoinment=' + idCita + '&patient=' + idPaciente + '&operacion=' + operacion;
+    getOperacionCita(idCita, idPaciente, operacion, origenCita){
+        //DEBEMOS OBTENER UN PAR DE VALORES REQUERIDOS PARA ENVIAR LOS MENSAJES
+        //DE CORREOS A LOS USUARIOS
+        let enviaCitaExterna = this.parametros.ENVIA_CORREO_CITAS_EXTERNAS();
+        let nodId = this.utiles.entregaNodId();
+
+        let urlCorta = environment.API_ENDPOINT + 'ReservarCita' +'?idAppoinment=' + idCita + '&patient=' + idPaciente + '&operacion=' + operacion + '&origenCita=' + origenCita
+        + '&enviaCitaExterna=' + enviaCitaExterna + '&nodId=' + nodId;
         let data = this.httpClient.get(urlCorta,{});
         return data;
     }
-    getOperacionCitaNative(idCita, idPaciente, operacion){
-        let urlCorta = environment.API_ENDPOINT + 'ReservarCita' +'?idAppoinment=' + idCita + '&patient=' + idPaciente + '&operacion=' + operacion;
+    getOperacionCitaNative(idCita, idPaciente, operacion, origenCita){
+        //DEBEMOS OBTENER UN PAR DE VALORES REQUERIDOS PARA ENVIAR LOS MENSAJES
+        //DE CORREOS A LOS USUARIOS
+        let enviaCitaExterna = this.parametros.ENVIA_CORREO_CITAS_EXTERNAS();
+        let nodId = this.utiles.entregaNodId();
+
+        let urlCorta = environment.API_ENDPOINT + 'ReservarCita' +'?idAppoinment=' + idCita + '&patient=' + idPaciente + '&operacion=' + operacion + '&origenCita=' + origenCita
+            + '&enviaCitaExterna=' + enviaCitaExterna + '&nodId=' + nodId;
         let data = this.http.get(urlCorta, {}, {});
         return data;
     }
@@ -977,4 +991,40 @@ export class ServicioCitas{
 
         return this.http.post(url, body, {});
     }
+
+    postColaMensaje(colaId, colaVisto) {
+        const body = JSON.stringify({
+            Id: colaId.toString(),
+            Visto: colaVisto.toString()
+        });
+
+        let url = environment.API_ENDPOINT + 'Notificacion';
+        let httpHeaders = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+        });
+        httpHeaders.set('Access-Control-Allow-Origin', '*');
+        httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+        httpHeaders.set("Access-Control-Allow-Headers", "*");
+
+        let options = { headers: httpHeaders };
+
+        let data = this.httpClient.post(url, body, options);
+        return data;
+    }
+    postColaMensajeNative(colaId, colaVisto) {
+        //realizar la llamada post nativa
+        const headers = new Headers;
+        const body =
+        {
+            "Id": colaId.toString(),
+            "Visto": colaVisto.toString()
+        };
+
+        let url = environment.API_ENDPOINT + 'Notificacion';
+        this.http.setDataSerializer('json');
+
+
+        return this.http.post(url, body, {});
+    }    
 }

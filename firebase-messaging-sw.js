@@ -24,9 +24,10 @@ function initializeFirebase() {
 messaging.onBackgroundMessage(function(payload) {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
     // Customize notification here
-    const notificationTitle = 'Background Message Title';
+    var datos = payload;
+    const notificationTitle = datos?.notification?.title;
     const notificationOptions = {
-      body: 'Background Message body.',
+      body: datos?.notification?.body,
       icon: '/firebase-logo.png'
     };
     //presentToast(notificationTitle, notificationOptions);

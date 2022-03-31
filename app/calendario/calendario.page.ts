@@ -948,11 +948,13 @@ export class CalendarioPage implements OnInit {
 
           if (this.citasVertical[s].Eventos[t].DetalleEventoMes.Subtitulo == 'Próxima Cita') {
             this.citasVertical[s].Eventos[t].Imagen = 'agendar_citas.svg';
-            this.citasVertical[s].Eventos[t].DetalleEventoMes.Titulo = 'Cita programada';
+            //this.citasVertical[s].Eventos[t].DetalleEventoMes.Titulo = 'Cita programada';
+            this.citasVertical[s].Eventos[t].DetalleEventoMes.Titulo = 'Próxima cita';
           }
           if (this.citasVertical[s].Eventos[t].DetalleEventoMes.Subtitulo == 'Próxima Cita Web') {
             this.citasVertical[s].Eventos[t].Imagen = 'agendar_citas.svg';
-            this.citasVertical[s].Eventos[t].DetalleEventoMes.Titulo = 'Cita programada web';
+            //this.citasVertical[s].Eventos[t].DetalleEventoMes.Titulo = 'Cita programada web';
+            this.citasVertical[s].Eventos[t].DetalleEventoMes.Titulo = 'Próxima cita';
           }
           if (this.citasVertical[s].Eventos[t].DetalleEventoMes.Subtitulo == 'Atención Realizada') {
             this.citasVertical[s].Eventos[t].Imagen = 'atenciones.svg';
@@ -1038,11 +1040,13 @@ export class CalendarioPage implements OnInit {
 
           if (this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Subtitulo == 'Próxima Cita') {
             this.citasVerticalTodas[s].Eventos[t].Imagen = 'agendar_citas.svg';
-            this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo = 'Cita programada';
+            //this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo = 'Cita programada';
+            this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo = 'Próxima cita';
           }
           if (this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Subtitulo == 'Próxima Cita Web') {
             this.citasVerticalTodas[s].Eventos[t].Imagen = 'agendar_citas.svg';
-            this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo = 'Cita programada web';
+            //this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo = 'Cita programada web';
+            this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo = 'Próxima cita';
           }
           if (this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Subtitulo == 'Atención Realizada') {
             this.citasVerticalTodas[s].Eventos[t].Imagen = 'atenciones.svg';
@@ -1385,6 +1389,8 @@ agregarUnElemento(fechaHoy){
       var idPaciente = usuarioCita.Rut;
       var idCita = evento.DetalleEventoMes.IdElemento;
       var accion = boton.Operacion;
+      //agregado 
+      var origenCita = evento.DetalleEventoMes.OrigenCita;
       let loader = await this.loading.create({
         cssClass: 'loading-vacio',
         showBackdrop: false,
@@ -1398,13 +1404,13 @@ agregarUnElemento(fechaHoy){
         var retorno = null;
         if (!this.utiles.isAppOnDevice()) {
           //llamada web
-          this.cita.getOperacionCita(idCita, idPaciente, accion).subscribe((response: any) => {
+          this.cita.getOperacionCita(idCita, idPaciente, accion, origenCita).subscribe((response: any) => {
             this.procesarRespuestaAgendar(response, loader, accion);
           })
         }
         else {
           //llamada nativa
-          this.cita.getOperacionCitaNative(idCita, idPaciente, accion).then((responseData: any) => {
+          this.cita.getOperacionCitaNative(idCita, idPaciente, accion, origenCita).then((responseData: any) => {
             var response = JSON.parse(responseData.data);
             this.procesarRespuestaAgendar(response, loader, accion);
           })

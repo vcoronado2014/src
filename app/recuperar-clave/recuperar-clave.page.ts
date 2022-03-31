@@ -13,7 +13,8 @@ import { NavigationExtras } from '@angular/router';
 })
 export class RecuperarClavePage implements OnInit {
   forma: FormGroup;
-  expEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/gm;
+  //expEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/gm;
+  expEmail = /^((\w[^\W]+)[\.\-]?){1,}\@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/gm
   estaCargando = false;
   constructor(
     private navCtrl: NavController,
@@ -28,7 +29,7 @@ export class RecuperarClavePage implements OnInit {
   }
   cargarForma() {
     this.forma = new FormGroup({
-      'correo': new FormControl('', [Validators.required, Validators.pattern(this.expEmail)])
+      'correo': new FormControl('', [Validators.required, Validators.email])
     });
   }
   abrirLogin() {

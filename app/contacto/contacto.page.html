@@ -1,0 +1,39 @@
+<ion-header class="back-app">
+    <ion-toolbar mode="md">
+      <ion-buttons slot="start">
+        <ion-back-button (click)="irAHome()" class="fcw"></ion-back-button>
+      </ion-buttons>
+      <ion-title class="fcw">Contacto</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+     
+    <div [hidden]="estaCargando">
+      <ion-item lines="none" style="padding-top: 15px;">
+        <app-avatar [style]="false" [urlImagen] = "usuarioAps.UrlImagen" [nombreCompleto]="usuarioAps.Nombres + ' ' + usuarioAps.ApellidoPaterno + ' ' + usuarioAps.ApellidoMaterno" [parentezco]="usuarioAps.Parentezco.Nombre"></app-avatar>
+      </ion-item>
+
+        <form [formGroup]="forma" novalidate>
+          <ion-row>
+            <mat-form-field appearance="outline" class="field-tipo-atencion-tda">
+              <mat-label>Motivo consulta</mat-label>
+              <mat-select formControlName="motivo" name="motivo" required>
+                <mat-option *ngFor="let mot of motivos" [value]="mot.Id">{{mot.Nombre}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="field-tipo-atencion-tda">
+              <mat-label>Comentario</mat-label>
+              <textarea matInput placeholder="Escriba su consulta..." formControlName="contenido" name="contenido" required rows="8"></textarea>
+              <mat-error [hidden]="!(f.contenido.errors && f.contenido.errors.required)">Requerido</mat-error>
+            </mat-form-field>            
+          </ion-row>
+          <ion-row>
+              <ion-button (click)="onSumbit()" [disabled]="forma.invalid" expand="full" class="ion-margin" style="width:100%;">ENVIAR</ion-button>
+          </ion-row>
+        </form>
+
+    </div>
+
+    <app-progress [mostrar]="estaCargando" [titulo]="tituloProgress"></app-progress>
+  </ion-content>

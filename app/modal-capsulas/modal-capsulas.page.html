@@ -1,0 +1,54 @@
+
+<ion-header>
+    <ion-toolbar mode="md">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/home" class="fcw"></ion-back-button>
+        </ion-buttons>
+        <ion-title class="fcw">Cápsulas</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+  
+  <ion-content class="back-app">
+    <app-progress [mostrar]="estaCargando" [titulo]="tituloLoading"></app-progress>
+ 
+    <div [hidden]="estaCargando" style="padding-top: 24px;">
+        <ion-item lines="none" style="padding-bottom: 24px;">
+            <!-- poner avatar -->
+            <ion-avatar slot="start">
+                <img *ngIf="usuarioAps.UrlImagen != ''" src={{usuarioAps.UrlImagen}}>
+                <img *ngIf="usuarioAps.UrlImagen == ''" src="../assets/img/no-imagen.jpg">
+            </ion-avatar>
+            <ion-row style="display: block;">
+                <div class="text-avatar">{{usuarioAps.Nombres + ' ' + usuarioAps.ApellidoPaterno + ' ' +
+                    usuarioAps.ApellidoMaterno}}</div>
+                <div class="subtext-avatar">{{usuarioAps.Parentezco.Nombre}}</div>
+            </ion-row>
+        </ion-item>
+        <div *ngFor="let item of capsulas">
+            <ion-card>
+                <iframe [src]="sanitizer.bypassSecurityTrustResourceUrl('https://www.youtube.com/embed/' + item.Url)" allow="autoplay;" frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" class="i-frame" allowfullscreen></iframe>
+                <ion-card-header>
+                  <ion-card-subtitle>{{item.Subtitulo}}</ion-card-subtitle>
+                  <ion-card-title>{{item.Titulo}}</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-row>
+                        {{item.Contenido}}
+                    </ion-row>
+    
+                    <ion-row style="float: right;">
+                        <a class="ion-margin-bottom" [href]="'https://www.youtube.com/watch?v=' + item.Url" target="_blank">Ver en Youtube</a> 
+                    </ion-row>
+                </ion-card-content>
+              </ion-card>
+        </div>
+
+
+
+    </div>
+    
+
+  
+  </ion-content>

@@ -29,7 +29,7 @@
         <mat-form-field appearance="outline" style="width: 100%;">
           <mat-label>Correo electrónico</mat-label>
           <input matInput placeholder="ejemplo@gmail.com" formControlName="email" name="email">
-          <mat-error [hidden]="!(f.email.errors && f.email.errors.pattern)">Correo inválido</mat-error>
+          <mat-error [hidden]="!(f.email.errors && f.email.errors.email)">Correo inválido</mat-error>
         </mat-form-field>
       </ion-row>
 

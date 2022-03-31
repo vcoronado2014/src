@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController, LoadingController } from '@ionic/angular';
-import { FormGroup, Validators, FormBuilder, FormControl, ValidatorFn } from '@angular/forms';
+import { FormGroup, Validators, FormBuilder, FormControl, ValidatorFn, FormGroupDirective, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 //servicios
 import { ServicioUtiles } from '../../app/services/ServicioUtiles';
@@ -23,7 +23,8 @@ export class RegistroUnoPage implements OnInit {
   //formulario
   forma: FormGroup;
   //expresiones regulares
-  expEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/gm;
+  //expEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/gm;
+  expEmail = /^((\w[^\W]+)[\.\-]?){1,}\@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/gm
   tipoMovimiento = '1';
   estaAgregandoFamilia = false;
   paginaAnterior = 'inicio';
@@ -65,9 +66,11 @@ export class RegistroUnoPage implements OnInit {
   cargarForma() {
     this.forma = new FormGroup({
       'run': new FormControl('', [Validators.required]),
-      'email': new FormControl('', [Validators.required, Validators.pattern(this.expEmail)]),
+      /* 'email': new FormControl('', [Validators.required, Validators.pattern(this.expEmail)]), */
+      'email': new FormControl('', [Validators.required, Validators.email]),
       'fechaNacimiento': new FormControl('', [Validators.required]),
     }, { validators: this.RunValidator });
+
   }
 
   volver() {

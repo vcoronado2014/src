@@ -33,7 +33,8 @@ export class ModalDetalleCitaPage implements OnInit {
   public cita = {
     IdCita: 0,
     IdPaciente: '',
-    Estado: ''
+    Estado: '',
+    OrigenCita: 0
   };
   botonReservar = {
     Titulo: 'RESERVAR',
@@ -195,13 +196,15 @@ export class ModalDetalleCitaPage implements OnInit {
       }
     }
     //esto hacemos para obtener los datos de la cita y del paciente
-    if (this.data.DetalleEventoMes.Subtitulo == 'Próxima Cita Web' && this.data.DetalleEventoMes.Estado != '') {
+    if ((this.data.DetalleEventoMes.Subtitulo == 'Próxima Cita Web'
+      || this.data.DetalleEventoMes.Subtitulo == 'Próxima Cita') && this.data.DetalleEventoMes.Estado != '') {
       this.cita.IdCita = this.data.DetalleEventoMes.IdElemento;
       //aca obtenemos el run del paciente
       let usuarioCita = this.utiles.entregaUsuarioNombre(this.data.DetalleEventoMes.NombrePaciente);
       //this.cita.IdPaciente = this.usuarioAps.Rut;
       this.cita.IdPaciente = usuarioCita.Rut;
       this.cita.Estado = this.data.DetalleEventoMes.Estado;
+      this.cita.OrigenCita = this.data.DetalleEventoMes.OrigenCita;
       if (this.cita.Estado == 'proposed') {
         this.titulo = 'Reserva de horas';
         this.botonReservar.Visible = true;
@@ -300,6 +303,8 @@ export class ModalDetalleCitaPage implements OnInit {
     var idPaciente = this.cita.IdPaciente;
     var idCita = this.cita.IdCita;
     var accion = boton.Operacion;
+    //agregado
+    var origenCita = this.cita.OrigenCita;
 
     //original
     /*     let loader = await this.loading.create({
@@ -318,14 +323,14 @@ export class ModalDetalleCitaPage implements OnInit {
       var retorno = null;
       if (!this.utiles.isAppOnDevice()) {
         //llamada web
-        this.agendar.getOperacionCita(idCita, idPaciente, accion).subscribe((response: any) => {
+        this.agendar.getOperacionCita(idCita, idPaciente, accion, origenCita).subscribe((response: any) => {
           this.procesarRespuesta(response, loader, accion);
         })
       }
       else {
         //llamada nativa
         //this.cargarDatosNative(mesConsultar, annoConsultar, loader);
-        this.agendar.getOperacionCitaNative(idCita, idPaciente, accion).then((responseData: any) => {
+        this.agendar.getOperacionCitaNative(idCita, idPaciente, accion, origenCita).then((responseData: any) => {
           var response = JSON.parse(responseData.data);
           this.procesarRespuesta(response, loader, accion);
         })
@@ -369,7 +374,7 @@ export class ModalDetalleCitaPage implements OnInit {
   }
   transformaHora(evento){
     var retorno = '';
-    if (evento && evento.DetalleEventoMes.Titulo == 'Vacuna administrada'){
+    if (evento && (evento.DetalleEventoMes.Titulo == 'Vacuna administrada' || evento.HoraInicioFin == '00:00')){
       let partes = evento.DetalleEventoMes.FechaHora.split(',');
       if (partes && partes.length == 2){
         retorno = partes[0];

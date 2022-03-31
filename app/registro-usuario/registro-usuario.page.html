@@ -7,6 +7,16 @@
     </ion-buttons>
     <ion-title class="fcw">Ajustes de la cuenta</ion-title>
   </ion-toolbar>
+  <ion-toolbar color="danger">
+    <ion-title size="small" class="texto-eliminacion ion-text-justify">Quiero eliminar mi cuenta y mis datos personales de registro. Si desea eliminar su cuenta y sus datos de registro tenga en consideración
+      que debe volver a registrarse, la eliminación de la cuenta y los datos de registro NO afectan sus datos clínicos.
+    </ion-title>
+<!--     <ion-buttons slot="end" (click)="eliminarCuenta()" style="padding-right: 16px;">
+      <ion-icon class="fcw" slot="icon-only" name="trash"></ion-icon>
+    </ion-buttons>  -->
+    <a mat-raised-button style="float:right; margin:8px;" 
+    (click)="eliminarCuenta()">ELIMINAR MI CUENTA</a>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
@@ -35,7 +45,7 @@
             <input matInput placeholder="ejemplo@gmail.com" formControlName="email" name="email"
               (blur)="validarCorreo($event)" required>
             <mat-error [hidden]="!(f.email.errors && f.email.errors.required)">Correo requerido</mat-error>
-            <mat-error [hidden]="!(f.email.errors && f.email.errors.pattern)">Correo inválido</mat-error>
+            <mat-error [hidden]="!(f.email.errors && f.email.errors.email)">Correo inválido</mat-error>
           </mat-form-field>
         </ion-row>
         <ion-row>

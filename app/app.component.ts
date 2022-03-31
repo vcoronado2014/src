@@ -22,6 +22,7 @@ declare var window;
 export class AppComponent {
   intervalo;
   arr;
+  
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -40,6 +41,10 @@ export class AppComponent {
     this.platform.ready().then(async () => {
       //this.statusBar.styleDefault();
       this.statusBar.styleBlackTranslucent();
+      //forzamos el modo claro ****************************
+      document.body.setAttribute('data-theme', 'light');
+      document.body.classList.toggle('dark', false);
+      //************************************************* */
       this.splashScreen.hide();
       if (this.utiles.isAppOnDevice()){
         this.networkService.onNetworkChange().subscribe(async (status: ConnectionStatus) => {
@@ -49,8 +54,10 @@ export class AppComponent {
           else{
             //lo comentamos hasta implementar correctamente
             //this.notificacion.buscarCitasTodas();
-            this.notificacion.buscarCitasTodasLocales();
+            //lo comentamos ya que las notificaciones se crearan mediante firebase
+            //this.notificacion.buscarCitasTodasLocales();
             await this.utiles.obtenerParametrosApp(environment.production);
+            await this.utiles.obtenerParametrosNodo();
             await this.utiles.crearTokenPlano();
             this.fcmService.initFCM();
             this.fcmService.receiveMessage(true);
@@ -61,8 +68,10 @@ export class AppComponent {
       else{
         //lo comentamos hasta implementar correctamente
         //this.notificacion.buscarCitasTodas();
-        this.notificacion.buscarCitasTodasLocales();
+        //lo comentamos ya que las notificaciones se crearan mediante firebase
+        //this.notificacion.buscarCitasTodasLocales();
         await this.utiles.obtenerParametrosApp(environment.production);
+        await this.utiles.obtenerParametrosNodo();
         await this.utiles.crearTokenPlano();
         this.fcmService.initFCM();
         this.fcmService.receiveMessage(true);

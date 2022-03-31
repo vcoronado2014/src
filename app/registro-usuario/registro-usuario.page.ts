@@ -29,7 +29,8 @@ export class RegistroUsuarioPage implements OnInit {
   patternOnlyLetter = '[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$';
   expCelular = /^(\+?56)?(\s?)(0?9)(\s?)[9876543]\d{7}$/gm;
   expPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{4,8}$/gm;
-  expEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/gm;
+  //expEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/gm;
+  expEmail = /^((\w[^\W]+)[\.\-]?){1,}\@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/gm
   expAceptaCondiciones = true;
   isLogged: boolean;
   loggedIn: boolean;
@@ -45,6 +46,17 @@ export class RegistroUsuarioPage implements OnInit {
   //acepta CONDICIONES
   rutaAceptoCondiciones;
   //aceptaCondiciones = true;
+  //para cerrar sesión
+  //para registrar la salida
+  objetoEntrada = {
+    VersionAppName: '',
+    Plataforma: '',
+    Token: '',
+    VersionAppNumber: '',
+    Fecha: new Date(),
+    TipoOperacion: '1',
+    Id: '0'
+  };
 
   //focus
   @ViewChild('nombreId', { static: true }) nombreInput: MatInput;
@@ -96,7 +108,7 @@ export class RegistroUsuarioPage implements OnInit {
   cargarForma() {
     this.forma = new FormGroup({
       'run': new FormControl({ value: '', disabled: this.estaEditando }, [Validators.required]),
-      'email': new FormControl({ value: '', disabled: this.estaEditando }, [Validators.required, Validators.pattern(this.expEmail)]),
+      'email': new FormControl({ value: '', disabled: this.estaEditando }, [Validators.required, Validators.email]),
       'nombre': new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.pattern(this.patternOnlyLetter)]),
       'apellido': new FormControl('', [Validators.required, Validators.pattern(this.patternOnlyLetter)]),
       'nombreSocial': new FormControl('', [Validators.maxLength(100)]),
@@ -543,6 +555,136 @@ export class RegistroUsuarioPage implements OnInit {
       }
     }
   }
+
+
+  //nuevo método para eliminar la cuenta
+  eliminarCuenta(){
+    let header = "Aviso";
+    let message = "Vas a eliminar tu cuenta y tus datos de registro, esta acción no se puede deshacer. \n¿Estás seguro de continuar?.";
+    this.presentAlertConfirm(header, message);
+  }
+  procesarEliminacionRegistro(){
+    console.log('eliminar cuenta');
+    //obtenemos el registro
+    let registroActual = this.utiles.obtenerRegistro();
+    if (registroActual == null){
+      this.utiles.presentToast('No tiene registro asociado.', 'bottom', 4000);
+      return;
+    }
+
+    //continuamos
+    this.estaCargando = true;
+    this.tituloLoading = 'Eliminando la cuenta...';
+
+    if (!this.utiles.isAppOnDevice()) {
+      //llamada web
+      this.acceso.borrarRegistro(registroActual.Id).subscribe((data:any)=>{
+        let respuesta = data;
+        //procesar la respuesta
+        console.log(respuesta);
+        this.estaCargando = false;
+        this.tituloLoading = '';
+        this.utiles.limpiarCache();
+        this.navCtrl.navigateBack('inicio');
+      }, error=>{
+        this.utiles.presentToast(error.error.ExceptionMessage, 'bottom', 4000);
+        this.estaCargando = false;
+        this.tituloLoading = '';
+      });
+    }
+    else{
+      //llamada nativa
+      this.acceso.borrarRegistroNative(registroActual.Id).then((data:any)=>{
+        let respuesta = JSON.parse(data.data);
+        console.log(respuesta);
+        this.estaCargando = false;
+        this.tituloLoading = '';
+        this.utiles.limpiarCache();
+        this.navCtrl.navigateBack('inicio');
+      }, error=>{
+        this.utiles.presentToast(error.error.ExceptionMessage, 'bottom', 4000);
+        this.estaCargando = false;
+        this.tituloLoading = '';
+      })
+    }
+
+
+  }
+
+  registrarSalida() {
+    //variable de session que identifica el ingreso
+    if (sessionStorage.getItem('RSS_ID')) {
+      this.tituloLoading = 'Registrando la salida.';
+      this.estaCargando = true;
+      this.objetoEntrada.VersionAppName = localStorage.getItem('version_app_name');
+      this.objetoEntrada.Plataforma = localStorage.getItem('plataforma');
+      this.objetoEntrada.VersionAppNumber = localStorage.getItem('version_number');
+      this.objetoEntrada.Token = localStorage.getItem('token_dispositivo');
+      this.objetoEntrada.Fecha = new Date();
+      this.objetoEntrada.Id = sessionStorage.getItem("RSS_ID");
+      this.objetoEntrada.TipoOperacion = '1';
+
+
+        if (!this.utiles.isAppOnDevice()) {
+          //web
+          this.servicioGeo.postIngreso(this.objetoEntrada).subscribe((data: any) => {
+            //console.log(data);
+            this.tituloLoading = '';
+            this.estaCargando = false;
+            this.procesarEliminacionRegistro();
+          }, error=>{
+            this.tituloLoading = '';
+            this.estaCargando = false;
+            this.procesarEliminacionRegistro();
+          });
+        }
+        else {
+          //dispositivo
+          this.servicioGeo.postIngresoNative(this.objetoEntrada).then(response => {
+            let respuesta = JSON.parse(response.data);
+            //console.log(respuesta);
+            this.tituloLoading = '';
+            this.estaCargando = false;
+            this.procesarEliminacionRegistro();
+          }, error=>{
+            this.tituloLoading = '';
+            this.estaCargando = false;
+            this.procesarEliminacionRegistro();
+          });
+        }
+
+
+    }
+  }
+
+  async presentAlertConfirm(header, message) {
+
+    const alert = await this.alertController.create({
+      header: header,
+      message: message,
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          cssClass: 'danger',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Si, Continuar',
+          cssClass: 'success',
+          handler: () => {
+            //aca debemos realizar la operación
+            this.registrarSalida();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+
 
   get f() { return this.forma.controls; }
 

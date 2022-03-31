@@ -21,7 +21,8 @@ export class ContactabilidadPage implements OnInit {
   patternOnlyLetter = '[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1 ]+$';
   expCelular = /^(\+?56)?(\s?)(0?9)(\s?)[9876543]\d{7}$/gm;
   expPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{4,8}$/gm;
-  expEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/gm;
+  //expEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/gm;
+  expEmail = /^((\w[^\W]+)[\.\-]?){1,}\@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/gm
   //variable para obtener el registro del usuario
   registro = null;
   estaCargando = false;
@@ -76,7 +77,8 @@ export class ContactabilidadPage implements OnInit {
   cargarForma() {
     this.forma = new FormGroup({
       'nombreSocial': new FormControl(''),
-      'email': new FormControl('', [Validators.pattern(this.expEmail)]),
+      //'email': new FormControl('', [Validators.pattern(this.expEmail)]),
+      'email': new FormControl('', [Validators.email]),
       'telefono': new FormControl('', [Validators.pattern(this.expCelular)]),
     });
     //precargar los datos del usuario. solo si modifica registro

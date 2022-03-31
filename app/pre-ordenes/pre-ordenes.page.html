@@ -16,7 +16,7 @@
   </div>
 
   <div style="padding-top: 12px;" [hidden]="estaCargando">
-    <h5 class="texto m-16">Selecciona un integrante de tu familia</h5>
+    <h4 class="m-16">Selecciona un integrante de tu familia</h4>
     <div *ngFor="let item of listadoUsuario" (click)="goToDetailsModulo(item)">
       <!-- poner avatar -->
       <app-avatar [lines]="linesAvatar" [urlImagen] = "item.UrlImagen" [nombreCompleto]="item.Nombres + ' ' + item.ApellidoPaterno + ' ' + item.ApellidoMaterno" [parentezco]="item.Parentezco.Nombre"></app-avatar>

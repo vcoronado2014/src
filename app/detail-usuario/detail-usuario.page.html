@@ -12,7 +12,7 @@
   <app-progress [mostrar]="estaCargando" [titulo]="tituloProgress"></app-progress>
   <!-- implementacion con spinner independiente -->
 
-  <ion-item lines="none" style="padding-top: 15px;">
+  <ion-item lines="none" style="padding-top: 15px;" [hidden]="estaCargando">
     <app-avatar [style]="false" [urlImagen] = "usuario.UrlImagen" [nombreCompleto]="usuario.Nombres + ' ' + usuario.ApellidoPaterno + ' ' + usuario.ApellidoMaterno" [parentezco]="usuario.Parentezco.Nombre"></app-avatar>
   </ion-item>
   <ion-grid [hidden]="estaCargando">

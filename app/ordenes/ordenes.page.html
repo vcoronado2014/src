@@ -11,14 +11,14 @@
       <ion-icon class="fcw" slot="icon-only" name="search"></ion-icon>
     </ion-buttons> 
   </ion-toolbar>
-  <ion-toolbar  *ngIf="mostrarBusqueda">
+  <ion-toolbar  *ngIf="mostrarBusqueda" mode="md">
     <ion-searchbar placeholder="Nombre examen" (ionInput)="filterList($event)"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="back-app">
 <!--SI HAY ORDENES -->
-<app-progress [mostrar]="estaCargando" titulo="Cargando exámenes"></app-progress>
+<app-progress [mostrar]="estaCargando" [titulo]="tituloProgress"></app-progress>
 <div [hidden]="estaCargando" style="padding-top: 24px;">
   <ion-item lines="none" style="padding-bottom: 24px;">
     <!-- poner avatar -->
@@ -46,12 +46,23 @@
       </ion-row>
       <ion-row>
         <ion-col>
-          <div class="subtext-avatar-1" *ngIf="exa.Resultados == null">
-            <div *ngIf="exa.FechaMuestra != '01-01-0001'">
+          <ion-row class="subtext-avatar-1" *ngIf="exa.Resultados?.length == 0">
+            <ion-col *ngIf="exa.FechaMuestra != '01-01-0001'" size="10">
               Fecha de toma {{exa.FechaMuestra}}
-            </div>
-          </div>
-          <div class="subtext-avatar-1" *ngIf="exa.Resultados != null">Fecha resultados {{exa.FechaResultado}}</div>
+            </ion-col>
+            <ion-col size="2">
+              <ion-icon name="checkmark-outline" color="danger"></ion-icon>
+            </ion-col>
+          </ion-row>
+          <ion-row class="subtext-avatar-1" *ngIf="exa.Resultados?.length != 0">
+            <ion-col size="10">
+              Fecha resultados {{exa.FechaResultado}}
+            </ion-col>
+            <ion-col size="2">
+              <ion-icon name="checkmark-done-outline" color="success"></ion-icon>
+            </ion-col>
+            
+          </ion-row>
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -84,6 +95,9 @@
 <!-- NO HAY ORDENES -->
 <div [hidden]="estaCargando" *ngIf="tiene == false" style="position: relative; height: 30vh;">
   <div style="position: absolute; display: table; height: 100%; font-size: 16pt; text-align: center;width: 100%;letter-spacing: 0.5pt;">
+<!--     <span class="material-icons">
+      info
+    </span> -->
     <p style="display: table-cell; vertical-align: middle">No tiene exámenes  <br>registrados
     </p>
   </div>

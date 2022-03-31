@@ -17,14 +17,17 @@
     <!-- aca debe ir el avatar -->
     <ion-list>
       <ion-item lines="none">
-        <ion-label class="ion-text-wrap titulo-evento">{{data.DetalleEventoMes.DescripcionPrincipal}}&nbsp;{{dosis}}</ion-label>
-      </ion-item>
-      <ion-item lines="none">
         <!-- poner avatar -->
         <app-avatar [style]="styleAvatar" [urlImagen] = "miImagen" [nombreCompleto]="miNombre" [parentezco]="miParentezco"></app-avatar>
       </ion-item>
+<!--       <ion-item lines="none">
+        <ion-label class="ion-text-wrap ion-text-capitalize titulo-evento" style="font-size: 20px;">{{data.DetalleEventoMes.DescripcionPrincipal.toLowerCase()}}&nbsp;{{dosis}}</ion-label>
+      </ion-item> -->
     </ion-list>
     <ion-list>
+      <ion-list-header>
+        <ion-label class="ion-text-wrap ion-text-capitalize titulo-evento" style="font-size: 20px;padding-right: 8px;">{{data.DetalleEventoMes.DescripcionPrincipal.toLowerCase()}}&nbsp;{{dosis}}</ion-label>
+      </ion-list-header>
       <!-- Vacunas administradas y por administrar -->
       <ion-item
         *ngIf="data.DetalleEventoMes.Subtitulo == 'Vacuna Administrada' || data.DetalleEventoMes.Subtitulo == 'Vacuna por administrar'">
@@ -60,7 +63,7 @@
         </ion-item>
       <!-- </ion-list> -->
     </ion-list>
-    <ion-row class="ion-padding-top ion-padding-start" *ngIf="data.DetalleEventoMes.Subtitulo == 'Próxima Cita Web' && data.DetalleEventoMes.Estado != ''">
+    <ion-row class="ion-padding-top ion-padding-start" *ngIf="(data.DetalleEventoMes.Subtitulo == 'Próxima Cita Web' || data.DetalleEventoMes.Subtitulo == 'Próxima Cita') && data.DetalleEventoMes.Estado != ''">
         <button *ngIf="botonConfirmar.Visible" (click)="presentAlertConfirm(botonConfirmar)" mat-raised-button color="primary" style="margin-right: 16px;">{{botonConfirmar.Titulo}}</button>
         <button  *ngIf="botonReservar.Visible" (click)="presentAlertConfirm(botonReservar)" mat-raised-button color="primary" style="margin-right: 16px;">{{botonReservar.Titulo}}</button>
         <button *ngIf="botonCancelar.Visible" (click)="presentAlertConfirm(botonCancelar)" mat-stroked-button color="primary">{{botonCancelar.Titulo}}</button>

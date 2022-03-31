@@ -448,4 +448,135 @@ export class ServicioGeo{
     let data = this.http.get(url,{}, {});
     return data;
   }
+
+    //para contacto
+    postContacto(nodId, correoOrigen, correoDestino, nombreEstablecimiento, telefono, tokenFcm, contenido, nombreEmisor, mcoId, eliminado) {
+      //realizar la llamada post a la api
+      const body = JSON.stringify(
+        {
+          "NodId": nodId.toString(),
+          "CorreoOrigen": correoOrigen,
+          "CorreoDestino": correoDestino,
+          "NombreEstablecimiento": nombreEstablecimiento,
+          "Telefono": telefono,
+          "TokenFcm": tokenFcm,
+          "Contenido": contenido,
+          "NombreEmisor": nombreEmisor,
+          "McoId": mcoId.toString(),
+          "Eliminado": eliminado.toString()
+        });
+  
+      let url = environment.API_ENDPOINT + 'Contacto';
+      let httpHeaders = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      });
+      httpHeaders.set('Access-Control-Allow-Origin', '*');
+      httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+      httpHeaders.set("Access-Control-Allow-Headers", "*");
+  
+      let options = { headers: httpHeaders };
+  
+      let data = this.httpClient.post(url, body, options);
+      return data;
+  
+    }
+    postContactoNative(nodId, correoOrigen, correoDestino, nombreEstablecimiento, telefono, tokenFcm, contenido, nombreEmisor, mcoId, eliminado){
+      //realizar la llamada post nativa
+      const headers = new Headers;
+      const body =
+      {
+        "NodId": nodId.toString(),
+        "CorreoOrigen": correoOrigen,
+        "CorreoDestino": correoDestino,
+        "NombreEstablecimiento": nombreEstablecimiento,
+        "Telefono": telefono,
+        "TokenFcm": tokenFcm,
+        "Contenido": contenido,
+        "NombreEmisor": nombreEmisor,
+        "McoId": mcoId.toString(),
+        "Eliminado": eliminado.toString()
+      };
+  
+      let url = environment.API_ENDPOINT + 'Contacto';
+      this.http.setDataSerializer('json');
+  
+  
+      return this.http.post(url, body, {});
+    }
+
+        //para capsulas
+        postCapsulas(nodId) {
+          //realizar la llamada post a la api
+          const body = JSON.stringify(
+            {
+              "NodId": nodId.toString()
+            });
+      
+          let url = environment.API_ENDPOINT + 'CapsulasEducativas';
+          let httpHeaders = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          });
+          httpHeaders.set('Access-Control-Allow-Origin', '*');
+          httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+          httpHeaders.set("Access-Control-Allow-Headers", "*");
+      
+          let options = { headers: httpHeaders };
+      
+          let data = this.httpClient.post(url, body, options);
+          return data;
+      
+        }
+        postCapsulasNative(nodId){
+          //realizar la llamada post nativa
+          const headers = new Headers;
+          const body =
+          {
+            "NodId": nodId.toString(),
+          };
+      
+          let url = environment.API_ENDPOINT + 'CapsulasEducativas';
+          this.http.setDataSerializer('json');
+      
+      
+          return this.http.post(url, body, {});
+        }
+
+        postPersonaRayen(uspId) {
+          //realizar la llamada post a la api
+          const body = JSON.stringify(
+            {
+              "UspId": uspId.toString()
+            });
+      
+          let url = environment.API_ENDPOINT + 'ObtenerPersonaApi';
+          let httpHeaders = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          });
+          httpHeaders.set('Access-Control-Allow-Origin', '*');
+          httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+          httpHeaders.set("Access-Control-Allow-Headers", "*");
+      
+          let options = { headers: httpHeaders };
+      
+          let data = this.httpClient.post(url, body, options);
+          return data;
+      
+        }
+        postPersonaRayenNative(uspId){
+          //realizar la llamada post nativa
+          const headers = new Headers;
+          const body =
+          {
+            "UspId": uspId.toString(),
+          };
+      
+          let url = environment.API_ENDPOINT + 'ObtenerPersonaApi';
+          this.http.setDataSerializer('json');
+      
+      
+          return this.http.post(url, body, {});
+        }
 }

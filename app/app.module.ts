@@ -49,6 +49,7 @@ import { MatInputModule  } from '@angular/material/input';
 import { MatDatepickerModule  } from '@angular/material/datepicker';
 import { MatSelectModule  } from '@angular/material/select'
 import { MatIconModule  } from '@angular/material/icon';
+import { MatAutocompleteModule  } from '@angular/material/autocomplete';
 /* import { MatSelectModule  } from '@angular/material/select';
 import { MatFormField  } from '@angular/material/form-field/form-field';
 import { MatFormField  } from '@angular/material/form-field/label'; */
@@ -87,6 +88,7 @@ import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/
     MatInputModule,
     MatIconModule,
     MatDatepickerModule,
+    MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
     IonicModule.forRoot(), 

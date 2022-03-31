@@ -45,6 +45,9 @@ export class PreOrdenesPage implements OnInit {
     }
     else{
       this.titulo = 'Exámenes';
+      //borraremos la info de session storage
+      sessionStorage.removeItem('ORDENES_COMPLETO');
+      sessionStorage.removeItem('EXAMENES_COMPLETO');
     }
 
     this.estaCargando = true;
@@ -114,7 +117,8 @@ export class PreOrdenesPage implements OnInit {
   goToDetails(usuario) {
     const navigationExtras: NavigationExtras = {
       queryParams: {
-        usuario: JSON.stringify(usuario)
+        usuario: JSON.stringify(usuario),
+        actualiza: true
       }
     };
     this.navCtrl.navigateRoot(['ordenes'], navigationExtras);
@@ -133,7 +137,8 @@ export class PreOrdenesPage implements OnInit {
     else{
       const navigationExtras: NavigationExtras = {
         queryParams: {
-          usuario: JSON.stringify(usuario)
+          usuario: JSON.stringify(usuario),
+          actualiza: 'true'
         }
       };
       this.navCtrl.navigateForward(['ordenes'], navigationExtras);

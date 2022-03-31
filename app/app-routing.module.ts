@@ -125,8 +125,16 @@ const routes: Routes = [
     loadChildren: () => import('./modal-alertas/modal-alertas.module').then( m => m.ModalAlertasPageModule)
   },
   {
+    path: 'modal-capsulas',
+    loadChildren: () => import('./modal-capsulas/modal-capsulas.module').then( m => m.ModalCapsulasPageModule)
+  },
+  {
     path: 'resultados',
     loadChildren: () => import('./resultados/resultados.module').then( m => m.ResultadosPageModule)
+  },
+  {
+    path: 'contacto',
+    loadChildren: () => import('./contacto/contacto.module').then( m => m.ContactoPageModule)
   },
   {
     path: 'modal-busqueda',
@@ -135,11 +143,7 @@ const routes: Routes = [
   {
     path: 'error',
     loadChildren: () => import('./error/error.module').then( m => m.ErrorPageModule)
-  },
-  {
-    path: 'error',
-    loadChildren: () => import('./error/error.module').then( m => m.ErrorPageModule)
-  },
+  }
 
 
 ];

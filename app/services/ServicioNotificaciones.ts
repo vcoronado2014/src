@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Platform, ToastController } from '@ionic/angular';
+import { Platform, ToastController, AlertController } from '@ionic/angular';
 import { AppVersion } from '@ionic-native/app-version/ngx';
 import * as moment from 'moment';
 import { environment } from '../../environments/environment';
 //notificaciones locales
-import { ELocalNotificationTriggerUnit, LocalNotifications } from '@ionic-native/local-notifications/ngx';
+import { ELocalNotificationTriggerUnit, LocalNotifications, ILocalNotificationActionType } from '@ionic-native/local-notifications/ngx';
 //utiles
 import { ServicioUtiles } from '../../app/services/ServicioUtiles';
 //citas
@@ -16,6 +16,9 @@ export class ServicioNotificaciones{
     citasArr = [];
     vacunasCovid = [];
 
+    //evento click
+    clickSub: any;
+
     constructor(
         public platform : Platform,
         public appVersion: AppVersion,
@@ -23,7 +26,8 @@ export class ServicioNotificaciones{
         private localNotifications: LocalNotifications,
         private utiles: ServicioUtiles,
         private citas : ServicioCitas,
-        public parametrosApp: ServicioParametrosApp
+        public parametrosApp: ServicioParametrosApp,
+        private alertController: AlertController,
     ){
       //inicializamos los valores
       moment.locale('es');
@@ -59,6 +63,49 @@ export class ServicioNotificaciones{
             this.utiles.presentToast(titulo + '\r\n' + texto, 'bottom', 10000);
         }
     }
+
+    //nuevo para autentificarse
+    unsub() {
+        this.clickSub.unsubscribe();
+    }    
+
+    async presentAlert(data) {
+        const alert = await this.alertController.create({
+            header: 'Alert',
+            message: data,
+            buttons: ['OK']
+        });
+        await alert.present();
+    }
+
+    crearNotificacionEvento(id, titulo, texto, url, paciente){
+        console.log(paciente);
+        if (this.utiles.isAppOnDevice()){
+            this.clickSub = this.localNotifications.on('click').subscribe(data => {
+                console.log(data);
+                //this.presentAlert('Your notifiations contains a secret = ' + data.data.secret);
+                this.utiles.autentificarDirectoLogin(url, paciente);
+                this.unsub();
+              });
+
+            this.localNotifications.schedule(
+                {
+                    id: id,
+                    title: titulo,
+                    text: texto,
+                    trigger: { in: 1, unit: ELocalNotificationTriggerUnit.MINUTE },
+                    foreground: true,
+                    data: {url: url}
+                }
+            )
+        }
+        else{
+            //web
+            //this.utiles.presentToast(titulo + '\r\n' + texto, 'bottom', 10000);
+            this.utiles.presentToastWithOptions(titulo, texto, 'top', url, paciente);
+        }
+    }
+
     notificacionCita(accion, data){
         if (this.utiles.isAppOnDevice()){
             
@@ -549,17 +596,41 @@ export class ServicioNotificaciones{
                         var lugar = todas[i].Eventos[s].DetalleEventoMes.Lugar;
                         var id = todas[i].Eventos[s].DetalleEventoMes.IdElemento;
                         var titulo = todas[i].Eventos[s].DetalleEventoMes.Titulo;
-                        var texto = fecha + ' ' + hora + '\n' + todas[i].Eventos[s].DetalleEventoMes.DescripcionPrincipal + '\n' + todas[i].Eventos[s].DetalleEventoMes.DescripcionSecundaria + '\n' + lugar;
+                        //var texto = fecha + ' ' + hora + '\n' + todas[i].Eventos[s].DetalleEventoMes.DescripcionPrincipal + '\n' + todas[i].Eventos[s].DetalleEventoMes.DescripcionSecundaria + '\n' + lugar;
                         //para obtener al paciente
                         var paciente = this.utiles.entregaUsuarioRut(todas[i].Eventos[s].DetalleEventoMes.NombrePaciente);
                         var nombrePaciente = paciente != null ? paciente.Nombres + ' ' + paciente.ApellidoPaterno + ' ' + paciente.ApellidoMaterno : '';
+                        //esta entidad la cambiaremos para que se pueda mostrar un modal o bien 
+                        //se muestre la opción de anular o confirmar una cita
+                        var esCita = todas[i].Eventos[s].DetalleEventoMes.Titulo == 'Cita' ? true : false;
+                        var estado = todas[i].Eventos[s].DetalleEventoMes.Estado ? todas[i].Eventos[s].DetalleEventoMes.Estado : '';
+                        var origenCita = todas[i].Eventos[s].DetalleEventoMes.OrigenCita ? todas[i].Eventos[s].DetalleEventoMes.OrigenCita : 0;
+                        var colaId = todas[i].Eventos[s].DetalleEventoMes.ColaId ? todas[i].Eventos[s].DetalleEventoMes.ColaId : 0;
+                        var colaVisto = todas[i].Eventos[s].DetalleEventoMes.ColaVisto ? todas[i].Eventos[s].DetalleEventoMes.ColaVisto : 0;
+                        var texto = '';
+                        if (estado != ''){
+                            if (estado == 'cancelled'){
+                                texto = 'Su cita para el día ' + fecha + ' a las ' + hora + ' en ' + lugar + ' con ' + todas[i].Eventos[s].DetalleEventoMes.DescripcionSecundaria + ', ha sido CANCELADA.';
+                            }
+                            else{
+                                texto = 'Tienes una cita para el día ' + fecha + ' a las ' + hora + ' en ' + lugar + ' con ' + todas[i].Eventos[s].DetalleEventoMes.DescripcionSecundaria + ', recuerda presentarte con anticipación.';
+                            }
+                        }
+                        else{
+                            texto = fecha + ' ' + hora + '\n' + todas[i].Eventos[s].DetalleEventoMes.DescripcionPrincipal + '\n' + todas[i].Eventos[s].DetalleEventoMes.DescripcionSecundaria + '\n' + lugar;
+                        }
                         let entidad = {
                             Titulo: titulo,
                             Subtitulo: nombrePaciente,
                             Contenido: texto,
                             Id: id,
                             Indice: indice,
-                            IrA: null
+                            IrA: null,
+                            EsCita: esCita,
+                            Estado: estado,
+                            OrigenCita: origenCita,
+                            ColaId: colaId,
+                            ColaVisto: colaVisto
                         }
                         arr.push(entidad);
                         indice++;
@@ -571,7 +642,7 @@ export class ServicioNotificaciones{
         return arr;
     }
 
-    crearNotificacionesCitas(todas){
+    crearNotificacionesCitas(todas, creaNotificacion){
         var indice = 1000;
         if (todas && todas.length > 0) {
             for (var i = 0; i < todas.length; i++){
@@ -591,7 +662,11 @@ export class ServicioNotificaciones{
                         this.agregarEntidadLocal(todas[i].Eventos[s].DetalleEventoMes.Titulo, nombrePaciente,
                             indice, id, texto);
                         indice++;
-                        this.crearNotificacion(id, titulo, texto);
+                        //this.crearNotificacion(id, titulo, texto);
+                        if (creaNotificacion){
+                            this.crearNotificacionEvento(id, titulo, texto, 'calendario', paciente);
+                        }
+                        
 
                     }
                 }
@@ -632,14 +707,14 @@ export class ServicioNotificaciones{
                 //web
                 this.citas.postCitasWebFuturas(ruts).subscribe((response:any)=>{
                     var todas = response;
-                    this.crearNotificacionesCitas(todas);
+                    this.crearNotificacionesCitas(todas, true);
                 })
             }
             else{
                 //nativa
                 this.citas.postCitasWebFuturasNative(ruts).then((response:any)=>{
                     var todas = JSON.parse(response.data);
-                    this.crearNotificacionesCitas(todas);
+                    this.crearNotificacionesCitas(todas, false);
                 })
             }
         }

@@ -54,6 +54,16 @@ export class BusquedaAvanzadaPage implements OnInit {
   //esto es para infiniti scroll
   topLimit: number = 5;
   citasFiltradasTop: any = [];
+  //parametros desde la pagina anterior
+  profesional = '';
+  tipoAtencion = '';
+  profesionales = [];
+  profesionalesFiltrados = [];
+  comboSeleccionadoProf = '';
+
+  comboSeleccionadoFecha = '';
+  comboSeleccionadoHorario = '';
+  comboSeleccionadoDias = '';
 
   constructor(
     public navCtrl: NavController,
@@ -69,6 +79,283 @@ export class BusquedaAvanzadaPage implements OnInit {
     public activatedRoute: ActivatedRoute,
     private router: Router,
   ) { }
+
+  agregarProfesionales(data) {
+    var contador = 1;
+    if (data) {
+      data.forEach(cita => {
+        var entidad = this.profesionales.filter(p => p.Texto == cita.NombreCompletoMedico);
+        if (entidad.length == 0) {
+          var entidadProfesional = {
+            Texto: cita.NombreCompletoMedico,
+            Valor: contador,
+            Selected: false
+          };
+          if (cita.NombreCompletoMedico.toLowerCase() == this.profesional.toLowerCase() && this.profesional != '') {
+            entidadProfesional.Selected = true;
+            //seleccionamos el input de profesional
+            this.comboSeleccionadoProf = this.profesional;
+          }
+          else {
+            entidadProfesional.Selected = false;
+          }
+          this.profesionales.push(entidadProfesional);
+          contador++;
+        }
+      });
+    }
+
+    //sessionStorage.setItem('PROFESIONALES_ATENCION', JSON.stringify(this.profesionales));
+    this.profesionalesFiltrados = this.profesionales;
+    console.log(this.profesionales);
+  }
+
+  async filterList(item) {
+    console.log(item.srcElement.value);
+    if (item.srcElement.value != '') {
+      this.profesionalesFiltrados = this.profesionales;
+
+      const searchTerm = item.srcElement.value;
+      if (!searchTerm) {
+        return;
+      }
+      this.profesionalesFiltrados = this.profesionalesFiltrados.filter(prof => {
+        if (prof.Texto && searchTerm) {
+          return (prof.Texto.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
+        }
+      })
+    }
+    else {
+      this.profesionalesFiltrados = this.profesionales;
+      //dejamos los tdas como estaban
+      this.tiposAtencion = sessionStorage.getItem('TIPOS_ATENCION') ? JSON.parse(sessionStorage.getItem('TIPOS_ATENCION')) : [];
+      this.idComboSeleccionado = 0;
+      this.comboSeleccionado = 'Selecciona...';
+    }
+
+  }
+
+  crearFiltros() {
+    this.tiposAtencion = [];
+    this.profesionalesFiltrados = [];
+    this.profesionales = [];
+
+    var entidadInicial = {
+      Texto: 'Selecciona...',
+      Valor: 0,
+      Selected: true
+    }
+    this.tiposAtencion.push(entidadInicial);
+    this.idComboSeleccionado = 0;
+  }
+  selectedTipoAtencion() {
+    if (this.tipoAtencion && this.tiposAtencion.length > 0) {
+      this.tiposAtencion.forEach(tipo => {
+        if (tipo.Texto == this.tipoAtencion) {
+          tipo.Selected = true;
+          //seleccionamos el tipo atención
+          this.comboSeleccionado = this.tipoAtencion;
+        }
+        else {
+          tipo.Selected = false;
+        }
+      });
+    }
+  }
+  limpiarProfesional() {
+    this.comboSeleccionadoProf = '';
+    this.profesionalesFiltrados = this.profesionales;
+    var item = {
+      srcElement: {
+        value: ''
+      }
+    };
+    this.filterList(item);
+    //aca realizar búsqueda
+    //this.buscarCitasFiltro();
+  }
+  changeProfesional() {
+    console.log(this.comboSeleccionadoProf);
+    //aca debemos filtrar los tdas de este medico
+    this.filtrarTDAProfesional(this.comboSeleccionadoProf);
+    //aca realizar búsqueda
+    //this.buscarCitasFiltro();
+  }
+  filtrarTDAProfesional(nombreProfesional) {
+    this.crearTiposAtencionInicial();
+    //agregamos los tdas sólo del medico
+    var citas = sessionStorage.getItem('CITAS_DISPONIBLES') ? JSON.parse(sessionStorage.getItem('CITAS_DISPONIBLES')) : [];
+    var contador = 1;
+    if (citas) {
+      citas.forEach(cita => {
+        if (cita.NombreCompletoMedico.toLowerCase() == nombreProfesional.toLowerCase()) {
+          var tda = this.tiposAtencion.filter(t => t.Texto == cita.TipoAtencion);
+          if (tda.length == 0) {
+            var entidad = {
+              Texto: cita.TipoAtencion,
+              Valor: contador,
+              Selected: false
+            }
+            this.tiposAtencion.push(entidad);
+          }
+          contador++;
+        }
+
+      });
+    }
+  }
+  crearTiposAtencionInicial() {
+    //var arr = [];
+    this.tiposAtencion = [];
+    var entidadInicial = {
+      Texto: 'Selecciona...',
+      Valor: 0,
+      Selected: true
+    }
+    this.tiposAtencion.push(entidadInicial);
+    this.idComboSeleccionado = 0;
+  }
+  mostrarChips() {
+    var ocultar = true;
+    if (this.comboSeleccionadoProf != '' || this.comboSeleccionado != 'Selecciona...'
+        || this.comboSeleccionadoDias != '' || this.comboSeleccionadoFecha != ''
+        || this.comboSeleccionadoHorario != '') {
+      ocultar = false;
+    }
+    return ocultar;
+  }
+
+  buscarCitasFiltro(event) {
+    this.mostrarProgress = true;
+    this.encontroCitas = false;
+    this.disabledCombo = true;
+    setTimeout(() => {
+      //console.log('Async operation has ended');
+
+      //event.target.complete();
+      this.mostrarProgress = false;
+      //this.encontroCitas = true;
+      //si existen citas hay que deshabilitar el control
+      this.disabledCombo = false;
+      this.indexarCitasFiltro();
+    }, 2000);
+
+  }
+  indexarCitasFiltro() {
+    //el tipo de atencion seleccionado
+    //HAY QUE AGREGAR LOS DEMAS FILTROS
+    //el filtro profesional
+    var usaTipoAtencion = this.comboSeleccionado == 'Selecciona...' ? false : true;
+    var usaProfesional = this.comboSeleccionadoProf == '' ? false : true;
+
+    var citasProcesar = [];
+    if (usaProfesional && usaTipoAtencion){
+      if (this.citas){
+        this.citas.forEach(cita => {
+            if (cita.NombreCompletoMedico.toLowerCase() == this.comboSeleccionadoProf.toLowerCase()
+            && cita.TipoAtencion.toLowerCase() == this.comboSeleccionado.toLowerCase()){
+              citasProcesar.push(cita);
+            }
+        }); 
+      }
+    }
+    else if (usaProfesional == false && usaTipoAtencion){
+      if (this.citas){
+        this.citas.forEach(cita => {
+            if (cita.TipoAtencion.toLowerCase() == this.comboSeleccionado.toLowerCase()){
+              citasProcesar.push(cita);
+            }
+        }); 
+      }
+    }
+    else if (usaProfesional && usaTipoAtencion == false){
+      if (this.citas){
+        this.citas.forEach(cita => {
+            if (cita.NombreCompletoMedico.toLowerCase() == this.comboSeleccionadoProf.toLowerCase()){
+              citasProcesar.push(cita);
+            }
+        }); 
+      }
+    }
+    else{
+      citasProcesar = this.citas;
+    }
+
+    this.citasFiltradas = [];
+    var indice = 1;
+    if (citasProcesar && citasProcesar.length > 0) {
+      citasProcesar.forEach(cita => {
+
+          //aca debemos aplicar los demas filtros, el primero es fecha inicio
+          var fechaCita = moment(cita.FechaHoraInicio);
+          var isAfter = moment(fechaCita.format()).isAfter(this.fechaInicioBusqueda);
+          //aca ya tenemos el segundo filtro importante
+          if (isAfter) {
+            //ahora debemos trabajar con los filtros de horario
+            //partimos con dia de la semana
+            if (this.diasBusqueda && this.diasBusqueda.length > 0) {
+              var diaSemana = fechaCita.day();
+              //console.log('dia semana ' + diaSemana + ' ' + fechaCita.format('DD-MM-YYYY'));
+              var existe = this.diasBusqueda.includes(diaSemana.toString());
+              //si el día de la semana existe se agrega
+              if (existe) {
+                //ahora aplicamos filtros de mañana y tarde
+                if (this.horarioBusqueda == 0) {
+                  cita.indice = indice;
+                  this.citasFiltradas.push(cita);
+                  indice++;
+                }
+                else {
+                  //busca mañana o tarde
+                  var hora = fechaCita.hour();
+                  var minute = fechaCita.minute();
+                  var horaEntera = this.utiles.convertirHoraInt(hora, minute);
+                  //deberia entregar 600 para las 6 am y 1800 para las 6 pm
+                  //por lo tanto todo aquello menor o igual 1200 es mañana
+                  if (this.horarioBusqueda == 1 && horaEntera <= 1200) {
+                    //mañana
+                    //console.log('mañana');
+                    cita.indice = indice;
+                    this.citasFiltradas.push(cita);
+                    indice++;
+                  }
+                  if (this.horarioBusqueda == 2 && horaEntera > 1200) {
+                    //tarde
+                    //console.log('tarde');
+                    cita.indice = indice;
+                    this.citasFiltradas.push(cita);
+                    indice++;
+                  }
+
+                }
+
+              }
+
+            }
+          }
+
+      });
+    }
+    if (indice > 2) {
+      this.encontroCitas = true;
+    }
+    //aca le ponemos limite a ala lista de citas filtradas
+    if (this.citasFiltradas && this.citasFiltradas.length > 0) {
+      this.citasFiltradasTop = this.citasFiltradas.slice(0, this.topLimit);
+    }
+  }
+  
+  limpiarFiltros(){
+    //metodos de limpieza
+    this.setFechasInicioFin();
+    this.tiposAtencion = sessionStorage.getItem('TIPOS_ATENCION_LOCAL') ? JSON.parse(sessionStorage.getItem('TIPOS_ATENCION_LOCAL')) : [];
+    this.comboSeleccionado = 'Selecciona...';
+    this.idComboSeleccionado = 0;
+    this.limpiarProfesional();
+    this.citasFiltradas = [];
+    this.encontroCitas = false;
+  }
+
 
   volver() {
     if (this.idUsuario == 0) {
@@ -97,12 +384,24 @@ export class BusquedaAvanzadaPage implements OnInit {
           this.codigoDeis = this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
           this.nodId = this.usuarioAps.ConfiguracionNodo.NodId;
         }
+        //parametros adicionales
+        this.profesional = params?.Profesional ? params.Profesional : '';
+        this.tipoAtencion = params?.TipoAtencion ? params.TipoAtencion : '';
       }
     });
+    console.log('profesional ' + this.profesional);
+    console.log('tipo atencion ' + this.tipoAtencion);
+    this.tiposAtencion = sessionStorage.getItem('TIPOS_ATENCION_LOCAL') ? JSON.parse(sessionStorage.getItem('TIPOS_ATENCION_LOCAL')) : [];
     //creamos tipo atencion inicial
-    this.crearTiposAtencion();
+    //this.crearTiposAtencion();
+    //nuevo, ojo con esto
+    //this.crearFiltros();
+    //***************** */
     this.setFechasInicioFin();
     this.citas = JSON.parse(sessionStorage.getItem('CITAS_DISPONIBLES'));
+    //nuevo
+    this.selectedTipoAtencion();
+    this.agregarProfesionales(this.citas);
 
   }
   setFechasInicioFin() {
@@ -110,7 +409,9 @@ export class BusquedaAvanzadaPage implements OnInit {
     this.fechaTermino = sessionStorage.getItem('FECHA_TERMINO_CONSULTA');
     //dejamos el horario busqueda por defecto en mañana
     this.horarioBusqueda = 0;
+    this.comboSeleccionadoHorario = this.entregaJornada(this.horarioBusqueda);
     this.diasBusqueda = ['1', '2', '3', '4', '5', '6', '7'];
+    this.comboSeleccionadoDias = this.entregaDiasSemana(this.diasBusqueda);
     this.fechaInicioBusqueda = this.fechaInicio;
   }
   indexarCitas() {
@@ -280,11 +581,23 @@ export class BusquedaAvanzadaPage implements OnInit {
     if (event.detail.value) {
       this.fechaInicioBusqueda = event.detail.value;
       //console.log(this.fechaInicioBusqueda);
+      var fechaActual = moment().format('YYYY-MM-DD');
+      var fechaComparar = moment(this.fechaInicioBusqueda).format('YYYY-MM-DD');
+      if (fechaActual != fechaComparar)
+      {
+        this.comboSeleccionadoFecha = 'Fecha inicio';
+      }
+      else{
+        this.comboSeleccionadoFecha = '';
+      }
+
     }
   }
   changeHorario(event) {
     if (event.detail.value) {
       this.horarioBusqueda = event.detail.value;
+      //el horario de busqueda es por defecto 0 (mañana)
+      this.comboSeleccionadoHorario = this.entregaJornada(this.horarioBusqueda);
       //console.log(this.horarioBusqueda);
     }
   }
@@ -292,8 +605,59 @@ export class BusquedaAvanzadaPage implements OnInit {
     if (event.detail.value) {
       this.diasBusqueda = event.detail.value;
       //console.log(this.diasBusqueda);
+      this.comboSeleccionadoDias = this.entregaDiasSemana(this.diasBusqueda);
     }
   }
 
+  entregaJornada(value){
+    var retorno = '';
+    if (value == '0'){
+      retorno = 'Todo el día';
+    }
+    else if (value == '1'){
+      retorno = 'Mañana';
+    }
+    else if (value == '2'){
+      retorno = 'Tarde'
+    }
+    return retorno;
+  }
+  entregaDiasSemana(array){
+    var retorno = '';
+    var arrDias = [];
+    if (array.length == 7){
+      retorno = 'Todos los días';
+    }
+    else{
+      array.forEach(dia => {
+        if (dia == '1'){
+          arrDias.push('Lu');
+        }
+        if (dia == '2'){
+          arrDias.push('Ma');
+        }
+        if (dia == '3'){
+          arrDias.push('Mi');
+        }
+        if (dia == '4'){
+          arrDias.push('Ju');
+        }
+        if (dia == '5'){
+          arrDias.push('Vi');
+        }
+        if (dia == '6'){
+          arrDias.push('Sa');
+        }
+        if (dia == '7'){
+          arrDias.push('Do');
+        }
+      });
+
+      retorno = arrDias.toString();
+
+      console.log(retorno);
+    }
+    return retorno;
+  }
 
 }

@@ -57,7 +57,8 @@ export class ResultadosPage implements OnInit {
     //this.navCtrl.navigateRoot('nuevo-login');
     const navigationExtras: NavigationExtras = {
       queryParams: {
-        usuario: JSON.stringify(this.usuarioAps)
+        usuario: JSON.stringify(this.usuarioAps),
+        actualiza: 'false'
       }
     }
     this.navCtrl.navigateRoot(['ordenes'], navigationExtras);

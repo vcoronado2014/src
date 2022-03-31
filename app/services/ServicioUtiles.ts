@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Platform, ToastController } from '@ionic/angular';
+import { Platform, ToastController, NavController } from '@ionic/angular';
 import { AppVersion } from '@ionic-native/app-version/ngx';
 import { Device } from '@ionic-native/device/ngx';
 import { Network } from '@ionic-native/network/ngx';
@@ -7,6 +7,9 @@ import * as moment from 'moment';
 import { environment } from '../../environments/environment';
 //servicio
 import { ServicioGeo } from '../services/ServicioGeo';
+import { ServicioAcceso } from '../services/ServicioAcceso';
+import { NavigationExtras } from '@angular/router';
+import { ServicioParametrosApp } from '../services/ServicioParametrosApp';
 
 @Injectable()
 export class ServicioUtiles{
@@ -36,7 +39,10 @@ export class ServicioUtiles{
         public toast: ToastController,
         public device: Device,
         private servicioGeo: ServicioGeo,
-        public network: Network
+        public network: Network,
+        private acceso: ServicioAcceso,
+        private navCtrl: NavController,
+        private paramettros : ServicioParametrosApp
     ){
       //inicializamos los valores
       moment.locale('es');
@@ -260,7 +266,7 @@ export class ServicioUtiles{
             src: 'familia',
             esSubMenu: true
         }
-        arrPages.push(pagConfigContacto); */
+        arrPages.push(pagConfigContacto); 
         
         var pagDos = {
             title: 'Términos y condiciones',
@@ -269,7 +275,19 @@ export class ServicioUtiles{
             icon: 'link',
             esSubMenu: false
         };
-        arrPages.push(pagDos);
+        arrPages.push(pagDos);*/
+
+        var usaContacto = this.paramettros.ENVIA_CORREO_CONTACTO();
+        if (usaContacto){
+            var pagDos = {
+                title: 'Contacto',
+                visible: true,
+                src:'contacto',
+                icon: 'mail',
+                esSubMenu: false
+            };
+            arrPages.push(pagDos);
+        }
 
         return arrPages;
     }
@@ -1134,6 +1152,256 @@ export class ServicioUtiles{
             Ambiente: ambiente
         }
         return entidad;
+    }
+    //nuevo método para eliminar registro
+    obtenerRegistro(){
+        return localStorage.getItem('REGISTRO') && localStorage.getItem('REGISTRO') != '' ? JSON.parse(localStorage.getItem('REGISTRO')) : null;
+    }
+    
+    limpiarCache(){
+        localStorage.clear();
+        sessionStorage.clear();
+    }
+
+    async presentToastWithOptions(titulo, mensaje, posicion, url, paciente) {
+        const toast = await this.toast.create({
+          header: titulo,
+          message: mensaje,
+          position: posicion,
+          buttons: [
+              {
+                  text: 'Cerrar',
+                  role: 'cancel',
+                  handler: () => {
+                      console.log('Cancel clicked');
+                      toast.dismiss();
+                  },
+              },
+              {
+                  side: 'end',
+                  text: 'Ver',
+                  role: 'alert',
+                  handler: () => {
+                      console.log('Favorite clicked');
+                      console.log(url);
+                      this.autentificarDirectoLogin(url, paciente);
+                      toast.dismiss();
+                  },
+              },
+
+          ],
+        });
+        await toast.present();
+      }
+
+    autentificarDirectoLogin(url, paciente) {
+        if (url) {
+            //obtenemos las variables
+            let correo = this.getNombreUsuario();
+            if (correo == '') {
+                //no se puede, ya que este parametro está vacío
+                this.presentToast('No ha recordado su nombre de usuario, no puede autentificarse', 'bottom', 4000);
+                return;
+            }
+
+            let password = this.encriptar(this.getPassword());
+            if (password == '') {
+                //no se puede, ya que este parametro está vacío
+                this.presentToast('No ha recordado su nombre de usuario, no puede autentificarse', 'bottom', 4000);
+                return;
+            }
+
+            this.irLogin(correo, password, paciente, url);
+
+        }
     }   
+    irLogin(user, password, paciente, url) {
+        const navigationExtras: NavigationExtras = {
+            queryParams: {
+                user: user,
+                password: password,
+                idUsp: paciente.Id,
+                url: url
+            }
+        };
+        this.navCtrl.navigateBack(['nuevo-login'], navigationExtras);
+    }
+
+    //metodos para filtrar citas
+    obtenerTdasProfesional(citasFiltradas, nombreProfesional){
+        var nuevoArreglo = [];
+        var cantidad = 0;
+        var cantidadProcesar = 3;
+        var arrTDAS = [];
+        if (citasFiltradas && citasFiltradas.length > 0){
+            citasFiltradas.forEach(cita => {
+                if (cita.NombreCompletoMedico.toLowerCase() == nombreProfesional.toLowerCase()){
+                    var tdas = arrTDAS.filter(t=>t.toLowerCase() == cita.TipoAtencion.toLowerCase());
+                    if (tdas.length == 0){
+                        arrTDAS.push(cita.TipoAtencion);
+                    }
+                }
+            });
+        }
+
+        cantidad = arrTDAS.length;
+        //hay que controlar la cantidad de citas de acuerdo al tipo de atencion
+        if (cantidad > 1 && cantidad <= 2){
+            cantidadProcesar = 3;
+        }
+        if (cantidad > 2 && cantidad <= 3){
+            cantidadProcesar = 2;
+        }
+        if (cantidad > 3){
+            cantidadProcesar = 1;
+        }
+
+
+        if (cantidad > 1){
+            //debemos recorrer las citas por tdas y obtener al menos las primeras 2 de cada una
+            arrTDAS.forEach(tda => {
+                var elemento = citasFiltradas.filter(c=>c.TipoAtencion.toLowerCase() == tda.toLowerCase());
+                //console.log(elemento);
+                //determinamos el largo de los elementos a obtener
+                var largo = elemento.length <= cantidadProcesar ? elemento.length : cantidadProcesar;
+                var arr = elemento.slice(0, largo);
+                //console.log(arr);
+                nuevoArreglo = nuevoArreglo.concat(arr);
+            });
+        }
+        else{
+            nuevoArreglo = citasFiltradas;
+        }
+        //console.log(nuevoArreglo);
+        this.indexarCitas(nuevoArreglo);
+        return nuevoArreglo;
+    }
+
+    obtenerProfesionalTdas(citasFiltradas, nombreTda){
+        var nuevoArreglo = [];
+        var cantidad = 0;
+        var cantidadProcesar = 3;
+        var arrProf = [];
+        if (citasFiltradas && citasFiltradas.length > 0){
+            citasFiltradas.forEach(cita => {
+                if (cita.TipoAtencion.toLowerCase() == nombreTda.toLowerCase()){
+                    var tdas = arrProf.filter(t=>t.toLowerCase() == cita.NombreCompletoMedico.toLowerCase());
+                    if (tdas.length == 0){
+                        arrProf.push(cita.NombreCompletoMedico);
+                    }
+                }
+            });
+        }
+
+        cantidad = arrProf.length;
+        //hay que controlar la cantidad de citas de acuerdo al tipo de atencion
+        if (cantidad > 1 && cantidad <= 2) {
+            cantidadProcesar = 3;
+        }
+        if (cantidad > 2 && cantidad <= 3) {
+            cantidadProcesar = 2;
+        }
+        if (cantidad > 3) {
+            cantidadProcesar = 1;
+        }
+        if (cantidad > 1){
+            //debemos recorrer las citas por tdas y obtener al menos las primeras 2 de cada una
+            arrProf.forEach(tda => {
+                var elemento = citasFiltradas.filter(c=>c.NombreCompletoMedico.toLowerCase() == tda.toLowerCase());
+                //console.log(elemento);
+                //determinamos el largo de los elementos a obtener
+                var largo = elemento.length <= cantidadProcesar ? elemento.length : cantidadProcesar;
+                var arr = elemento.slice(0, largo);
+                //console.log(arr);
+                nuevoArreglo = nuevoArreglo.concat(arr);
+            });
+        }
+        else{
+            nuevoArreglo = citasFiltradas;
+        }
+        //console.log(nuevoArreglo);
+        this.indexarCitas(nuevoArreglo);
+        return nuevoArreglo;
+    }
+
+    indexarCitas(citasFiltradas){
+        var contador = 1;
+        if (citasFiltradas && citasFiltradas.length > 0){
+            citasFiltradas.forEach(cita => {
+                cita.indice = contador;
+                contador++;
+            });
+        }
+    }
+
+    async obtenerParametrosNodo(){
+        if (!this.isAppOnDevice()) {
+            //llamada web
+            this.paramettros.getParametrosNodo().subscribe((response:any)=>{
+              //procesar
+              console.log(response);
+              var param = response?.ParametrosNodo ? response.ParametrosNodo : [];
+              var mcos =  response?.MotivosContacto ? response.MotivosContacto : [];
+
+              localStorage.setItem('PARAMETROS_NODO',JSON.stringify(param));
+              localStorage.setItem('MOTIVOS_CONTACTO',JSON.stringify(mcos)); 
+            })
+          }
+          else{
+            this.paramettros.getParametrosNodoNative().then((response:any)=>{
+                //procesar
+                var data = JSON.parse(response.data);
+                var param = data?.ParametrosNodo ? data.ParametrosNodo : [];
+                var mcos =  data?.MotivosContacto ? data.MotivosContacto : [];
+  
+                localStorage.setItem('PARAMETROS_NODO',JSON.stringify(param));
+                localStorage.setItem('MOTIVOS_CONTACTO',JSON.stringify(mcos)); 
+              })
+          }
+    }
+
+    entregaNodId() {
+        //buscamos al usuario en local sttorage
+        let nodId = 0;
+        if (localStorage.getItem('UsuarioAps')) {
+            var usu = JSON.parse(localStorage.getItem('UsuarioAps'));
+            if (usu) {
+                nodId = usu.NodId ? usu?.NodId : 0;
+            }
+        }
+        return nodId;
+    }
+
+    entregaUsuarioLogueado(){
+        return localStorage.getItem('UsuarioAps') ? JSON.parse(localStorage.getItem('UsuarioAps')) : null;
+    }
+    necesitaActualizarDatosRayen(){
+        var retorno = true;
+        var fechaActual = moment();
+        var fechaUltimaActualizacion = moment();
+        if (localStorage.getItem('DATOS_RAYEN_PACIENTES')) {
+            var tiene = false;
+            let pacientes = JSON.parse(localStorage.getItem('DATOS_RAYEN_PACIENTES'));
+            if (pacientes && pacientes.length > 0) {
+                    tiene = true;
+                
+            }
+            if (tiene == false) {
+                retorno = true;
+            }
+            else {
+                if (localStorage.getItem('FECHA_ACTUALIZACION_DATOS_RAYEN')) {
+                    fechaUltimaActualizacion = moment(localStorage.getItem('FECHA_ACTUALIZACION_DATOS_RAYEN'));
+                    var diferencia = fechaActual.diff(fechaUltimaActualizacion, 'minutes');
+                    if (diferencia < 5) {
+                        retorno = false;
+                    }
+                }
+            }
+
+        }
+        return retorno;
+    }
+    
 
 }
