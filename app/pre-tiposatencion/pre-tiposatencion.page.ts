@@ -1,7 +1,7 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { NavigationExtras } from '@angular/router';
 import { NavController, ToastController, Platform, ModalController, LoadingController, MenuController, IonItem } from '@ionic/angular';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RoutesRecognized } from '@angular/router';
 
 import { ServicioUtiles } from '../../app/services/ServicioUtiles';
 import { ServicioParametrosApp } from '../../app/services/ServicioParametrosApp';
@@ -16,6 +16,7 @@ import { environment } from 'src/environments/environment';
 //modal
 import { ModalOperacionCitaPage } from '../modal-operacion-cita/modal-operacion-cita.page';
 import {combineAll, map, startWith} from 'rxjs/operators';
+import { filter, pairwise } from 'rxjs/operators';
 
 @Component({
   selector: 'app-pre-tiposatencion',
@@ -57,6 +58,22 @@ export class PreTiposatencionPage implements OnInit {
   comboSeleccionadoProf = '';
   idComboSeleccionadoProf = 0;
   disabledComboProf = false;
+
+  private previousPage: string;
+
+  establecimientoRayen = null;
+  tieneEstablecimientoRayen = false;
+  tieneMedicoCabecera = false;
+  nombreMedicoCabecera = '';
+  idMedicoCabecera = 0;
+  direccionEstablecimiento = '';
+  nombreEstablecimiento = '';
+  tieneHorasMedicoCabecera = false;
+
+  textoBotonMostrarMedico = 'MOSTRAR';
+
+  ocultarFiltros = false;
+
   constructor(
     public navCtrl: NavController,
     public toast: ToastController,
@@ -73,6 +90,14 @@ export class PreTiposatencionPage implements OnInit {
     /* public global: ServicioGeo */
   ) { }
 
+  changeFiltros(){
+    if (this.ocultarFiltros){
+      this.ocultarFiltros = false;
+    }
+    else{
+      this.ocultarFiltros = true;
+    }
+  }
 
   async presentToastWithOptions(titulo, mensaje, posicion) {
     const toast = await this.toast.create({
@@ -264,6 +289,7 @@ export class PreTiposatencionPage implements OnInit {
     this.limpiarProfesional();
     this.citasFiltradas = [];
     this.encontroCitas = false;
+    this.textoBotonMostrarMedico = 'MOSTRAR';
 
   }
   entregaTiposAtencion(){
@@ -294,16 +320,38 @@ export class PreTiposatencionPage implements OnInit {
   }
   async load(){
     this.activatedRoute.queryParams.subscribe(async params => {
-      if (params && params.Id) {
+      if (params && params.Id && params.CodigoDeis && params.NodId) {
         //this.estaAgregandoFamilia = true;
         this.idConsultar = params.Id;
+        //nuevos
+        this.codigoDeis = params.CodigoDeis;
+        this.nodId = params.NodId;
+
+        //obtención del medico de cabecera del nodo y del usuario
+        this.establecimientoRayen = this.utiles.entregaEstablecimientoRayen(this.nodId, this.idConsultar);
+        console.log(this.establecimientoRayen);
+        this.tieneEstablecimientoRayen = this.establecimientoRayen && this.establecimientoRayen.id > 0 ? true : false;
+        this.tieneMedicoCabecera = this.establecimientoRayen && this.establecimientoRayen.idFuncionarioPrestadorCabecera > 0 ? true : false;
+        this.direccionEstablecimiento = this.establecimientoRayen && this.establecimientoRayen.direccion != '' ? this.establecimientoRayen.direccion : '';
+        this.nombreEstablecimiento = this.establecimientoRayen && this.establecimientoRayen.razonSocial != '' ? this.establecimientoRayen.razonSocial : '';
+
+        if (this.tieneMedicoCabecera){
+          this.nombreMedicoCabecera = this.establecimientoRayen && this.establecimientoRayen.nombreFuncionarioPrestadorCabecera != '' ?
+            this.establecimientoRayen.nombreFuncionarioPrestadorCabecera : '';
+          this.idMedicoCabecera = this.establecimientoRayen && this.establecimientoRayen.idFuncionarioPrestadorCabecera > 0 ? 
+            this.establecimientoRayen.idFuncionarioPrestadorCabecera : 0;
+        }
+        
+
         this.usuarioAps = this.utiles.entregaUsuario(params.Id);
         if (this.usuarioAps != null) {
           this.usuarioAps.UrlImagen = this.utiles.entregaImagen(this.usuarioAps);
           this.miColor = this.utiles.entregaColor(this.usuarioAps);
           this.runPaciente = this.utiles.insertarGuion(this.usuarioAps.Rut);
-          this.codigoDeis = this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
-          this.nodId = this.usuarioAps.ConfiguracionNodo.NodId;
+          //los comentamos ya que vienen por parametro
+          //this.codigoDeis = this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
+          //this.nodId = this.usuarioAps.ConfiguracionNodo.NodId;
+
           //creamos tipo atencion inicial
           //this.crearTiposAtencion();
           //nuevo metodo
@@ -328,6 +376,14 @@ export class PreTiposatencionPage implements OnInit {
 
   async ngOnInit() {
     moment.locale('es');
+    this.previousPage = null;
+    this.router.events
+    .pipe(filter((event: any) => event instanceof RoutesRecognized), pairwise())
+    .subscribe((events: RoutesRecognized[]) => {
+        this.previousPage = events[0].urlAfterRedirects;
+        sessionStorage.setItem('PREVIOUS_PAGE_TIPOS_ATENCION', this.previousPage);
+        console.log(this.previousPage);
+    });
     //debemos recibir por parametro al usuario que le conseguiremos la hora
     this.load();
 
@@ -417,8 +473,8 @@ export class PreTiposatencionPage implements OnInit {
           loader.dismiss();
           this.disabledCombo = false;
           this.mostrarProgressDisp = false;
-          //this.utiles.presentToast('Se ha producido un error al obtener disponibilidad', 'bottom', 2000);
-          this.presentToastWithOptions('Citas','Se ha producido un error al obtener disponibilidad', 'bottom');
+          this.utiles.presentToast('Se ha producido un error al obtener disponibilidad', 'bottom', 2000);
+          //this.presentToastWithOptions('Citas','Se ha producido un error al obtener disponibilidad', 'bottom');
         });
       }
       else {
@@ -431,8 +487,8 @@ export class PreTiposatencionPage implements OnInit {
           loader.dismiss();
           this.disabledCombo = false;
           this.mostrarProgressDisp = false;
-          //this.utiles.presentToast('Se ha producido un error al obtener disponibilidad', 'bottom', 2000);
-          this.presentToastWithOptions('Citas','Se ha producido un error al obtener disponibilidad', 'bottom');
+          this.utiles.presentToast('Se ha producido un error al obtener disponibilidad', 'bottom', 2000);
+          //this.presentToastWithOptions('Citas','Se ha producido un error al obtener disponibilidad', 'bottom');
         });
       }
     });
@@ -475,8 +531,12 @@ export class PreTiposatencionPage implements OnInit {
     }
   }
 
-  //este metodo se modifica para entregar información adicional
-  //tipo de atencion web, sector, nombre completo medico
+  //una vez procesada la respuesta hay que entregarle al usuario
+  //la posibilidad de filtrar por el médico de cabecera
+  //siempre y cuando en la disponibilidad hayan citas disponibles para ese profesional
+  //si hay se debe setear el medico por defecto si el usuario decida hacerlo
+  //si no hay se debe mostrar un mensaje indicando que tiene médico de ccabecera pero no hay oferta para el
+  //si no tiene médico de cabecera no se debe mostrar la alerta
   procesarRespuestaTotal(data, loader) {
     //vienen las citas sin fecha
     this.citas = [];
@@ -499,6 +559,11 @@ export class PreTiposatencionPage implements OnInit {
             cita.NombreCompletoMedico = nombre + ' ' + apellidos;
             cita.Sector = cita.Servicio?.NombreServicio ? cita.Servicio.NombreServicio : 'No definido';
             cita.TipoAtencionWeb = cita.TipoServicio?.Nombre ? cita.TipoServicio.Nombre : '';
+            if (this.idMedicoCabecera > 0 && this.nombreMedicoCabecera != ''){
+              if (this.nombreMedicoCabecera.toLowerCase().includes(cita.NombreCompletoMedico.toLowerCase())){
+                this.tieneHorasMedicoCabecera = true;
+              }
+            }
           });
         }
 
@@ -524,8 +589,9 @@ export class PreTiposatencionPage implements OnInit {
         this.disabledCombo = false;
         this.mostrarProgressDisp = false;
         this.mostrarProgress = false;
-        //this.utiles.presentToast('Ocurrió un error al obtener la disponibilidad de citas, inténtelo nuevamente', 'bottom', 4000);
-        this.presentToastWithOptions('Citas','Se ha producido un error al obtener disponibilidad', 'bottom');
+        var texto = data.Mensaje.Detalle && data.Mensaje.Detalle.Texto ? data.Mensaje.Detalle.Texto : 'Ocurrió un error al obtener la disponibilidad de citas, inténtelo nuevamente';
+        this.utiles.presentToast(texto, 'bottom', 4000);
+        //this.presentToastWithOptions('Citas','Se ha producido un error al obtener disponibilidad', 'bottom');
       }
       //error
     }
@@ -685,18 +751,53 @@ export class PreTiposatencionPage implements OnInit {
       queryParams: {
         Id: this.idConsultar,
         Profesional: this.comboSeleccionadoProf,
-        TipoAtencion: this.comboSeleccionado
+        TipoAtencion: this.comboSeleccionado,
+        CodigoDeis: this.codigoDeis,
+        NodId: this.nodId
       }
     };
     this.navCtrl.navigateRoot(['busqueda-avanzada'], navigationExtras);
   }
   irAHome(){
-    const navigationExtras: NavigationExtras = {
-      queryParams: {
-        idUsp: this.idConsultar
-      }
-    };
-    this.navCtrl.navigateBack(['calendario'], navigationExtras);
+    //aca lo correcto sería enviarlo a la página de selección de nodos
+    var pagPrevia = this.getPreviousUrl();
+    if (pagPrevia != null && pagPrevia.includes('modal-nodo')){
+      ///modal-nodo?Id=14685144
+        const navigationExtras: NavigationExtras = {
+          queryParams: {
+            Id: this.idConsultar
+          }
+        };
+        this.navCtrl.navigateBack(['modal-nodo'], navigationExtras);
+    }
+    else{
+      const navigationExtras: NavigationExtras = {
+        queryParams: {
+          idUsp: this.idConsultar
+        }
+      };
+      this.navCtrl.navigateBack(['calendario'], navigationExtras);
+    }
+
+  }
+  public getPreviousUrl() {
+    var prev = sessionStorage.getItem('PREVIOUS_PAGE_TIPOS_ATENCION') ? sessionStorage.getItem('PREVIOUS_PAGE_TIPOS_ATENCION') : null;
+    return prev;
+  }
+  seleccionarHorasDelMedico(){
+    console.log(this.establecimientoRayen);
+    if (this.nombreMedicoCabecera != ''){
+      this.comboSeleccionadoProf = this.nombreMedicoCabecera;
+      this.profesionalesFiltrados = this.profesionales;
+      var item = {
+        srcElement : {
+          value: this.nombreMedicoCabecera
+        }
+      };
+      this.filterList(item);
+      this.buscarCitasFiltro();
+      this.textoBotonMostrarMedico = 'VOLVER A MOSTRAR';
+    }
   }
 
 }

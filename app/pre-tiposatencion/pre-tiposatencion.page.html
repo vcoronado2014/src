@@ -6,7 +6,37 @@
     <ion-title class="fcw">Reserva de horas</ion-title>
   </ion-toolbar>
   <ion-toolbar>
-    <mat-form-field appearance="fill" class="field-tipo-atencion-prof">
+    <ion-item lines="none" *ngIf="tieneEstablecimientoRayen">
+      <ion-avatar slot="start">
+        <img src="../../assets/imgs_nuevas/atenciones.png" />
+      </ion-avatar>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="10" class="ion-no-padding">
+            <div class="text-avatar">{{nombreEstablecimiento}}</div>
+            <div class="subtext-avatar" *ngIf="direccionEstablecimiento != ''">{{direccionEstablecimiento}}</div>
+          </ion-col>
+          <ion-col size="2" class="ion-no-padding ion-text-end">
+            <ion-icon name="options-outline" style="font-size: 2em; color:#000000DE;" (click)="changeFiltros()"></ion-icon>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+    <ion-item lines="none" *ngIf="tieneMedicoCabecera && mostrarProgressDisp == false && ocultarFiltros == false">
+      <ion-row style="display: block; width: 100%;" *ngIf="tieneHorasMedicoCabecera">
+        <div class="text-avatar ion-text-wrap ion-padding">Tu médico de cabecera es {{nombreMedicoCabecera}} él cuenta con horas disponibles. ¿Deseas consultar sus horas?</div>
+        <ion-row>
+          <ion-col class="ion-float-right ion-text-end">
+            <a mat-raised-button style="float:right; margin:8px;" 
+            (click)="seleccionarHorasDelMedico()">{{textoBotonMostrarMedico}}</a>
+          </ion-col>
+        </ion-row>
+      </ion-row>
+      <ion-row style="display: block; width: 100%;" *ngIf="!tieneHorasMedicoCabecera">
+        <div class="text-avatar ion-text-wrap ion-padding">Tienes a {{nombreMedicoCabecera}} como médico de cabecera, sin embargo este profesional no cuenta con horas disponibles.</div>
+      </ion-row>
+    </ion-item>
+    <mat-form-field appearance="fill" class="field-tipo-atencion-prof" *ngIf="ocultarFiltros == false">
       <mat-label>Profesional</mat-label>
       <input type="text" class="ion-text-capitalize" [disabled]="disabledCombo" placeholder="Profesional"
         aria-label="Number" matInput [(ngModel)]="comboSeleccionadoProf" (keyup)="filterList($event)"
@@ -22,14 +52,14 @@
       </mat-autocomplete>
     </mat-form-field>
 
-    <mat-form-field appearance="fill" class="field-tipo-atencion-tda">
+    <mat-form-field appearance="fill" class="field-tipo-atencion-tda"  *ngIf="ocultarFiltros == false">
       <mat-label>Tipo atención</mat-label>
       <mat-select [disabled]="disabledCombo" [(ngModel)]="comboSeleccionado">
         <mat-option *ngFor="let tipo of tiposAtencion" [value]="tipo.Texto">{{tipo.Texto}}</mat-option>
       </mat-select>
     </mat-form-field>    
   </ion-toolbar>
-  <ion-item lines="none" style="margin-top: 8px;" [hidden]="mostrarChips()">
+  <ion-item lines="none" [hidden]="mostrarChips()">
     <ion-chip *ngIf="comboSeleccionadoProf != ''">
       <ion-label class="ion-text-capitalize">{{comboSeleccionadoProf}}</ion-label>
     </ion-chip>
@@ -37,12 +67,12 @@
       <ion-label class="ion-text-capitalize">{{comboSeleccionado}}</ion-label>
     </ion-chip>
   </ion-item>
-  <ion-item>
+  <ion-item *ngIf="ocultarFiltros == false">
     <a mat-raised-button style="margin:8px;" 
     (click)="btnLimpiarFiltros()" slot="end">LIMPIAR</a>
     <a mat-raised-button color="primary" slot="end" (click)="buscarCitasFiltro($event)">BUSCAR</a>
   </ion-item>
-  <ion-item lines="none" style="padding-top: 15px;">
+  <ion-item lines="none">
     <app-avatar [style]="false" [urlImagen] = "usuarioAps.UrlImagen" [nombreCompleto]="usuarioAps.Nombres + ' ' + usuarioAps.ApellidoPaterno + ' ' + usuarioAps.ApellidoMaterno" [parentezco]="usuarioAps.Parentezco.Nombre"></app-avatar>
   </ion-item>
 </ion-header>

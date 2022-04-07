@@ -1135,6 +1135,8 @@ export class NuevoLoginPage implements OnInit {
   }
 
   async onSubmit() {
+    ///vamos a iniciar firebase para que vuelva a tomar el token
+    this.fcmService.initFCM();
     //this.utiles.verificaInternet();
     var puede = true;
     if (this.utiles.isAppOnDevice()) {
@@ -1165,7 +1167,8 @@ export class NuevoLoginPage implements OnInit {
     }
   }
   async onSubmitRecordarme() {
-    //this.utiles.verificaInternet();
+    ///vamos a iniciar firebase para que vuelva a tomar el token
+    this.fcmService.initFCM();
     var puede = true;
     if (this.utiles.isAppOnDevice()) {
       if (sessionStorage.getItem('CONEXION')) {
@@ -1288,14 +1291,17 @@ export class NuevoLoginPage implements OnInit {
     if (retorno.FamiliaRechazada && retorno.FamiliaRechazada.length >= 0) {
       localStorage.setItem('FAMILIA-RECHAZADA', JSON.stringify(retorno.FamiliaRechazada));
     }
+    //parametros
+    localStorage.setItem('PARAMETROS_NODO',JSON.stringify(retorno.ParametrosNodo));
+    //motivos de contacto
+    localStorage.setItem('MOTIVOS_CONTACTO',JSON.stringify(retorno.MotivosContacto));
+
 
 
     this.CodigoMensaje = retorno.RespuestaBase.CodigoMensaje;
     this.Mensaje = retorno.RespuestaBase.Mensaje;
 
     this.loggedIn = true;
-    /*     this.fcmService.initFCM();
-        this.fcmService.receiveMessage(true); */
   }
 
   async llamadaObtenerPacienteRayen() {
@@ -1363,7 +1369,6 @@ export class NuevoLoginPage implements OnInit {
             this.setDatosUsuario(retorno, user, userFamilia);
             this.estaCargandoHome = false;
           }
-
         }
 
         //si tiene usuario está valido
@@ -1419,6 +1424,7 @@ export class NuevoLoginPage implements OnInit {
               tieneUsuario = true;
               this.setDatosUsuario(retorno, user, userFamilia);
               this.estaCargandoHome = false;
+
             }
             else {
               //no tiene entidad contratante
@@ -1446,7 +1452,6 @@ export class NuevoLoginPage implements OnInit {
         //guardamos el registro de session
         this.registrarEntrada();
         if (url == 'calendario'){
-          //this.irCalendario(uspId);
           this.irAHome();
         }
         else{
@@ -1477,6 +1482,7 @@ export class NuevoLoginPage implements OnInit {
       return;
     }
   }
+
   irAHome() {
     if (this.estaCargandoHome){
       this.estaCargandoHome = false;

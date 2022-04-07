@@ -57,7 +57,6 @@ export class AppComponent {
             //lo comentamos ya que las notificaciones se crearan mediante firebase
             //this.notificacion.buscarCitasTodasLocales();
             await this.utiles.obtenerParametrosApp(environment.production);
-            await this.utiles.obtenerParametrosNodo();
             await this.utiles.crearTokenPlano();
             this.fcmService.initFCM();
             this.fcmService.receiveMessage(true);
@@ -71,7 +70,6 @@ export class AppComponent {
         //lo comentamos ya que las notificaciones se crearan mediante firebase
         //this.notificacion.buscarCitasTodasLocales();
         await this.utiles.obtenerParametrosApp(environment.production);
-        await this.utiles.obtenerParametrosNodo();
         await this.utiles.crearTokenPlano();
         this.fcmService.initFCM();
         this.fcmService.receiveMessage(true);

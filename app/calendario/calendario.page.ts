@@ -1478,12 +1478,41 @@ agregarUnElemento(fechaHoy){
   openReservarHoraPage() {
     //si no tiene hay que enviarlo a buscar disponibilidad directo
     //pasando id
+    var usaOtrosNodos = this.parametrosApp.PERMITE_CITAR_OTROS_NODOS();
+    var establecimientos = this.utiles.obtenerEstablecimientosRayen(this.usuarioAps.Id);
+    if (usaOtrosNodos){
+      if (establecimientos.length <= 1){
+        this.abrirPreTiposAtencion();
+      }
+      else{
+        this.abrirSelecccionNodo();
+      }
+      
+    }
+    else{
+      //directo a los pre-tiposatencion
+      this.abrirPreTiposAtencion();
+    }
+    
+  }
+  abrirPreTiposAtencion(){
+    //debemos pasar el codigo deis 2014
+    const navigationExtras: NavigationExtras = {
+      queryParams: {
+        Id: this.usuarioAps.Id,
+        CodigoDeis: this.usuarioAps.ConfiguracionNodo.CodigoDeis2014,
+        NodId: this.usuarioAps.NodId
+      }
+    };
+    this.navCtrl.navigateRoot(['pre-tiposatencion'], navigationExtras);
+  }
+  abrirSelecccionNodo(){
     const navigationExtras: NavigationExtras = {
       queryParams: {
         Id: this.usuarioAps.Id
       }
     };
-    this.navCtrl.navigateRoot(['pre-tiposatencion'], navigationExtras);
+    this.navCtrl.navigateForward(['modal-nodo'], navigationExtras);
   }
 
   revisaEstado(item) {

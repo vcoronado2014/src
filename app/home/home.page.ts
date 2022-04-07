@@ -3,6 +3,7 @@ import { NavController, ToastController, Platform, ModalController, LoadingContr
 import { NavigationExtras } from '@angular/router';
 //inap
 import { InAppBrowser, InAppBrowserOptions } from '@ionic-native/in-app-browser/ngx';
+import { Router, RoutesRecognized } from '@angular/router';
 
 import { ServicioUtiles } from '../../app/services/ServicioUtiles';
 import { ServicioAcceso } from '../../app/services/ServicioAcceso';
@@ -18,6 +19,7 @@ import { ModalAlertasPage } from '../modal-alertas/modal-alertas.page';
 import { ModalCapsulasPage } from '../modal-capsulas/modal-capsulas.page';
 //moment
 import * as moment from 'moment';
+import { filter, pairwise } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -89,6 +91,10 @@ export class HomePage implements OnInit {
 
   //para las capsulas educativas
   usaCapsulasEducativas = false;
+  progressRayen = false;
+  pacientesRayen = [];
+  establecimientosRayen = [];
+  private previousPage: string;
 
   constructor(
     public navCtrl: NavController,
@@ -106,10 +112,20 @@ export class HomePage implements OnInit {
     public servNotificaciones: ServicioNotificaciones,
     public info: ServicioInfoUsuario,
     public inap: InAppBrowser,
+    private router: Router,
   ) { }
 
   ngOnInit() {
     moment.locale('es');
+    this.previousPage = null;
+
+    this.router.events
+    .pipe(filter((event: any) => event instanceof RoutesRecognized), pairwise())
+    .subscribe((events: RoutesRecognized[]) => {
+        this.previousPage = events[0].urlAfterRedirects;
+        console.log(this.previousPage);
+    });
+
     this.usaCapsulasEducativas = this.parametrosApp.USA_CAPSULAS_EDUCATIVAS();
     //obtención ruta acepto condiciones
     this.rutaAceptoCondiciones = this.parametrosApp.URL_ACEPTA_CONDICIONES();
@@ -137,7 +153,177 @@ export class HomePage implements OnInit {
     this.obtenerNotificacionesApiLocales();
     //nueva implementación
     this.miembrosPorAceptar();
+    if (this.utiles.necesitaActualizarDatosRayen(false))
+      this.llamadaObtenerPacienteRayen();
   }
+  public getPreviousUrl() {
+    return this.previousPage;
+  }
+  async obtenerEstablecimientosUsuarioRayen(){
+    this.establecimientosRayen = [];
+
+    this.progressRayen = true;
+    var establecimientos = [];
+    var tienePacienteRayen = this.pacientesRayen && this.pacientesRayen.length > 0 ? true: false;
+    if (tienePacienteRayen){
+      if (this.pacientesRayen && this.pacientesRayen.length > 0){
+        this.pacientesRayen.forEach(paciente => {
+          if (paciente && paciente.UsuariosNodo?.UsuarioNodo?.length > 0){
+            paciente.UsuariosNodo?.UsuarioNodo.forEach(nodo => {
+              var entidad = {
+                Id: nodo.IdNodo,
+                EsInscrito: nodo.EsInscrito,
+                IdFuncionarioPrestadorCabecera: nodo.IdFuncionarioPrestadorCabecera,
+                UspId: paciente.Id
+              };
+              //antes vamos a verificar si se inserta o no
+              if (this.utiles.verificaNodoRayenAgregar(paciente.Id, nodo.IdNodo)){
+                establecimientos.push(entidad);
+              }
+            });
+          }
+        });
+      }
+      //ahora tendriamos que traernos los nodos ccompletamente
+      console.log(establecimientos);
+      if (establecimientos && establecimientos.length > 0){
+        if (!this.utiles.isAppOnDevice()){
+          //web
+          this.servicioGeo.postEstablecimientosFork(establecimientos).subscribe((data:any)=>{
+            this.progressRayen = true;
+            if (data && data.length > 0){
+              var indice = 0;
+              data.forEach(nodo => {
+                if (nodo && nodo?.nodo){
+                  console.log(nodo.nodo);
+                  nodo.nodo.esInscrito = establecimientos[indice].EsInscrito;
+                  nodo.nodo.id = establecimientos[indice].Id;
+                  nodo.nodo.idFuncionarioPrestadorCabecera = establecimientos[indice].IdFuncionarioPrestadorCabecera;
+                  nodo.nodo.nombreFuncionarioPrestadorCabecera = nodo.nodo.nombreFuncionarioPrestadorCabecera;
+                  this.establecimientosRayen.push(nodo.nodo);
+                  indice++;
+                }
+      
+              });
+            }
+      
+            this.progressRayen = false;
+            //seteamos los nodos del usuario
+            sessionStorage.setItem('ESTABLECIMIENTOS_USUARIO_RAYEN', JSON.stringify(this.establecimientosRayen));
+      
+          }, error => {
+            console.log(error);
+            this.progressRayen = false;
+          });
+        }
+        else {
+          //nativa
+          this.servicioGeo.postEstablecimientosForkNative(establecimientos).subscribe((data: any) => {
+            //data es lo que hay que recorrer
+            this.progressRayen = true;
+            if (data && data.length > 0) {              
+/*               var datos = JSON.parse(data);
+              console.log(datos); */
+
+              var indice = 0;
+              data.forEach(datos => {
+                var nodo = JSON.parse(datos.data);
+                if (nodo && nodo?.nodo){
+                  console.log(nodo.nodo);
+                  nodo.nodo.esInscrito = establecimientos[indice].EsInscrito;
+                  nodo.nodo.id = establecimientos[indice].Id;
+                  nodo.nodo.idFuncionarioPrestadorCabecera = establecimientos[indice].IdFuncionarioPrestadorCabecera;
+                  nodo.nodo.nombreFuncionarioPrestadorCabecera = nodo.nodo.nombreFuncionarioPrestadorCabecera;
+                  this.establecimientosRayen.push(nodo.nodo);
+                  indice++;
+                }
+
+              });
+
+            }
+            this.progressRayen = false;
+            //seteamos los nodos del usuario
+            sessionStorage.setItem('ESTABLECIMIENTOS_USUARIO_RAYEN', JSON.stringify(this.establecimientosRayen));
+
+          }, error => {
+            console.log(error);
+            this.progressRayen = false;
+          })
+        }
+
+      }
+    }
+    else{
+      //obtenemos los nodos del paciente de accuerdo a lo registrado en
+      //la autentificación
+      var establecimientosR = this.utiles.entregaEstablecimientosUsuariosRayen();
+
+      sessionStorage.setItem('ESTABLECIMIENTOS_USUARIO_RAYEN', JSON.stringify(establecimientosR));
+
+    }
+
+    this.progressRayen = false;
+
+  }
+  async llamadaObtenerPacienteRayen() {
+    this.pacientesRayen = [];
+    //this.establecimientosRayen = [];
+    //obtenemos los usuarios
+    var usuarios = this.utiles.entregaArregloUsuarios();
+    this.progressRayen = true;
+
+
+        if (!this.utiles.isAppOnDevice()) {
+          //llamada web
+          this.servicioGeo.postPersonaRayenFork(usuarios).subscribe((responseList: any) => {
+            console.log(responseList);
+            if (responseList && responseList.length > 0){
+              responseList.forEach(usu => {
+                if (usu){
+                  let usuRayen = usu?.ObtenerUsuarioApsPorFiltroResponse?.usuarios?.UsuarioAps;
+                  console.log(usuRayen);
+                  this.pacientesRayen.push(usuRayen);
+                }
+
+              });
+            }
+            console.log(this.pacientesRayen);
+            sessionStorage.setItem('USUARIOS_RAYEN', JSON.stringify(this.pacientesRayen));
+            localStorage.setItem('FECHA_ACTUALIZACION_DATOS_RAYEN', moment().format('YYYY-MM-DD HH:mm'));
+            this.progressRayen = false;
+            //haremos la llamada para obtener los establecimientos
+            this.obtenerEstablecimientosUsuarioRayen();
+            //************************************************* */
+          }, error => {
+            console.log(error);
+            this.progressRayen = false;
+          })
+        }
+        else{
+          this.servicioGeo.postPersonaRayenForkNative(usuarios).subscribe((responseList: any) => {
+            if (responseList && responseList.length > 0){
+              responseList.forEach(usu => {
+                if (usu && usu.data){
+                  var data = JSON.parse(usu.data);
+                  let usuRayen = data?.ObtenerUsuarioApsPorFiltroResponse?.usuarios?.UsuarioAps;
+                  this.pacientesRayen.push(usuRayen);
+                }
+
+              });
+            }
+            sessionStorage.setItem('USUARIOS_RAYEN', JSON.stringify(this.pacientesRayen));
+            localStorage.setItem('FECHA_ACTUALIZACION_DATOS_RAYEN', moment().format('YYYY-MM-DD HH:mm'));
+            this.progressRayen = false;
+            //haremos la llamada para obtener los establecimientos
+            this.obtenerEstablecimientosUsuarioRayen();
+            //************************************************* */
+          }, error=>{
+            console.log(error);
+            this.progressRayen = false;
+          });
+        }
+  }
+
   obtenerDatosUsuarios() {
     this.arrMediciones = [];
     var arregloUsuarios = this.utiles.entregaArregloUsuarios();
@@ -281,6 +467,17 @@ export class HomePage implements OnInit {
     this.miColor = this.utiles.entregaColor(this.usuarioAps);
     this.miImagen = this.utiles.entregaImagen(this.usuarioAps)
     this.miNombre = this.utiles.entregaMiNombre();
+    //llamamos a actualizar las notificaciones si es que vienen desde la pag /quitar-familia
+    if (this.getPreviousUrl() == '/quitar-familia'){
+      //cuando volvemos de quitar familia se deben volver a obtener los pacientes rayen
+      //sin verificar la ultima fecha de actualizacion
+
+      if (this.progressRayen == false){
+        if (this.utiles.necesitaActualizarDatosRayen(true))
+          this.llamadaObtenerPacienteRayen();
+      }
+      this.obtenerNotificacionesApiLocales();
+    }
     console.log('will enter home');
     /*     this.obtenerDatosUsuarios();
         this.obtenerAlergiasPacientes();
@@ -478,29 +675,6 @@ export class HomePage implements OnInit {
     this.notificaciones = [];
     this.estaCargando = true;
     this.estaCargandoNotificaciones = true;
-    var annoConsultar = 0;
-    var mesConsultar = 0;
-    var fechaActual = moment();
-    var fechaEvaluar = moment().add(5, 'days');
-    var mesActual = {
-      mes: fechaActual.month() + 1,
-      anno: fechaActual.year()
-    };
-    var mesEvaluar = {
-      mes: fechaEvaluar.month() + 1,
-      anno: fechaEvaluar.year()
-    };
-    //debemos ver si en los 5 dias de diferencia hay dos meses o un mes
-    if (mesActual.mes == mesEvaluar.mes && mesActual.anno == mesEvaluar.anno) {
-      //es le mismo mes
-      mesConsultar = mesActual.mes;
-      annoConsultar = mesActual.anno;
-    }
-    else {
-      //hay diferencia, por tanto se toma el ultimo mes
-      mesConsultar = mesEvaluar.mes;
-      annoConsultar = mesEvaluar.anno;
-    }
     var ruts = this.servNotificaciones.entregaArregloRuts();
     if (!this.utiles.isAppOnDevice()) {
       //web

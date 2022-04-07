@@ -371,6 +371,10 @@ export class QuitarFamiliaPage implements OnInit {
     if (retorno.FamiliaRechazada && retorno.FamiliaRechazada.length >= 0) {
       localStorage.setItem('FAMILIA-RECHAZADA', JSON.stringify(retorno.FamiliaRechazada));
     }
+    //parametros
+    localStorage.setItem('PARAMETROS_NODO', JSON.stringify(retorno.ParametrosNodo));
+    //motivos de contacto
+    localStorage.setItem('MOTIVOS_CONTACTO', JSON.stringify(retorno.MotivosContacto));
 
 
     this.CodigoMensaje = retorno.RespuestaBase.CodigoMensaje;

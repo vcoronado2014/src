@@ -30,7 +30,7 @@ export class ServicioFCM{
         var tiempoExpiracion = this.parametros.TIEMPO_EXPIRACION_TOKEN_FCM();
 
         let token = localStorage.getItem('TOKEN_FIREBASE_MESSAGE') && localStorage.getItem('TOKEN_FIREBASE_MESSAGE') != '' && localStorage.getItem('TOKEN_FIREBASE_MESSAGE') != 'null'
-            ? localStorage.getItem('TOKEN_FIREBASE_MESSAGE') : null;
+            && localStorage.getItem('TOKEN_FIREBASE_MESSAGE') != 'NULL' ? localStorage.getItem('TOKEN_FIREBASE_MESSAGE') : '';
 
         if (token != null && localStorage.getItem('DATE_TOKEN_FIREBASE_MESSAGE')){
             //tiene token

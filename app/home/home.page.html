@@ -83,6 +83,7 @@
    </ion-toolbar>
  </ion-header>
  <ion-content class="card-background-page-home back-app" id="content">
+  <ion-progress-bar *ngIf="progressRayen" type="indeterminate"></ion-progress-bar>
    <ion-grid>
      <app-progress [mostrar]="estaCargando" titulo="Buscando preferencias"></app-progress>
      <ion-row [hidden]="estaCargando" class="ion-padding-top">

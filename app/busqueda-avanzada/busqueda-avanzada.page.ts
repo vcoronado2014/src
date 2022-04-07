@@ -65,6 +65,8 @@ export class BusquedaAvanzadaPage implements OnInit {
   comboSeleccionadoHorario = '';
   comboSeleccionadoDias = '';
 
+  ocultarFiltros = false;
+
   constructor(
     public navCtrl: NavController,
     public toast: ToastController,
@@ -79,6 +81,15 @@ export class BusquedaAvanzadaPage implements OnInit {
     public activatedRoute: ActivatedRoute,
     private router: Router,
   ) { }
+
+  changeFiltros(){
+    if (this.ocultarFiltros){
+      this.ocultarFiltros = false;
+    }
+    else{
+      this.ocultarFiltros = true;
+    }
+  }
 
   agregarProfesionales(data) {
     var contador = 1;
@@ -359,12 +370,14 @@ export class BusquedaAvanzadaPage implements OnInit {
 
   volver() {
     if (this.idUsuario == 0) {
-      this.navCtrl.navigateRoot('pre-tiposatencion');
+      this.navCtrl.navigateRoot('home');
     }
     else {
       const navigationExtras: NavigationExtras = {
         queryParams: {
-          Id: this.idUsuario
+          Id: this.idUsuario,
+          CodigoDeis: this.codigoDeis,
+          NodId: this.nodId
         }
       };
       this.navCtrl.navigateRoot(['pre-tiposatencion'], navigationExtras);
@@ -373,16 +386,18 @@ export class BusquedaAvanzadaPage implements OnInit {
   ngOnInit() {
     moment.locale('es');
     this.activatedRoute.queryParams.subscribe(async params => {
-      if (params && params.Id) {
+      if (params && params.Id && params.CodigoDeis && params.NodId) {
         this.idUsuario = params.Id
+        this.codigoDeis = params.CodigoDeis;
+        this.nodId = params.NodId;
         this.usuarioAps = this.utiles.entregaUsuario(params.Id);
         if (this.usuarioAps) {
           //this.usuarioAps.UrlImagen = this.utiles.entregaMiImagen();
           this.usuarioAps.UrlImagen = this.utiles.entregaImagen(this.usuarioAps);
           this.miColor = this.utiles.entregaColor(this.usuarioAps);
           this.runPaciente = this.utiles.insertarGuion(this.usuarioAps.Rut);
-          this.codigoDeis = this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
-          this.nodId = this.usuarioAps.ConfiguracionNodo.NodId;
+/*           this.codigoDeis = this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
+          this.nodId = this.usuarioAps.ConfiguracionNodo.NodId; */
         }
         //parametros adicionales
         this.profesional = params?.Profesional ? params.Profesional : '';

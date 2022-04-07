@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HTTP } from '@ionic-native/http/ngx';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { forkJoin } from 'rxjs';
 
 @Injectable()
 export class ServicioGeo{
@@ -450,7 +451,7 @@ export class ServicioGeo{
   }
 
     //para contacto
-    postContacto(nodId, correoOrigen, correoDestino, nombreEstablecimiento, telefono, tokenFcm, contenido, nombreEmisor, mcoId, eliminado) {
+    postContacto(nodId, correoOrigen, correoDestino, nombreEstablecimiento, telefono, tokenFcm, contenido, nombreEmisor, mcoId, eliminado, run) {
       //realizar la llamada post a la api
       const body = JSON.stringify(
         {
@@ -463,7 +464,8 @@ export class ServicioGeo{
           "Contenido": contenido,
           "NombreEmisor": nombreEmisor,
           "McoId": mcoId.toString(),
-          "Eliminado": eliminado.toString()
+          "Eliminado": eliminado.toString(),
+          "Run": run,
         });
   
       let url = environment.API_ENDPOINT + 'Contacto';
@@ -481,7 +483,7 @@ export class ServicioGeo{
       return data;
   
     }
-    postContactoNative(nodId, correoOrigen, correoDestino, nombreEstablecimiento, telefono, tokenFcm, contenido, nombreEmisor, mcoId, eliminado){
+    postContactoNative(nodId, correoOrigen, correoDestino, nombreEstablecimiento, telefono, tokenFcm, contenido, nombreEmisor, mcoId, eliminado, run){
       //realizar la llamada post nativa
       const headers = new Headers;
       const body =
@@ -495,7 +497,8 @@ export class ServicioGeo{
         "Contenido": contenido,
         "NombreEmisor": nombreEmisor,
         "McoId": mcoId.toString(),
-        "Eliminado": eliminado.toString()
+        "Eliminado": eliminado.toString(),
+        "Run": run
       };
   
       let url = environment.API_ENDPOINT + 'Contacto';
@@ -579,4 +582,150 @@ export class ServicioGeo{
       
           return this.http.post(url, body, {});
         }
+
+        postPersonaRayenFork(usuarios) {
+          var arrDatos = [];
+          let url = environment.API_ENDPOINT + 'ObtenerPersonaApi';
+
+          let httpHeaders = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          });
+          httpHeaders.set('Access-Control-Allow-Origin', '*');
+          httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+          httpHeaders.set("Access-Control-Allow-Headers", "*");
+      
+          let options = { headers: httpHeaders };
+
+
+          if (usuarios && usuarios.length > 0) {
+            usuarios.forEach(usu => {
+              const body = JSON.stringify(
+                {
+                  "UspId": usu.Id.toString()
+                });
+
+                arrDatos.push(this.httpClient.post(url, body, options));
+
+            });
+          }
+
+          return forkJoin(arrDatos);
+
+      }
+      postPersonaRayenForkNative(usuarios) {
+        //realizar la llamada post nativa
+        var arrDatos = [];
+        const headers = new Headers;
+        let url = environment.API_ENDPOINT + 'ObtenerPersonaApi';
+        this.http.setDataSerializer('json');
+
+        if (usuarios && usuarios.length > 0) {
+          usuarios.forEach(usu => {
+            const body = 
+              {
+                "UspId": usu.Id.toString()
+              };
+
+              arrDatos.push(this.http.post(url, body, {}));
+
+          });
+        }
+
+        return forkJoin(arrDatos);
+  
+    }
+    postEstablecimientosFork(establecimientos) {
+      var arrDatos = [];
+      let url = environment.API_ENDPOINT + 'ObtenerEstablecimientoApi';
+
+      let httpHeaders = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      });
+      httpHeaders.set('Access-Control-Allow-Origin', '*');
+      httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+      httpHeaders.set("Access-Control-Allow-Headers", "*");
+  
+      let options = { headers: httpHeaders };
+
+
+      if (establecimientos && establecimientos.length > 0) {
+        establecimientos.forEach(usu => {
+          const body = JSON.stringify(
+            {
+              "NodId": usu.Id.toString(),
+              "UspId": usu.UspId.toString(),
+              "IdFuncionarioPrestadorCabecera": usu.IdFuncionarioPrestadorCabecera.toString()
+            });
+
+            arrDatos.push(this.httpClient.post(url, body, options));
+
+        });
+      }
+
+      return forkJoin(arrDatos);
+
+  }
+  postEstablecimientosForkNative(establecimientos) {
+    //realizar la llamada post nativa
+    var arrDatos = [];
+    const headers = new Headers;
+    let url = environment.API_ENDPOINT + 'ObtenerEstablecimientoApi';
+    this.http.setDataSerializer('json');
+
+    if (establecimientos && establecimientos.length > 0) {
+      establecimientos.forEach(usu => {
+        const body =
+        {
+          "NodId": usu.Id.toString(),
+          "UspId": usu.UspId.toString(),
+          "IdFuncionarioPrestadorCabecera": usu.IdFuncionarioPrestadorCabecera.toString()
+        };
+
+        arrDatos.push(this.http.post(url, body, {}));
+
+      });
+    }
+
+    return forkJoin(arrDatos);
+
+  }
+
+  postFuncionarioRayen(fnpId) {
+    //realizar la llamada post a la api
+    const body = JSON.stringify(
+      {
+        "FnpId": fnpId.toString()
+      });
+
+    let url = environment.API_ENDPOINT + 'ObtenerFuncionarioApi';
+    let httpHeaders = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache'
+    });
+    httpHeaders.set('Access-Control-Allow-Origin', '*');
+    httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+    httpHeaders.set("Access-Control-Allow-Headers", "*");
+
+    let options = { headers: httpHeaders };
+
+    let data = this.httpClient.post(url, body, options);
+    return data;
+
+  }
+  postFuncionarioRayenNative(fnpId){
+    //realizar la llamada post nativa
+    const headers = new Headers;
+    const body =
+    {
+      "FnpId": fnpId.toString(),
+    };
+
+    let url = environment.API_ENDPOINT + 'ObtenerFuncionarioApi';
+    this.http.setDataSerializer('json');
+
+
+    return this.http.post(url, body, {});
+  }
 }

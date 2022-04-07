@@ -125,6 +125,10 @@ const routes: Routes = [
     loadChildren: () => import('./modal-alertas/modal-alertas.module').then( m => m.ModalAlertasPageModule)
   },
   {
+    path: 'modal-nodo',
+    loadChildren: () => import('./modal-seleccion-nodo/modal-seleccion-nodo.module').then( m => m.ModalSeleccionNodoPageModule)
+  },
+  {
     path: 'modal-capsulas',
     loadChildren: () => import('./modal-capsulas/modal-capsulas.module').then( m => m.ModalCapsulasPageModule)
   },

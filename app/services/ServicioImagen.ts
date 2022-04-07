@@ -37,21 +37,46 @@ export class ServicioImagen{
         let data = this.httpClient.post(url, model, options);
         return data;
     }
-    putImagenNative(uspId, files) {
+    preview(files: any) {
+        var retorno = {
+            Nombre: '',
+            FilePath: ''
+        };
+
+        if (files)
+            return retorno;
+
+        var mimeType = files.type;
+        if (mimeType.match(/image\/*/) == null) {
+            return retorno;
+        }
+
+        var reader = new FileReader();
+        var imagePath = files;
+        var nombreArchivo = files.name;
+        reader.readAsDataURL(files);
+        reader.onload = (_event) => {
+            //probando
+            imagePath = reader.result;
+            console.log(imagePath);
+            console.log(nombreArchivo);
+            retorno.FilePath = imagePath;
+            retorno.Nombre = nombreArchivo;
+
+            return retorno;
+        }
+    }
+    putImagenNative(uspId, filePath, fileName) {
         var model = new FormData();
         model.append("uspId", uspId);
-        model.append("fileName", files);
+        model.append("fileName", fileName);
 
         let url = environment.API_ENDPOINT + 'File';
-        var options = {
-            fileKey: "fileName",
-            fileName: files,
-            chunkedMode: false,
-            mimeType: "multipart/form-data",
-            params: { 'fileName': files, 'uspId': uspId }
+
+        let body = {
+            "uspId": uspId
         };
-        this.http.setDataSerializer('json');
-        return this.http.post(url, model, options);
+        return this.http.uploadFile(url, body, {}, filePath, fileName);
     }
     putColor(uspId, color) {
         const body = JSON.stringify({ UspId: uspId.toString(), Color: color });

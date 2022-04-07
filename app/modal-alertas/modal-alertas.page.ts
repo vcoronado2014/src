@@ -74,7 +74,15 @@ export class ModalAlertasPage implements OnInit {
   procesarAlertas() {
     if (this.notificaciones && this.notificaciones.length > 0) {
       this.notificaciones.forEach(alerta => {
-        let usu = this.utiles.entregaUsuarioNombre(alerta.Subtitulo);
+
+        let usu = null;
+        if (alerta.IrA == 'asociar-familia'){
+          //es una alerta que debe contener al mismo usuario logueado
+          usu = this.utiles.entregaUsuarioLogueado();
+        }
+        else{
+          usu = this.utiles.entregaUsuarioNombre(alerta.Subtitulo);
+        }
         alerta.UsuarioAps = usu == null ? null : usu;
         if (alerta.UsuarioAps != null) {
           alerta.UsuarioAps.UrlImagen = environment.URL_FOTOS + alerta.UsuarioAps.UrlImagen;

@@ -1,13 +1,15 @@
 <ion-header class="back-app">
     <ion-toolbar mode="md">
       <ion-buttons slot="start">
-       <!--  <ion-back-button defaultHref="/pre-tiposatencion" class="fcw"></ion-back-button> -->
         <ion-back-button (click)="volver()" defaultHref="/" class="fcw"></ion-back-button>
       </ion-buttons>
       <ion-title class="fcw">Búsqueda avanzada</ion-title>
+      <ion-buttons slot="end" class="pdr10" (click)="changeFiltros()">
+        <ion-icon class="fcw" slot="icon-only" name="options-outline"></ion-icon>
+      </ion-buttons>
     </ion-toolbar>
 
-    <ion-toolbar>
+    <ion-toolbar *ngIf="ocultarFiltros == false">
       <mat-form-field appearance="fill" class="field-tipo-atencion-prof">
         <mat-label>Profesional</mat-label>
         <input type="text" class="ion-text-capitalize" [disabled]="disabledCombo" placeholder="Profesional"
@@ -94,13 +96,13 @@
         </ion-chip>
       </ion-row>
     </ion-item>
-    <ion-item>
+    <ion-item *ngIf="ocultarFiltros == false">
       <a mat-raised-button style="margin:8px;" 
       (click)="limpiarFiltros()" slot="end">LIMPIAR</a>
       <a mat-raised-button color="primary" slot="end" (click)="buscarCitasFiltro($event)">BUSCAR</a>
     </ion-item>
 
-    <ion-item lines="none" style="padding-top: 15px;">
+    <ion-item lines="none">
       <app-avatar [style]="false" [urlImagen] = "usuarioAps.UrlImagen" [nombreCompleto]="usuarioAps.Nombres + ' ' + usuarioAps.ApellidoPaterno + ' ' + usuarioAps.ApellidoMaterno" [parentezco]="usuarioAps.Parentezco.Nombre"></app-avatar>
     </ion-item>    
   </ion-header>

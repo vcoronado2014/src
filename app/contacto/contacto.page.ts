@@ -80,7 +80,7 @@ export class ContactoPage implements OnInit {
         if (!this.utiles.isAppOnDevice()) {
           //llamada web
           this.servicioGeo.postContacto(nodId, correoOrigen, correoDestino, nombreEstablecimiento, 
-            telefono, tokenFcm, contenido, nombreEmisor, mcoId, 0).subscribe((response: any) => {
+            telefono, tokenFcm, contenido, nombreEmisor, mcoId, 0, run).subscribe((response: any) => {
             //procesar respuesta
             var datos = response;
             //this.procesarRespuesta(datos, loader, nombreSocial, telefono, email, run);
@@ -101,7 +101,7 @@ export class ContactoPage implements OnInit {
         else {
           //llamada nativa
           this.servicioGeo.postContactoNative(nodId, correoOrigen, correoDestino, nombreEstablecimiento, 
-            telefono, tokenFcm, contenido, nombreEmisor, mcoId, 0).then((response: any) => {
+            telefono, tokenFcm, contenido, nombreEmisor, mcoId, 0, run).then((response: any) => {
             //procesar respuesta
             var datos = JSON.parse(response.data);
             this.estaCargando = false;

@@ -68,7 +68,7 @@ export class AjustesFamiliaPage implements OnInit {
     this.fileP = $event.target.files[0];
 
     if (this.fileP) {
-      if (this.fileP.size <= 2048000) {
+      if (this.fileP.size <= 4096000) {
         this.putImagen(this.fileP);
       } else {
         //this.presentToast('El tamaño de la imágen excede el máximo permitido.'); 
@@ -80,7 +80,7 @@ export class AjustesFamiliaPage implements OnInit {
     }
   }
 
-  async putImagen(files) {
+  async putImagen(files:any) {
     var uspId = this.usuarioAps.Id.toString();
     //console.log(files.size);
     let loader = await this.loading.create({
@@ -92,7 +92,7 @@ export class AjustesFamiliaPage implements OnInit {
       if (!this.utiles.isAppOnDevice()) {
         //llamada web
         this.img.putImagen(uspId, files).subscribe((data: any) => {
-          if (data) {
+          if (data && data != '') {
             this.image = environment.URL_FOTOS + data;
             //cambiar la imagen del usuario aps
             //o de la familia
@@ -130,31 +130,37 @@ export class AjustesFamiliaPage implements OnInit {
 
 
             }
+            this.utiles.presentToast('Avatar guardado con éxito', 'bottom', 3000);
+          }
+          else{
+            this.utiles.presentToast('Ocurrió un error al guardar el archivo', 'bottom', 3000);
           }
           //terminamos loader
           loader.dismiss();
         })
       }
-      else {
-        //lamada nativa
-        this.img.putImagenNative(uspId, files).then((data: any) => {
-          if (data) {
-            this.image = environment.URL_FOTOS + JSON.parse(data.data);
+      else{
+        this.img.putImagen(uspId, files).subscribe((data: any) => {
+          if (data && data != '') {
+            this.image = environment.URL_FOTOS + data;
             //cambiar la imagen del usuario aps
             //o de la familia
             if (this.usuarioAps) {
               if (this.usuarioAps.UrlImagen) {
                 //dejamos al usuario con la nueva imagen
-                this.usuarioAps.UrlImagen = environment.URL_FOTOS + JSON.parse(data.data);
+                this.usuarioAps.UrlImagen = environment.URL_FOTOS + data;
               }
             }
             if (sessionStorage.UsuarioAps) {
               var nuevoUsuarioAps = JSON.parse(sessionStorage.UsuarioAps);
               //cambiamos este elemento solo si el usuario existe
               if (nuevoUsuarioAps.Id == uspId) {
-                nuevoUsuarioAps.UrlImagen = JSON.parse(data.data);
+                //nuevoUsuarioAps.UrlImagen = environment.URL_FOTOS + data;
+                nuevoUsuarioAps.UrlImagen = data;
                 //debemos guardar el objeto serializado
                 sessionStorage.setItem('UsuarioAps', JSON.stringify(nuevoUsuarioAps));
+                //gurdamos mi imagen en local storage
+                localStorage.setItem('MI_IMAGEN', data);
               }
               else {
                 //si no es el mismo hay que buscarlo en la lista de familia y cambiarlo
@@ -162,7 +168,8 @@ export class AjustesFamiliaPage implements OnInit {
                 if (usuariosFamilia && usuariosFamilia.length > 0) {
                   usuariosFamilia.forEach(usuario => {
                     if (usuario.Id == uspId) {
-                      usuario.UrlImagen = JSON.parse(data.data);
+                      //usuario.UrlImagen = environment.URL_FOTOS + data;
+                      usuario.UrlImagen = data;
                     }
                   });
                   //ahora serializamos y cambiamos
@@ -170,15 +177,20 @@ export class AjustesFamiliaPage implements OnInit {
                 }
               }
 
+
             }
+            this.utiles.presentToast('Avatar guardado con éxito', 'bottom', 3000);
+          }
+          else{
+            this.utiles.presentToast('Ocurrió un error al guardar el archivo', 'bottom', 3000);
           }
           //terminamos loader
           loader.dismiss();
         })
-
       }
     });
   }
+
   async putColor() {
     var uspId = this.usuarioAps.Id.toString();
     var colorGuardar = this.color;

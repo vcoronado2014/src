@@ -1,0 +1,63 @@
+<ion-header class="back-app">
+    <ion-toolbar mode="md">
+        <ion-buttons slot="start">
+          <ion-back-button (click)="irAHome()" defaultHref="/calendario" class="fcw"></ion-back-button>
+        </ion-buttons>
+        <ion-title class="fcw">Selección</ion-title>
+      </ion-toolbar>
+      <ion-item lines="none" style="padding-top: 15px;">
+        <app-avatar [style]="false" [urlImagen] = "usuarioAps.UrlImagen" [nombreCompleto]="usuarioAps.Nombres + ' ' + usuarioAps.ApellidoPaterno + ' ' + usuarioAps.ApellidoMaterno" [parentezco]="usuarioAps.Parentezco.Nombre"></app-avatar>
+      </ion-item>
+  </ion-header>
+  
+  <ion-content class="back-app">
+    <div style="padding-top: 12px;" [hidden]="estaCargando">
+      <h4 class="m-16">A continuación podrás seleccionar el establecimiento donde quieres tomar una hora para tu atención.</h4>
+      <!-- acca el contenido para que el usuario seleccione el establecimiento -->
+      <div *ngFor="let nodo of listadoNodos">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title class="ion-text-capitalize">{{nodo.razonSocial.toLowerCase()}}</ion-card-title>
+            <ion-card-subtitle *ngIf="nodo.direccion.length > 5" class="ion-text-capitalize">{{nodo.direccion.toLowerCase()}}</ion-card-subtitle>
+            <ion-card-subtitle *ngIf="nodo.direccion.length <= 5">No registra dirección</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+              <ion-row *ngIf="nodo.esInscrito">
+                  En este establecimiento estás inscrito. 
+                  <div *ngIf="nodo.idFuncionarioPrestadorCabecera && nodo.idFuncionarioPrestadorCabecera > 0">Tienes como médico de cabecera a {{nodo.nombreFuncionarioPrestadorCabecera}}</div>
+              </ion-row>
+              <ion-row *ngIf="!nodo.esInscrito">
+                En este establecimiento estás adscrito.
+                <div *ngIf="nodo.idFuncionarioPrestadorCabecera && nodo.idFuncionarioPrestadorCabecera > 0">Tienes como médico de cabecera a {{nodo.nombreFuncionarioPrestadorCabecera}}</div>
+              </ion-row>
+
+              <ion-row style="float: right;">
+                  <a class="ion-margin-bottom ion-margin-top" (click)="irAReservar(nodo)">TOMAR HORA</a> 
+              </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </div>
+<!--       <div>
+        <ion-grid>
+          <ion-row class="ion-no-padding ion-no-margin row-card">
+            <mat-card *ngFor="let nodo of listadoNodos" color="light" style="margin-bottom: 8px;" id="myListCard">
+              <mat-card-header>
+                  <mat-card-subtitle *ngIf="nodo.esInscrito" class="hora">Inscrito</mat-card-subtitle>
+                  <mat-card-subtitle *ngIf="!nodo.esInscrito" class="hora">Adscrito</mat-card-subtitle>
+                  <mat-card-title class="ion-text-capitalize">{{nodo.razonSocial.toLowerCase()}}</mat-card-title>
+                  <mat-card-subtitle *ngIf="nodo.direccion.length > 5" class="ion-text-capitalize">{{nodo.direccion}}</mat-card-subtitle>
+                  <mat-card-subtitle *ngIf="nodo.direccion.length <= 5" class="ion-text-capitalize">No registrada</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-actions>
+                <button color="primary" mat-button (click)="irAReservar(nodo)">VER DISPONIBILIDAD</button>
+              </mat-card-actions>
+            </mat-card>
+          </ion-row>
+        </ion-grid>
+      </div> -->
+
+
+
+    </div>
+ 
+  </ion-content>

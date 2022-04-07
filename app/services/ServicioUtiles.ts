@@ -1333,33 +1333,6 @@ export class ServicioUtiles{
             });
         }
     }
-
-    async obtenerParametrosNodo(){
-        if (!this.isAppOnDevice()) {
-            //llamada web
-            this.paramettros.getParametrosNodo().subscribe((response:any)=>{
-              //procesar
-              console.log(response);
-              var param = response?.ParametrosNodo ? response.ParametrosNodo : [];
-              var mcos =  response?.MotivosContacto ? response.MotivosContacto : [];
-
-              localStorage.setItem('PARAMETROS_NODO',JSON.stringify(param));
-              localStorage.setItem('MOTIVOS_CONTACTO',JSON.stringify(mcos)); 
-            })
-          }
-          else{
-            this.paramettros.getParametrosNodoNative().then((response:any)=>{
-                //procesar
-                var data = JSON.parse(response.data);
-                var param = data?.ParametrosNodo ? data.ParametrosNodo : [];
-                var mcos =  data?.MotivosContacto ? data.MotivosContacto : [];
-  
-                localStorage.setItem('PARAMETROS_NODO',JSON.stringify(param));
-                localStorage.setItem('MOTIVOS_CONTACTO',JSON.stringify(mcos)); 
-              })
-          }
-    }
-
     entregaNodId() {
         //buscamos al usuario en local sttorage
         let nodId = 0;
@@ -1375,33 +1348,121 @@ export class ServicioUtiles{
     entregaUsuarioLogueado(){
         return localStorage.getItem('UsuarioAps') ? JSON.parse(localStorage.getItem('UsuarioAps')) : null;
     }
-    necesitaActualizarDatosRayen(){
+    //los datos de rayen los dejaremos en sesion, solo se deberían actualizar cuando
+    //se agregan miembros de la familia, ahi se fuerza la acctualizacion
+    necesitaActualizarDatosRayen(fuerzaActualizacion) {
         var retorno = true;
-        var fechaActual = moment();
-        var fechaUltimaActualizacion = moment();
-        if (localStorage.getItem('DATOS_RAYEN_PACIENTES')) {
-            var tiene = false;
-            let pacientes = JSON.parse(localStorage.getItem('DATOS_RAYEN_PACIENTES'));
-            if (pacientes && pacientes.length > 0) {
+        if (fuerzaActualizacion) {
+            return retorno;
+        }
+        else {
+            if (sessionStorage.getItem('USUARIOS_RAYEN')) {
+                var tiene = false;
+                let pacientes = JSON.parse(sessionStorage.getItem('USUARIOS_RAYEN'));
+                if (pacientes && pacientes.length > 0) {
                     tiene = true;
-                
+                }
+                if (tiene == false) {
+                    retorno = true;
+                }
+                else {
+                    retorno = false;
+                }
             }
-            if (tiene == false) {
-                retorno = true;
+        }
+
+
+        return retorno;
+    }
+
+    obtenerEstablecimientosRayen(uspId){
+        var array = sessionStorage.getItem('ESTABLECIMIENTOS_USUARIO_RAYEN') ? JSON.parse(sessionStorage.getItem('ESTABLECIMIENTOS_USUARIO_RAYEN')) : [];
+        array = array.filter(e=>e.uspId == uspId);
+        return array;
+    }
+    
+    entregaEstablecimientosUsuariosRayen() {
+        //buscamos al usuario en local sttorage
+        var arreglo = [];
+        let usuario = null;
+        if (localStorage.getItem('UsuarioAps')) {
+            var usu = JSON.parse(localStorage.getItem('UsuarioAps'));
+            if (usu) {
+                if (usu.UsuarioNodos) {
+                    usu.UsuarioNodos.forEach(usuNodo => {
+                        var entidad = {
+                            codigoDeis2014: usuNodo.CodigoDeis2014,
+                            direccion: usuNodo.Direccion,
+                            razonSocial: usuNodo.RazonSocial,
+                            nodId: usuNodo.NodId,
+                            esInscrito: usuNodo.EsInscrito,
+                            idFuncionarioPrestadorCabecera: usuNodo.FnpIdCabecera,
+                            nombreFuncionarioPrestadorCabecera: usuNodo.NombreMedicoCabecera,
+                            uspId: usuNodo.UspId
+                        };
+
+                        arreglo.push(entidad);
+                    });
+                }
             }
-            else {
-                if (localStorage.getItem('FECHA_ACTUALIZACION_DATOS_RAYEN')) {
-                    fechaUltimaActualizacion = moment(localStorage.getItem('FECHA_ACTUALIZACION_DATOS_RAYEN'));
-                    var diferencia = fechaActual.diff(fechaUltimaActualizacion, 'minutes');
-                    if (diferencia < 5) {
-                        retorno = false;
+        }
+        if (localStorage.getItem('UsuariosFamilia')) {
+            var existe = false;
+            var usuarios = JSON.parse(localStorage.getItem('UsuariosFamilia'));
+            if (usuarios && usuarios.length > 0) {
+                for (var i = 0; i < usuarios.length; i++) {
+                    if (usuarios[i].UsuarioNodos) {
+                        usuarios[i].UsuarioNodos.forEach(usuNodo => {
+                            var entidad = {
+                                codigoDeis2014: usuNodo.CodigoDeis2014,
+                                direccion: usuNodo.Direccion,
+                                razonSocial: usuNodo.RazonSocial,
+                                nodId: usuNodo.NodId,
+                                esInscrito: usuNodo.EsInscrito,
+                                idFuncionarioPrestadorCabecera: usuNodo.FnpIdCabecera,
+                                nombreFuncionarioPrestadorCabecera: usuNodo.NombreMedicoCabecera,
+                                uspId: usuNodo.UspId
+                            };
+
+                            arreglo.push(entidad);
+                        });
+                    }
+
+                }
+            }
+        }
+        return arreglo;
+
+    }
+
+    entregaEstablecimientoRayen(nodId, uspId){
+        var retorno = null;
+        var establecimientos = sessionStorage.getItem('ESTABLECIMIENTOS_USUARIO_RAYEN') ?
+            JSON.parse(sessionStorage.getItem('ESTABLECIMIENTOS_USUARIO_RAYEN')) : [];
+        
+        if (establecimientos && establecimientos.length > 0){
+            retorno = establecimientos.filter(e=>e.nodId == nodId && e.uspId == uspId)[0];
+        }
+
+        return retorno;
+    }
+
+    verificaNodoRayenAgregar(uspId, nodId){
+        var agrega = false;
+        var usuario = this.entregaUsuario(uspId);
+        if (usuario && usuario.EntidadContratante && usuario.EntidadContratante.length > 0){
+            for(let contratante of usuario.EntidadContratante){
+                if (contratante.RelacionNodos && contratante.RelacionNodos.length > 0){
+                    for(let rl of contratante.RelacionNodos){
+                        if (rl.NodId == nodId){
+                            agrega = true;
+                            break;
+                        }
                     }
                 }
             }
-
         }
-        return retorno;
+        return agrega;
     }
-    
 
 }

@@ -237,4 +237,19 @@ export class ServicioParametrosApp{
         return retorno;
     }
 
+    PERMITE_CITAR_OTROS_NODOS = ()=>{
+        let retorno = false;
+        if (localStorage.getItem('PARAMETROS_NODO')){
+            let elementos = JSON.parse(localStorage.getItem('PARAMETROS_NODO'));
+            if (elementos && elementos.length > 0){
+                let arrRetorno = elementos.find(p=>p.Nombre == 'PERMITE_CITAR_OTROS_NODOS');
+                if (arrRetorno && arrRetorno.Id > 0){
+                    if (parseInt(arrRetorno.Valor) == 1)
+                        retorno = true;
+                }
+            }
+        } 
+        return retorno;
+    }
+
 }
