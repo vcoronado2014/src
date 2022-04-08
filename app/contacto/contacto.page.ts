@@ -24,8 +24,8 @@ export class ContactoPage implements OnInit {
   tituloProgress = '';
   usuarioAps;
 
-  motivos=[];
-  
+  motivos = [];
+
   constructor(
     private navCtrl: NavController,
     public utiles: ServicioUtiles,
@@ -41,9 +41,9 @@ export class ContactoPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    
+
     this.motivos = this.parametrosApp.entregaMotivosContacto();
-    console.log(this.motivos);
+    //console.log(this.motivos);
     this.usuarioAps = localStorage.getItem('UsuarioAps') ? JSON.parse(localStorage.getItem('UsuarioAps')) : null;
     if (this.usuarioAps != null) {
       this.usuarioAps.UrlImagen = this.utiles.entregaImagen(this.usuarioAps);
@@ -65,7 +65,7 @@ export class ContactoPage implements OnInit {
 
       //variables a enviar
       let nodId = this.usuarioAps.NodId;
-      let correoOrigen = this.usuarioAps.Email ?  this.usuarioAps.Email : '';
+      let correoOrigen = this.usuarioAps.Email ? this.usuarioAps.Email : '';
       let correoDestino = this.parametrosApp.URL_CORREO_CONTACTO();
       let nombreEstablecimiento = this.usuarioAps.Establecimiento ? this.usuarioAps.Establecimiento?.RazonSocial : '';
       let run = this.usuarioAps.Rut ? this.usuarioAps.Rut : '';
@@ -76,50 +76,50 @@ export class ContactoPage implements OnInit {
       let registro = this.utiles.obtenerRegistro();
       let telefono = registro ? registro?.TelefonoContacto : 'No registra';
 
-      if (correoDestino != ''){
+      if (correoDestino != '') {
         if (!this.utiles.isAppOnDevice()) {
           //llamada web
-          this.servicioGeo.postContacto(nodId, correoOrigen, correoDestino, nombreEstablecimiento, 
+          this.servicioGeo.postContacto(nodId, correoOrigen, correoDestino, nombreEstablecimiento,
             telefono, tokenFcm, contenido, nombreEmisor, mcoId, 0, run).subscribe((response: any) => {
-            //procesar respuesta
-            var datos = response;
-            //this.procesarRespuesta(datos, loader, nombreSocial, telefono, email, run);
-            this.estaCargando = false;
-            this.tituloProgress = '';
-            if (datos){
-              this.utiles.presentToast('Mensaje enviado con éxito', 'bottom', 4000);
-            }
-            this.irAHome();
+              //procesar respuesta
+              var datos = response;
+              //this.procesarRespuesta(datos, loader, nombreSocial, telefono, email, run);
+              this.estaCargando = false;
+              this.tituloProgress = '';
+              if (datos) {
+                this.utiles.presentToast('Mensaje enviado con éxito', 'bottom', 4000);
+              }
+              this.irAHome();
 
-          }, error => {
-            console.log(error.message);
-            this.estaCargando = false;
-            this.tituloProgress = '';
-            this.utiles.presentToast('Se presentó un error al guardar los datos, contacte al administrador', 'bottom', 2000);
-          })
+            }, error => {
+              console.log(error.message);
+              this.estaCargando = false;
+              this.tituloProgress = '';
+              this.utiles.presentToast('Se presentó un error al guardar los datos, contacte al administrador', 'bottom', 2000);
+            })
         }
         else {
           //llamada nativa
-          this.servicioGeo.postContactoNative(nodId, correoOrigen, correoDestino, nombreEstablecimiento, 
+          this.servicioGeo.postContactoNative(nodId, correoOrigen, correoDestino, nombreEstablecimiento,
             telefono, tokenFcm, contenido, nombreEmisor, mcoId, 0, run).then((response: any) => {
-            //procesar respuesta
-            var datos = JSON.parse(response.data);
-            this.estaCargando = false;
-            this.tituloProgress = '';
-            if (datos){
-              this.utiles.presentToast('Mensaje enviado con éxito', 'bottom', 4000);
-            }
-            this.irAHome();
+              //procesar respuesta
+              var datos = JSON.parse(response.data);
+              this.estaCargando = false;
+              this.tituloProgress = '';
+              if (datos) {
+                this.utiles.presentToast('Mensaje enviado con éxito', 'bottom', 4000);
+              }
+              this.irAHome();
 
-          }).catch(error => {
-            console.log(error.message);
-            this.estaCargando = false;
-            this.tituloProgress = '';
-            this.utiles.presentToast('Se presentó un error al guardar los datos, contacte al administrador', 'bottom', 2000);
-          })
+            }).catch(error => {
+              console.log(error.message);
+              this.estaCargando = false;
+              this.tituloProgress = '';
+              this.utiles.presentToast('Se presentó un error al guardar los datos, contacte al administrador', 'bottom', 2000);
+            })
         }
       }
-      else{
+      else {
         this.estaCargando = false;
         this.tituloProgress = '';
         this.utiles.presentToast('No hay correo de contacto, comuníquese con el administrador.', 'bottom', 4000);
@@ -134,7 +134,7 @@ export class ContactoPage implements OnInit {
 
   }
 
-  irAHome(){
+  irAHome() {
     this.navCtrl.navigateBack('home');
   }
 

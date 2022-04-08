@@ -138,7 +138,6 @@ export class ModalOperacionCitaPage implements OnInit {
       }
       else {
         //llamada nativa
-        //this.cargarDatosNative(mesConsultar, annoConsultar, loader);
         this.agendar.getOperacionCitaNative(idCita, idPaciente, accion, origenCita).then((responseData: any) => {
           var response = JSON.parse(responseData.data);
           this.procesarRespuesta(response, loader, accion);

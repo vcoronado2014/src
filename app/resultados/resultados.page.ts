@@ -41,15 +41,15 @@ export class ResultadosPage implements OnInit {
         if (this.resultados && this.resultados.length > 0){
           this.tiene = true;
         }
-        console.log(this.resultados);
+        //console.log(this.resultados);
       }
       if (params && params.nombreExamen) {
         this.nombreExamen = params.nombreExamen;
-        console.log(this.nombreExamen);
+        //console.log(this.nombreExamen);
       }
       if (params && params.usuario) {
         this.usuarioAps = JSON.parse(params.usuario);
-        console.log(this.usuarioAps);
+        //console.log(this.usuarioAps);
       }
     });
   }

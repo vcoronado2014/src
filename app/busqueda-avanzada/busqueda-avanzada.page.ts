@@ -82,11 +82,11 @@ export class BusquedaAvanzadaPage implements OnInit {
     private router: Router,
   ) { }
 
-  changeFiltros(){
-    if (this.ocultarFiltros){
+  changeFiltros() {
+    if (this.ocultarFiltros) {
       this.ocultarFiltros = false;
     }
-    else{
+    else {
       this.ocultarFiltros = true;
     }
   }
@@ -118,11 +118,11 @@ export class BusquedaAvanzadaPage implements OnInit {
 
     //sessionStorage.setItem('PROFESIONALES_ATENCION', JSON.stringify(this.profesionales));
     this.profesionalesFiltrados = this.profesionales;
-    console.log(this.profesionales);
+    //console.log(this.profesionales);
   }
 
   async filterList(item) {
-    console.log(item.srcElement.value);
+    //console.log(item.srcElement.value);
     if (item.srcElement.value != '') {
       this.profesionalesFiltrados = this.profesionales;
 
@@ -186,7 +186,7 @@ export class BusquedaAvanzadaPage implements OnInit {
     //this.buscarCitasFiltro();
   }
   changeProfesional() {
-    console.log(this.comboSeleccionadoProf);
+    //console.log(this.comboSeleccionadoProf);
     //aca debemos filtrar los tdas de este medico
     this.filtrarTDAProfesional(this.comboSeleccionadoProf);
     //aca realizar búsqueda
@@ -229,8 +229,8 @@ export class BusquedaAvanzadaPage implements OnInit {
   mostrarChips() {
     var ocultar = true;
     if (this.comboSeleccionadoProf != '' || this.comboSeleccionado != 'Selecciona...'
-        || this.comboSeleccionadoDias != '' || this.comboSeleccionadoFecha != ''
-        || this.comboSeleccionadoHorario != '') {
+      || this.comboSeleccionadoDias != '' || this.comboSeleccionadoFecha != ''
+      || this.comboSeleccionadoHorario != '') {
       ocultar = false;
     }
     return ocultar;
@@ -260,35 +260,35 @@ export class BusquedaAvanzadaPage implements OnInit {
     var usaProfesional = this.comboSeleccionadoProf == '' ? false : true;
 
     var citasProcesar = [];
-    if (usaProfesional && usaTipoAtencion){
-      if (this.citas){
+    if (usaProfesional && usaTipoAtencion) {
+      if (this.citas) {
         this.citas.forEach(cita => {
-            if (cita.NombreCompletoMedico.toLowerCase() == this.comboSeleccionadoProf.toLowerCase()
-            && cita.TipoAtencion.toLowerCase() == this.comboSeleccionado.toLowerCase()){
-              citasProcesar.push(cita);
-            }
-        }); 
+          if (cita.NombreCompletoMedico.toLowerCase() == this.comboSeleccionadoProf.toLowerCase()
+            && cita.TipoAtencion.toLowerCase() == this.comboSeleccionado.toLowerCase()) {
+            citasProcesar.push(cita);
+          }
+        });
       }
     }
-    else if (usaProfesional == false && usaTipoAtencion){
-      if (this.citas){
+    else if (usaProfesional == false && usaTipoAtencion) {
+      if (this.citas) {
         this.citas.forEach(cita => {
-            if (cita.TipoAtencion.toLowerCase() == this.comboSeleccionado.toLowerCase()){
-              citasProcesar.push(cita);
-            }
-        }); 
+          if (cita.TipoAtencion.toLowerCase() == this.comboSeleccionado.toLowerCase()) {
+            citasProcesar.push(cita);
+          }
+        });
       }
     }
-    else if (usaProfesional && usaTipoAtencion == false){
-      if (this.citas){
+    else if (usaProfesional && usaTipoAtencion == false) {
+      if (this.citas) {
         this.citas.forEach(cita => {
-            if (cita.NombreCompletoMedico.toLowerCase() == this.comboSeleccionadoProf.toLowerCase()){
-              citasProcesar.push(cita);
-            }
-        }); 
+          if (cita.NombreCompletoMedico.toLowerCase() == this.comboSeleccionadoProf.toLowerCase()) {
+            citasProcesar.push(cita);
+          }
+        });
       }
     }
-    else{
+    else {
       citasProcesar = this.citas;
     }
 
@@ -297,53 +297,53 @@ export class BusquedaAvanzadaPage implements OnInit {
     if (citasProcesar && citasProcesar.length > 0) {
       citasProcesar.forEach(cita => {
 
-          //aca debemos aplicar los demas filtros, el primero es fecha inicio
-          var fechaCita = moment(cita.FechaHoraInicio);
-          var isAfter = moment(fechaCita.format()).isAfter(this.fechaInicioBusqueda);
-          //aca ya tenemos el segundo filtro importante
-          if (isAfter) {
-            //ahora debemos trabajar con los filtros de horario
-            //partimos con dia de la semana
-            if (this.diasBusqueda && this.diasBusqueda.length > 0) {
-              var diaSemana = fechaCita.day();
-              //console.log('dia semana ' + diaSemana + ' ' + fechaCita.format('DD-MM-YYYY'));
-              var existe = this.diasBusqueda.includes(diaSemana.toString());
-              //si el día de la semana existe se agrega
-              if (existe) {
-                //ahora aplicamos filtros de mañana y tarde
-                if (this.horarioBusqueda == 0) {
+        //aca debemos aplicar los demas filtros, el primero es fecha inicio
+        var fechaCita = moment(cita.FechaHoraInicio);
+        var isAfter = moment(fechaCita.format()).isAfter(this.fechaInicioBusqueda);
+        //aca ya tenemos el segundo filtro importante
+        if (isAfter) {
+          //ahora debemos trabajar con los filtros de horario
+          //partimos con dia de la semana
+          if (this.diasBusqueda && this.diasBusqueda.length > 0) {
+            var diaSemana = fechaCita.day();
+            //console.log('dia semana ' + diaSemana + ' ' + fechaCita.format('DD-MM-YYYY'));
+            var existe = this.diasBusqueda.includes(diaSemana.toString());
+            //si el día de la semana existe se agrega
+            if (existe) {
+              //ahora aplicamos filtros de mañana y tarde
+              if (this.horarioBusqueda == 0) {
+                cita.indice = indice;
+                this.citasFiltradas.push(cita);
+                indice++;
+              }
+              else {
+                //busca mañana o tarde
+                var hora = fechaCita.hour();
+                var minute = fechaCita.minute();
+                var horaEntera = this.utiles.convertirHoraInt(hora, minute);
+                //deberia entregar 600 para las 6 am y 1800 para las 6 pm
+                //por lo tanto todo aquello menor o igual 1200 es mañana
+                if (this.horarioBusqueda == 1 && horaEntera <= 1200) {
+                  //mañana
+                  //console.log('mañana');
                   cita.indice = indice;
                   this.citasFiltradas.push(cita);
                   indice++;
                 }
-                else {
-                  //busca mañana o tarde
-                  var hora = fechaCita.hour();
-                  var minute = fechaCita.minute();
-                  var horaEntera = this.utiles.convertirHoraInt(hora, minute);
-                  //deberia entregar 600 para las 6 am y 1800 para las 6 pm
-                  //por lo tanto todo aquello menor o igual 1200 es mañana
-                  if (this.horarioBusqueda == 1 && horaEntera <= 1200) {
-                    //mañana
-                    //console.log('mañana');
-                    cita.indice = indice;
-                    this.citasFiltradas.push(cita);
-                    indice++;
-                  }
-                  if (this.horarioBusqueda == 2 && horaEntera > 1200) {
-                    //tarde
-                    //console.log('tarde');
-                    cita.indice = indice;
-                    this.citasFiltradas.push(cita);
-                    indice++;
-                  }
-
+                if (this.horarioBusqueda == 2 && horaEntera > 1200) {
+                  //tarde
+                  //console.log('tarde');
+                  cita.indice = indice;
+                  this.citasFiltradas.push(cita);
+                  indice++;
                 }
 
               }
 
             }
+
           }
+        }
 
       });
     }
@@ -355,8 +355,8 @@ export class BusquedaAvanzadaPage implements OnInit {
       this.citasFiltradasTop = this.citasFiltradas.slice(0, this.topLimit);
     }
   }
-  
-  limpiarFiltros(){
+
+  limpiarFiltros() {
     //metodos de limpieza
     this.setFechasInicioFin();
     this.tiposAtencion = sessionStorage.getItem('TIPOS_ATENCION_LOCAL') ? JSON.parse(sessionStorage.getItem('TIPOS_ATENCION_LOCAL')) : [];
@@ -396,16 +396,16 @@ export class BusquedaAvanzadaPage implements OnInit {
           this.usuarioAps.UrlImagen = this.utiles.entregaImagen(this.usuarioAps);
           this.miColor = this.utiles.entregaColor(this.usuarioAps);
           this.runPaciente = this.utiles.insertarGuion(this.usuarioAps.Rut);
-/*           this.codigoDeis = this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
-          this.nodId = this.usuarioAps.ConfiguracionNodo.NodId; */
+          /*           this.codigoDeis = this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
+                    this.nodId = this.usuarioAps.ConfiguracionNodo.NodId; */
         }
         //parametros adicionales
         this.profesional = params?.Profesional ? params.Profesional : '';
         this.tipoAtencion = params?.TipoAtencion ? params.TipoAtencion : '';
       }
     });
-    console.log('profesional ' + this.profesional);
-    console.log('tipo atencion ' + this.tipoAtencion);
+    //console.log('profesional ' + this.profesional);
+    //console.log('tipo atencion ' + this.tipoAtencion);
     this.tiposAtencion = sessionStorage.getItem('TIPOS_ATENCION_LOCAL') ? JSON.parse(sessionStorage.getItem('TIPOS_ATENCION_LOCAL')) : [];
     //creamos tipo atencion inicial
     //this.crearTiposAtencion();
@@ -592,17 +592,16 @@ export class BusquedaAvanzadaPage implements OnInit {
     return await modal.present();
   }
   changeFechaInicio(event) {
-    console.log(event);
+    //console.log(event);
     if (event.detail.value) {
       this.fechaInicioBusqueda = event.detail.value;
       //console.log(this.fechaInicioBusqueda);
       var fechaActual = moment().format('YYYY-MM-DD');
       var fechaComparar = moment(this.fechaInicioBusqueda).format('YYYY-MM-DD');
-      if (fechaActual != fechaComparar)
-      {
+      if (fechaActual != fechaComparar) {
         this.comboSeleccionadoFecha = 'Fecha inicio';
       }
-      else{
+      else {
         this.comboSeleccionadoFecha = '';
       }
 
@@ -624,53 +623,53 @@ export class BusquedaAvanzadaPage implements OnInit {
     }
   }
 
-  entregaJornada(value){
+  entregaJornada(value) {
     var retorno = '';
-    if (value == '0'){
+    if (value == '0') {
       retorno = 'Todo el día';
     }
-    else if (value == '1'){
+    else if (value == '1') {
       retorno = 'Mañana';
     }
-    else if (value == '2'){
+    else if (value == '2') {
       retorno = 'Tarde'
     }
     return retorno;
   }
-  entregaDiasSemana(array){
+  entregaDiasSemana(array) {
     var retorno = '';
     var arrDias = [];
-    if (array.length == 7){
+    if (array.length == 7) {
       retorno = 'Todos los días';
     }
-    else{
+    else {
       array.forEach(dia => {
-        if (dia == '1'){
+        if (dia == '1') {
           arrDias.push('Lu');
         }
-        if (dia == '2'){
+        if (dia == '2') {
           arrDias.push('Ma');
         }
-        if (dia == '3'){
+        if (dia == '3') {
           arrDias.push('Mi');
         }
-        if (dia == '4'){
+        if (dia == '4') {
           arrDias.push('Ju');
         }
-        if (dia == '5'){
+        if (dia == '5') {
           arrDias.push('Vi');
         }
-        if (dia == '6'){
+        if (dia == '6') {
           arrDias.push('Sa');
         }
-        if (dia == '7'){
+        if (dia == '7') {
           arrDias.push('Do');
         }
       });
 
       retorno = arrDias.toString();
 
-      console.log(retorno);
+      //console.log(retorno);
     }
     return retorno;
   }

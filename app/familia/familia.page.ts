@@ -55,7 +55,7 @@ export class FamiliaPage implements OnInit {
     await loader.present().then(async () => {
       //cargamos mi color
       this.miColor = this.utiles.entregaMiColor();
-      if (this.utiles.tieneFamiliaAceptada() || this.utiles.tieneFamiliaRechazada()){
+      if (this.utiles.tieneFamiliaAceptada() || this.utiles.tieneFamiliaRechazada()) {
         this.mostrarAgregarQuitar = true;
       }
       //demas cargas

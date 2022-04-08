@@ -20,9 +20,6 @@
         <!-- poner avatar -->
         <app-avatar [style]="styleAvatar" [urlImagen] = "miImagen" [nombreCompleto]="miNombre" [parentezco]="miParentezco"></app-avatar>
       </ion-item>
-<!--       <ion-item lines="none">
-        <ion-label class="ion-text-wrap ion-text-capitalize titulo-evento" style="font-size: 20px;">{{data.DetalleEventoMes.DescripcionPrincipal.toLowerCase()}}&nbsp;{{dosis}}</ion-label>
-      </ion-item> -->
     </ion-list>
     <ion-list>
       <ion-list-header>
@@ -36,7 +33,6 @@
       </ion-item>
       <ion-item>
         <ion-label>Fecha</ion-label>
-        <!-- <ion-label class="ion-text-wrap">{{data.DetalleEventoMes.FechaHora}}</ion-label> -->
         <ion-label class="ion-text-wrap">{{transformaHora(data)}}</ion-label>
       </ion-item>
       <!-- proxima cita -->

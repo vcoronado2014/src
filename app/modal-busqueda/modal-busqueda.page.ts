@@ -11,11 +11,11 @@ import * as moment from 'moment';
 import { SplitPipe } from '../../app/pipes/split.pipe';
 
 @Component({
-  selector: 'app-modal-busqueda',
-  templateUrl: './modal-busqueda.page.html',
-  styleUrls: ['./modal-busqueda.page.scss'],
+    selector: 'app-modal-busqueda',
+    templateUrl: './modal-busqueda.page.html',
+    styleUrls: ['./modal-busqueda.page.scss'],
 })
-export class ModalBusquedaPage implements OnInit{
+export class ModalBusquedaPage implements OnInit {
     estaCargando = false;
     tituloLoading = '';
     styleAvatar = false;
@@ -39,7 +39,7 @@ export class ModalBusquedaPage implements OnInit{
             TieneFecha: false,
             Valor: false
         },
-];
+    ];
     constructor(
         public modalCtrl: ModalController,
         public navParams: NavParams,
@@ -60,8 +60,8 @@ export class ModalBusquedaPage implements OnInit{
         if (this.navParams.get('opciones')) {
             this.examenes = JSON.parse(this.navParams.get('opciones'));
             this.procesarItems();
-            console.log(this.examenes);
-            console.log(this.listaBusqueda);
+            //console.log(this.examenes);
+            //console.log(this.listaBusqueda);
         }
     }
     procesarItems() {
@@ -82,14 +82,6 @@ export class ModalBusquedaPage implements OnInit{
 
     dismiss() {
         this.modalCtrl.dismiss();
-/*         if (this.haySeleccionado()) {
-            this.modalCtrl.dismiss({
-                data: this.listaBusqueda
-            });
-        }
-        else{
-            this.utiles.presentToast('Debe seleccionar un orden para continuar', 'bottom', 3000);
-        } */
     }
     dismissDatos() {
         //this.modalCtrl.dismiss();
@@ -98,7 +90,7 @@ export class ModalBusquedaPage implements OnInit{
                 data: this.listaBusqueda
             });
         }
-        else{
+        else {
             this.utiles.presentToast('Debe seleccionar un orden para continuar', 'bottom', 3000);
         }
     }
@@ -114,13 +106,13 @@ export class ModalBusquedaPage implements OnInit{
                     }
                 }
             }
-            console.log(this.listaBusqueda);
+            //console.log(this.listaBusqueda);
         }
     }
-    haySeleccionado(){
+    haySeleccionado() {
         var retorno = false;
-        var arrSeleccionados = this.listaBusqueda.filter(p=>p.Valor == true);
-        if (arrSeleccionados && arrSeleccionados.length > 0){
+        var arrSeleccionados = this.listaBusqueda.filter(p => p.Valor == true);
+        if (arrSeleccionados && arrSeleccionados.length > 0) {
             retorno = true;
         }
         return retorno;

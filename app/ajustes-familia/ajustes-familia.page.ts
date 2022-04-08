@@ -80,7 +80,7 @@ export class AjustesFamiliaPage implements OnInit {
     }
   }
 
-  async putImagen(files:any) {
+  async putImagen(files: any) {
     var uspId = this.usuarioAps.Id.toString();
     //console.log(files.size);
     let loader = await this.loading.create({
@@ -132,14 +132,14 @@ export class AjustesFamiliaPage implements OnInit {
             }
             this.utiles.presentToast('Avatar guardado con éxito', 'bottom', 3000);
           }
-          else{
+          else {
             this.utiles.presentToast('Ocurrió un error al guardar el archivo', 'bottom', 3000);
           }
           //terminamos loader
           loader.dismiss();
         })
       }
-      else{
+      else {
         this.img.putImagen(uspId, files).subscribe((data: any) => {
           if (data && data != '') {
             this.image = environment.URL_FOTOS + data;
@@ -181,7 +181,7 @@ export class AjustesFamiliaPage implements OnInit {
             }
             this.utiles.presentToast('Avatar guardado con éxito', 'bottom', 3000);
           }
-          else{
+          else {
             this.utiles.presentToast('Ocurrió un error al guardar el archivo', 'bottom', 3000);
           }
           //terminamos loader

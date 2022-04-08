@@ -126,7 +126,7 @@ export class ModalAjustesPage implements OnInit {
             }
             this.utiles.presentToast('Avatar guardado con éxito', 'bottom', 3000);
           }
-          else{
+          else {
             this.utiles.presentToast('Ocurrió un error al guardar el archivo', 'bottom', 3000);
           }
           //terminamos loader
@@ -174,7 +174,7 @@ export class ModalAjustesPage implements OnInit {
             }
             this.utiles.presentToast('Avatar guardado con éxito', 'bottom', 3000);
           }
-          else{
+          else {
             this.utiles.presentToast('Ocurrió un error al guardar el archivo', 'bottom', 3000);
           }
           //terminamos loader

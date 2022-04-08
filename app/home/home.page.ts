@@ -86,7 +86,7 @@ export class HomePage implements OnInit {
   rutaAceptoCondiciones;
   options: InAppBrowserOptions = {
     location: 'yes',
-  };  
+  };
 
 
   //para las capsulas educativas
@@ -120,11 +120,11 @@ export class HomePage implements OnInit {
     this.previousPage = null;
 
     this.router.events
-    .pipe(filter((event: any) => event instanceof RoutesRecognized), pairwise())
-    .subscribe((events: RoutesRecognized[]) => {
+      .pipe(filter((event: any) => event instanceof RoutesRecognized), pairwise())
+      .subscribe((events: RoutesRecognized[]) => {
         this.previousPage = events[0].urlAfterRedirects;
-        console.log(this.previousPage);
-    });
+        //console.log(this.previousPage);
+      });
 
     this.usaCapsulasEducativas = this.parametrosApp.USA_CAPSULAS_EDUCATIVAS();
     //obtención ruta acepto condiciones
@@ -159,16 +159,16 @@ export class HomePage implements OnInit {
   public getPreviousUrl() {
     return this.previousPage;
   }
-  async obtenerEstablecimientosUsuarioRayen(){
+  async obtenerEstablecimientosUsuarioRayen() {
     this.establecimientosRayen = [];
 
     this.progressRayen = true;
     var establecimientos = [];
-    var tienePacienteRayen = this.pacientesRayen && this.pacientesRayen.length > 0 ? true: false;
-    if (tienePacienteRayen){
-      if (this.pacientesRayen && this.pacientesRayen.length > 0){
+    var tienePacienteRayen = this.pacientesRayen && this.pacientesRayen.length > 0 ? true : false;
+    if (tienePacienteRayen) {
+      if (this.pacientesRayen && this.pacientesRayen.length > 0) {
         this.pacientesRayen.forEach(paciente => {
-          if (paciente && paciente.UsuariosNodo?.UsuarioNodo?.length > 0){
+          if (paciente && paciente.UsuariosNodo?.UsuarioNodo?.length > 0) {
             paciente.UsuariosNodo?.UsuarioNodo.forEach(nodo => {
               var entidad = {
                 Id: nodo.IdNodo,
@@ -177,7 +177,7 @@ export class HomePage implements OnInit {
                 UspId: paciente.Id
               };
               //antes vamos a verificar si se inserta o no
-              if (this.utiles.verificaNodoRayenAgregar(paciente.Id, nodo.IdNodo)){
+              if (this.utiles.verificaNodoRayenAgregar(paciente.Id, nodo.IdNodo)) {
                 establecimientos.push(entidad);
               }
             });
@@ -185,17 +185,17 @@ export class HomePage implements OnInit {
         });
       }
       //ahora tendriamos que traernos los nodos ccompletamente
-      console.log(establecimientos);
-      if (establecimientos && establecimientos.length > 0){
-        if (!this.utiles.isAppOnDevice()){
+      //console.log(establecimientos);
+      if (establecimientos && establecimientos.length > 0) {
+        if (!this.utiles.isAppOnDevice()) {
           //web
-          this.servicioGeo.postEstablecimientosFork(establecimientos).subscribe((data:any)=>{
+          this.servicioGeo.postEstablecimientosFork(establecimientos).subscribe((data: any) => {
             this.progressRayen = true;
-            if (data && data.length > 0){
+            if (data && data.length > 0) {
               var indice = 0;
               data.forEach(nodo => {
-                if (nodo && nodo?.nodo){
-                  console.log(nodo.nodo);
+                if (nodo && nodo?.nodo) {
+                  //console.log(nodo.nodo);
                   nodo.nodo.esInscrito = establecimientos[indice].EsInscrito;
                   nodo.nodo.id = establecimientos[indice].Id;
                   nodo.nodo.idFuncionarioPrestadorCabecera = establecimientos[indice].IdFuncionarioPrestadorCabecera;
@@ -203,14 +203,14 @@ export class HomePage implements OnInit {
                   this.establecimientosRayen.push(nodo.nodo);
                   indice++;
                 }
-      
+
               });
             }
-      
+
             this.progressRayen = false;
             //seteamos los nodos del usuario
             sessionStorage.setItem('ESTABLECIMIENTOS_USUARIO_RAYEN', JSON.stringify(this.establecimientosRayen));
-      
+
           }, error => {
             console.log(error);
             this.progressRayen = false;
@@ -221,15 +221,12 @@ export class HomePage implements OnInit {
           this.servicioGeo.postEstablecimientosForkNative(establecimientos).subscribe((data: any) => {
             //data es lo que hay que recorrer
             this.progressRayen = true;
-            if (data && data.length > 0) {              
-/*               var datos = JSON.parse(data);
-              console.log(datos); */
-
+            if (data && data.length > 0) {
               var indice = 0;
               data.forEach(datos => {
                 var nodo = JSON.parse(datos.data);
-                if (nodo && nodo?.nodo){
-                  console.log(nodo.nodo);
+                if (nodo && nodo?.nodo) {
+                  //console.log(nodo.nodo);
                   nodo.nodo.esInscrito = establecimientos[indice].EsInscrito;
                   nodo.nodo.id = establecimientos[indice].Id;
                   nodo.nodo.idFuncionarioPrestadorCabecera = establecimientos[indice].IdFuncionarioPrestadorCabecera;
@@ -253,7 +250,7 @@ export class HomePage implements OnInit {
 
       }
     }
-    else{
+    else {
       //obtenemos los nodos del paciente de accuerdo a lo registrado en
       //la autentificación
       var establecimientosR = this.utiles.entregaEstablecimientosUsuariosRayen();
@@ -273,55 +270,55 @@ export class HomePage implements OnInit {
     this.progressRayen = true;
 
 
-        if (!this.utiles.isAppOnDevice()) {
-          //llamada web
-          this.servicioGeo.postPersonaRayenFork(usuarios).subscribe((responseList: any) => {
-            console.log(responseList);
-            if (responseList && responseList.length > 0){
-              responseList.forEach(usu => {
-                if (usu){
-                  let usuRayen = usu?.ObtenerUsuarioApsPorFiltroResponse?.usuarios?.UsuarioAps;
-                  console.log(usuRayen);
-                  this.pacientesRayen.push(usuRayen);
-                }
-
-              });
+    if (!this.utiles.isAppOnDevice()) {
+      //llamada web
+      this.servicioGeo.postPersonaRayenFork(usuarios).subscribe((responseList: any) => {
+        //console.log(responseList);
+        if (responseList && responseList.length > 0) {
+          responseList.forEach(usu => {
+            if (usu) {
+              let usuRayen = usu?.ObtenerUsuarioApsPorFiltroResponse?.usuarios?.UsuarioAps;
+              //console.log(usuRayen);
+              this.pacientesRayen.push(usuRayen);
             }
-            console.log(this.pacientesRayen);
-            sessionStorage.setItem('USUARIOS_RAYEN', JSON.stringify(this.pacientesRayen));
-            localStorage.setItem('FECHA_ACTUALIZACION_DATOS_RAYEN', moment().format('YYYY-MM-DD HH:mm'));
-            this.progressRayen = false;
-            //haremos la llamada para obtener los establecimientos
-            this.obtenerEstablecimientosUsuarioRayen();
-            //************************************************* */
-          }, error => {
-            console.log(error);
-            this.progressRayen = false;
-          })
-        }
-        else{
-          this.servicioGeo.postPersonaRayenForkNative(usuarios).subscribe((responseList: any) => {
-            if (responseList && responseList.length > 0){
-              responseList.forEach(usu => {
-                if (usu && usu.data){
-                  var data = JSON.parse(usu.data);
-                  let usuRayen = data?.ObtenerUsuarioApsPorFiltroResponse?.usuarios?.UsuarioAps;
-                  this.pacientesRayen.push(usuRayen);
-                }
 
-              });
-            }
-            sessionStorage.setItem('USUARIOS_RAYEN', JSON.stringify(this.pacientesRayen));
-            localStorage.setItem('FECHA_ACTUALIZACION_DATOS_RAYEN', moment().format('YYYY-MM-DD HH:mm'));
-            this.progressRayen = false;
-            //haremos la llamada para obtener los establecimientos
-            this.obtenerEstablecimientosUsuarioRayen();
-            //************************************************* */
-          }, error=>{
-            console.log(error);
-            this.progressRayen = false;
           });
         }
+        //console.log(this.pacientesRayen);
+        sessionStorage.setItem('USUARIOS_RAYEN', JSON.stringify(this.pacientesRayen));
+        localStorage.setItem('FECHA_ACTUALIZACION_DATOS_RAYEN', moment().format('YYYY-MM-DD HH:mm'));
+        this.progressRayen = false;
+        //haremos la llamada para obtener los establecimientos
+        this.obtenerEstablecimientosUsuarioRayen();
+        //************************************************* */
+      }, error => {
+        console.log(error);
+        this.progressRayen = false;
+      })
+    }
+    else {
+      this.servicioGeo.postPersonaRayenForkNative(usuarios).subscribe((responseList: any) => {
+        if (responseList && responseList.length > 0) {
+          responseList.forEach(usu => {
+            if (usu && usu.data) {
+              var data = JSON.parse(usu.data);
+              let usuRayen = data?.ObtenerUsuarioApsPorFiltroResponse?.usuarios?.UsuarioAps;
+              this.pacientesRayen.push(usuRayen);
+            }
+
+          });
+        }
+        sessionStorage.setItem('USUARIOS_RAYEN', JSON.stringify(this.pacientesRayen));
+        localStorage.setItem('FECHA_ACTUALIZACION_DATOS_RAYEN', moment().format('YYYY-MM-DD HH:mm'));
+        this.progressRayen = false;
+        //haremos la llamada para obtener los establecimientos
+        this.obtenerEstablecimientosUsuarioRayen();
+        //************************************************* */
+      }, error => {
+        console.log(error);
+        this.progressRayen = false;
+      });
+    }
   }
 
   obtenerDatosUsuarios() {
@@ -337,7 +334,7 @@ export class HomePage implements OnInit {
           if (!this.utiles.isAppOnDevice()) {
             //llamada web
             this.info.getIndicadorValorApi(usu.Id).subscribe((response: any) => {
-              console.log(response);
+              //console.log(response);
               entidad.Mediciones = response;
               this.arrMediciones.push(entidad);
               localStorage.setItem('ANTECEDENTES', JSON.stringify(this.arrMediciones));
@@ -352,7 +349,7 @@ export class HomePage implements OnInit {
             //llamada nativa
             this.info.getIndicadorValorNativeApi(usu.Id).then((response: any) => {
               //this.procesarIndicadorValor(JSON.parse(response.data), loader);
-              console.log(JSON.parse(response.data));
+              //console.log(JSON.parse(response.data));
               entidad.Mediciones = JSON.parse(response.data);
               this.arrMediciones.push(entidad);
               localStorage.setItem('ANTECEDENTES', JSON.stringify(this.arrMediciones));
@@ -380,7 +377,7 @@ export class HomePage implements OnInit {
           if (!this.utiles.isAppOnDevice()) {
             //llamada web
             this.info.getAlergiasApi(usu.Id).subscribe((response: any) => {
-              console.log(response);
+              //console.log(response);
               entidad.Alergias = response;
               this.arrAlergias.push(entidad);
               localStorage.setItem('ALERGIAS', JSON.stringify(this.arrAlergias));
@@ -395,7 +392,7 @@ export class HomePage implements OnInit {
             //llamada nativa
             this.info.getAlergiasNativeApi(usu.Id).then((response: any) => {
               //this.procesarIndicadorValor(JSON.parse(response.data), loader);
-              console.log(JSON.parse(response.data));
+              //console.log(JSON.parse(response.data));
               entidad.Alergias = JSON.parse(response.data);
               this.arrAlergias.push(entidad);
               localStorage.setItem('ALERGIAS', JSON.stringify(this.arrAlergias));
@@ -424,7 +421,7 @@ export class HomePage implements OnInit {
           if (!this.utiles.isAppOnDevice()) {
             //llamada web
             this.info.postAntecedentesApi(usu.Id).subscribe((response: any) => {
-              console.log(response);
+              //console.log(response);
               entidad.Morbidos = response;
               this.arrMorbidos.push(entidad);
               localStorage.setItem('MORBIDOS', JSON.stringify(this.arrMorbidos));
@@ -439,7 +436,7 @@ export class HomePage implements OnInit {
             //llamada nativa
             this.info.postAntecedentesNativeApi(usu.Id).then((response: any) => {
               //this.procesarIndicadorValor(JSON.parse(response.data), loader);
-              console.log(JSON.parse(response.data));
+              //console.log(JSON.parse(response.data));
               entidad.Morbidos = JSON.parse(response.data);
               this.arrMorbidos.push(entidad);
               localStorage.setItem('MORBIDOS', JSON.stringify(this.arrMorbidos));
@@ -468,20 +465,18 @@ export class HomePage implements OnInit {
     this.miImagen = this.utiles.entregaImagen(this.usuarioAps)
     this.miNombre = this.utiles.entregaMiNombre();
     //llamamos a actualizar las notificaciones si es que vienen desde la pag /quitar-familia
-    if (this.getPreviousUrl() == '/quitar-familia'){
+    if (this.getPreviousUrl() == '/quitar-familia') {
       //cuando volvemos de quitar familia se deben volver a obtener los pacientes rayen
       //sin verificar la ultima fecha de actualizacion
 
-      if (this.progressRayen == false){
+      if (this.progressRayen == false) {
         if (this.utiles.necesitaActualizarDatosRayen(true))
           this.llamadaObtenerPacienteRayen();
       }
       this.obtenerNotificacionesApiLocales();
     }
-    console.log('will enter home');
-    /*     this.obtenerDatosUsuarios();
-        this.obtenerAlergiasPacientes();
-        this.obtenerMorbidosPacientes(); */
+    //console.log('will enter home');
+
   }
   openPage(pages) {
     if (pages.src != '#') {
@@ -680,7 +675,7 @@ export class HomePage implements OnInit {
       //web
       this.cita.postCitasWebFuturas(ruts).subscribe((response: any) => {
         var data = response;
-        console.log(data);
+        //console.log(data);
         this.notificaciones = this.servNotificaciones.construyeNotificacionesLocales(data);
         this.estaCargando = false;
         this.estaCargandoNotificaciones = false;
@@ -816,8 +811,8 @@ export class HomePage implements OnInit {
     );
     modal.onDidDismiss().then((data: any) => {
       if (data) {
-        console.log(data);
-        if (data?.data){
+        //console.log(data);
+        if (data?.data) {
           this.obtenerNotificacionesApiLocales();
         }
       }
@@ -863,9 +858,9 @@ export class HomePage implements OnInit {
     }
   }
   abrirTerminos() {
-    if (this.rutaAceptoCondiciones != '#'){
+    if (this.rutaAceptoCondiciones != '#') {
       //abrir en una ventana nueva
-      if (this.utiles.isAppOnDevice()){
+      if (this.utiles.isAppOnDevice()) {
         let target = "_system";
         this.inap.create(encodeURI(this.rutaAceptoCondiciones), target, this.options);
       }

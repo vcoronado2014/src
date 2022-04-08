@@ -74,11 +74,6 @@ export class ModalExamenesPage implements OnInit {
     if (this.usuarioAps) {
       this.estaCargando = true;
       this.tituloProgress = 'Buscando exámenes del usuario';
-/*       let loader = await this.loading.create({
-        message: 'Obteniendo...<br>Exámenes del usuario',
-        duration: 20000
-      }); */
-
       let loader = await this.loading.create({
         cssClass: 'loading-vacio',
         showBackdrop: false,
@@ -104,7 +99,7 @@ export class ModalExamenesPage implements OnInit {
           //this.lab.getExamenesNative(this.oalaId).then((response: any) => {
           this.lab.getExamenesApiNative(this.oalaId).then((response: any) => {
             this.porocesarLista(JSON.parse(response.data), loader);
-          }).catch(error=>{
+          }).catch(error => {
             console.log(error.message);
             this.estaCargando = false;
             this.tituloProgress = '';

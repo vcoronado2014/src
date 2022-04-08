@@ -108,55 +108,6 @@
   </ion-header>
   
   <ion-content class="back-app">
-<!--     <mat-form-field appearance="outline" class="field-tipo-atencion">
-      <mat-label>Tipo atención</mat-label>
-      <mat-select [disabled]="disabledCombo" [(ngModel)]="comboSeleccionado" (selectionChange)="buscarCitas($event)">
-        <mat-option *ngFor="let tipo of tiposAtencion" [value]="tipo.Texto">{{tipo.Texto}}</mat-option>
-      </mat-select>
-    </mat-form-field> -->
-
-    <!-- fecha inicio -->
-<!--     <ion-item class="ion-padding-start ion-padding-end">
-      <ion-label>Fecha de inicio</ion-label>
-      <ion-datetime 
-        (ionChange)="changeFechaInicio($event)"
-        monthNames="enero, febrero, marzo, abril, mayo, junio, julio, agosto, septiembre, octubre, noviembre, diciembre"
-        monthShortNames="ene, feb, mar, abr, may, jun, jul, ago, sep, oct, nov, dic"
-        dayNames="lunes, martes, miércoles, jueves, viernes, sábado, domingo"
-        dayShortNames="lun, mar, mié, jue, vie, sáb, dom"
-        displayFormat="MMMM, DD YYYY" 
-        doneText="Aceptar"
-        cancelText="Cancelar"
-        [min]="fechaInicio" 
-        [max]="fechaTermino" 
-        [value]="fechaInicio">
-      </ion-datetime>
-    </ion-item> -->
-    <!-- horario -->
-<!--     <ion-item class="ion-padding-start ion-padding-end">
-      <ion-label>Horario</ion-label>
-      <ion-select value="0" (ionChange)="changeHorario($event)" okText="Aceptar" cancelText="Cancelar">
-        <ion-select-option value="0">Todo el día</ion-select-option>
-        <ion-select-option value="1">Mañana</ion-select-option>
-        <ion-select-option value="2">Tarde</ion-select-option>
-      </ion-select>
-    </ion-item> -->
-    <!-- dias -->
-<!--     <ion-item class="ion-padding-start ion-padding-end">
-      <ion-label>Días de la semana</ion-label>
-      <ion-select (ionChange)="changeDia($event)" multiple="true" [value]="['1','2','3','4','5','6','7']" okText="Aceptar" cancelText="Cancelar">
-        <ion-select-option value="1">Lu</ion-select-option>
-        <ion-select-option value="2">Ma</ion-select-option>
-        <ion-select-option value="3">Mi</ion-select-option>
-        <ion-select-option value="4">Ju</ion-select-option>
-        <ion-select-option value="5">Vi</ion-select-option>
-        <ion-select-option value="6">Sá</ion-select-option>
-        <ion-select-option value="7">Do</ion-select-option>
-      </ion-select>
-    </ion-item> -->
-    <!-- boton buscar -->
-    <!-- <ion-button class="mt-32 ion-padding-start" color="primary" (click)="buscarCitas($event)">BUSCAR</ion-button> -->
-
     <app-progress [mostrar]="mostrarProgress" titulo="Buscando citas"></app-progress>
     <!-- resultados -->
     <div *ngIf="encontroCitas">
@@ -172,10 +123,6 @@
             <ion-col size="12" class="titulo-fecha" class="ion-text-capitalize">
               {{transformDate(cita.FechaHoraInicio, 'dddd DD MMMM YYYY')}}
             </ion-col>
- <!--            <ion-col class="texto-item ion-text-capitalize">
-              {{cita.NombresMedico.toLowerCase()}} {{cita.ApellidosMedico.toLowerCase()}}
-            </ion-col> -->
-
             <ion-col size="8" class="texto-item ion-text-capitalize" *ngIf="comboSeleccionado != 'Selecciona...' && comboSeleccionadoProf == ''">
               <strong>{{cita.NombresMedico.toLowerCase()}} {{cita.ApellidosMedico.toLowerCase()}}</strong> 
             </ion-col>

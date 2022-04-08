@@ -68,36 +68,9 @@
     </ion-grid>
 </ion-item>
 </div>
-
-
-<!-- <ion-card [hidden]="estaCargando" *ngFor="let item of listadoOrdenes" (click)="ordenSelected(item)">
-  <ion-card-content>
-    <app-avatar [lines]="none" [urlImagen] = "item.UrlImagen" 
-    [nombreCompleto]="item.NombreUsuario" 
-    [parentezco]="item.Parentezco"></app-avatar>
-    <ion-item lines="none">
-      <ion-grid>
-        <ion-row>
-          <ion-col>
-            <ion-label class="ion-text-wrap">N° de órden: <strong>{{ item.Id }}</strong></ion-label>
-          </ion-col>
-          <ion-col>
-            <ion-label class="ion-text-wrap">Estado: <strong>{{ item.Estado }}</strong></ion-label>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-item>
-    <ion-item lines="none">
-      <ion-badge color="primary" slot="end">{{ item.Fecha }}</ion-badge>
-    </ion-item>
-  </ion-card-content>
-</ion-card>   -->
 <!-- NO HAY ORDENES -->
 <div [hidden]="estaCargando" *ngIf="tiene == false" style="position: relative; height: 30vh;">
   <div style="position: absolute; display: table; height: 100%; font-size: 16pt; text-align: center;width: 100%;letter-spacing: 0.5pt;">
-<!--     <span class="material-icons">
-      info
-    </span> -->
     <p style="display: table-cell; vertical-align: middle">No tiene exámenes  <br>registrados
     </p>
   </div>

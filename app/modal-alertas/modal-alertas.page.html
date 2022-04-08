@@ -11,50 +11,6 @@
   <ion-content class="back-app">
     <app-progress [mostrar]="estaCargando" [titulo]="tituloLoading"></app-progress>
     <div [hidden]="estaCargando">
-
-      <!-- aca debe ir el avatar -->
-
-<!--       <ion-list *ngFor="let item of notificaciones">
-        <ion-item lines="none">
-            <ion-avatar slot="start">
-              <img *ngIf="item.UsuarioAps.UrlImagen != ''" src={{item.UsuarioAps.UrlImagen}}>
-              <img *ngIf="item.UsuarioAps.UrlImagen == ''" src="../assets/img/no-imagen.jpg">
-            </ion-avatar>
-            <ion-row style="display: block;">
-              <div class="text-avatar">{{item.Subtitulo}}</div>
-              <div class="subtext-avatar">{{item.UsuarioAps.Parentezco.Nombre}}</div>
-            </ion-row>
-          </ion-item>
-        <ion-item lines="full" button detail [hidden]="item.IrA == null" (click)="openNotificacion(item.IrA)">
-            <ion-row style="display: block; width: 100%;">
-                <div class="text-avatar">{{item.Titulo}}</div>
-                <div class="subtext-avatar">{{item.Contenido}}</div>
-            </ion-row>
-        </ion-item>
-        <ion-item lines="full" [hidden]="item.IrA != null">
-          <ion-grid>
-            <ion-row style="display: block; width: 100%;">
-              <ion-col size="12">
-                <div class="text-avatar">{{item.Titulo}}</div>
-                <div class="subtext-avatar">{{item.Contenido}}</div>
-              </ion-col>
-              <ion-col size="12" *ngIf="item.EsCita && item.Estado != ''" style="display: block; width: 100%;">
-                <ion-row>
-                  <ion-col class="ion-float-right ion-text-end" *ngIf="revisarCita(item, 'Anular')[1]">
-                    <button color="danger" mat-button 
-                      (click)="presentAlertConfirm(botonCancelar, item)">ANULAR</button>
-                  </ion-col>
-                  <ion-col class="ion-float-right ion-text-end" *ngIf="revisarCita(item, 'Confirmar')[0]">
-                    <button color="primary" mat-button 
-                      (click)="presentAlertConfirm(botonConfirmar, item)">CONFIRMAR</button>
-                  </ion-col>
-                </ion-row>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-item>
-    </ion-list> -->
-
     <ion-list *ngFor="let item of notificacionesTodas">
       <ion-item lines="none" *ngIf ="item.Notificaciones && item.Notificaciones.length > 0">
         <ion-avatar slot="start">

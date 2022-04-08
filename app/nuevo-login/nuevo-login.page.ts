@@ -637,13 +637,13 @@ export class NuevoLoginPage implements OnInit {
     public servNotificaciones: ServicioNotificaciones,
     public networkService: NetworkService,
     public network: Network
-  ) { 
+  ) {
   }
 
   ngOnInit() {
     moment.locale('es');
     this.miFoto = this.utiles.entregaMiImagenLogin();
-    console.log(this.miFoto);
+    //console.log(this.miFoto);
     //vamos a obtener las notificaciones push en esta pantalla
     this.recordarme = localStorage.getItem('RECORDARME') && localStorage.getItem('RECORDARME').toLowerCase() == 'true' ? true : false;
     //this.servNotificaciones.buscarCitasTodas();
@@ -658,7 +658,7 @@ export class NuevoLoginPage implements OnInit {
       if (params && params.user && params.password && params.idUsp && params.url) {
         //iniciar proceso de autologin
         //y enviar al modulo que se necesita
-        console.log(params);
+        //console.log(params);
 
         let pass = params.password ? params.password : '';
         let user = params.user ? params.user : '';
@@ -679,11 +679,10 @@ export class NuevoLoginPage implements OnInit {
     this.navCtrl.navigateRoot(['pre-registro-uno'], navigationExtras);
   }
   cargarForma() {
-    
-    console.log(this.recordarme);
+
+    //console.log(this.recordarme);
     this.forma = new FormGroup({
       'run': new FormControl('', [Validators.required]),
-      /* 'email': new FormControl('', [Validators.required, Validators.pattern(this.expEmail)]), */
       'email': new FormControl('', [Validators.required, Validators.email]),
       'clave': new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(10)]),
       //'recordarme': new FormControl(this.recordarme)
@@ -827,7 +826,7 @@ export class NuevoLoginPage implements OnInit {
     }
   }
 
-  procesoLocal(){
+  procesoLocal() {
     //aca enviar una alerta, diciendo que no se puede comunicar por la red
     //que se cargarán los datos de forma local para el usuario
     //mostrar dicho mensaje
@@ -858,7 +857,7 @@ export class NuevoLoginPage implements OnInit {
     localStorage.setItem('FAMILIA-ACEPTADA', JSON.stringify(this.dataLocalStorage.FAMILIA_ACEPTADA));
 
     localStorage.setItem('FAMILIA-RECHAZADA', JSON.stringify(this.dataLocalStorage.FAMILIA_RECHAZAZDA));
-   
+
     this.tokenDispositivo = (Math.random() * (1000000 - 1) + 1).toString() + ' local';
     localStorage.setItem('token_dispositivo', this.tokenDispositivo);
 
@@ -871,9 +870,9 @@ export class NuevoLoginPage implements OnInit {
     localStorage.setItem('ALERGIAS', JSON.stringify(this.dataLocalStorage.ALERGIAS));
 
     localStorage.setItem('FECHA_ACTUALIZACION_ANTECEDENTES', moment().add(1, 'days').format('YYYY-MM-DD HH:mm'));
-    localStorage.setItem('FECHA_ACTUALIZACION_ALERGIAS', moment().add(1,'days').format('YYYY-MM-DD HH:mm'));
-    localStorage.setItem('FECHA_ACTUALIZACION_MORBIDOS', moment().add(1,'days').format('YYYY-MM-DD HH:mm'));
-    localStorage.setItem('PARAMETROS_APP',JSON.stringify(this.dataLocalStorage.PARAMETROS_APP)); 
+    localStorage.setItem('FECHA_ACTUALIZACION_ALERGIAS', moment().add(1, 'days').format('YYYY-MM-DD HH:mm'));
+    localStorage.setItem('FECHA_ACTUALIZACION_MORBIDOS', moment().add(1, 'days').format('YYYY-MM-DD HH:mm'));
+    localStorage.setItem('PARAMETROS_APP', JSON.stringify(this.dataLocalStorage.PARAMETROS_APP));
     this.CodigoMensaje = 0;
     this.Mensaje = 'Exito';
 
@@ -888,239 +887,239 @@ export class NuevoLoginPage implements OnInit {
     //ahora guardamos
     this.estaCargandoHome = true;
 
-    
-      if (!this.utiles.isAppOnDevice()) {
-        //llamada web
-        setTimeout(() => {
-          this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data: any) => {
-            if (data) {
-              let respuesta = data;
-              //falta agregar esto *********
-              if (respuesta.Activo == 0 && respuesta.Eliminado == 1){
-                //esta eliminado
-                this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
-                this.estaCargandoHome = false;
-                return;
-              }
-              //************************** */
-              localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
-              localStorage.setItem('TIENE_REGISTRO', 'true');
-              //nueva funcionalidad
-              this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
-              //************** */
-              let registro = JSON.parse(localStorage.getItem('REGISTRO'));
-              this.estaCargandoHome = false;
-              this.autentificarse(registro.Run, password);
-            }
-            else {
-              this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
-              this.estaCargandoHome = false;
-              return;
-            }
-  
-          }, error => {
-            //console.log(error.message);
-            //this.utiles.presentToast("Error de conexión.", "middle", 3000);
-            this.estaCargandoHome = false;
-            this.procesoLocal();
-          })
-        }, 5000);
-      }
-      else {
-        //llamada nativa
-        setTimeout(() => {
-          this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data:any) => {
-            let respuesta = JSON.parse(data.data);
-            if (respuesta) {
-              //falta agregar esto *********
-              if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
-                //esta eliminado
-                this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
-                this.estaCargandoHome = false;
-                return;
-              }
-              //************************** */
-              localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
-              localStorage.setItem('TIENE_REGISTRO', 'true');
-              //nueva funcionalidad
-              this.utiles.guardarLogin(correo,this.utiles.desencriptar(password), this.recordarme);
-              //************** */
-              let registro = JSON.parse(localStorage.getItem('REGISTRO'));
-              this.estaCargandoHome = false;
-              this.autentificarse(registro.Run, password);
-            }
-            else {
-              this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
-              this.estaCargandoHome = false;
 
-              return;
-            }
-  
-          }).catch(error => {
-            //console.log(error.message);
-            //this.utiles.presentToast("Error de conexión.", "middle", 3000);
-            this.estaCargandoHome = false;
-            this.procesoLocal();
-          })
-        }, 5000);
-      }
-    
-  }
-  async loguearseRegistroRecordarme(correo, password) {
-    //ahora guardamos
-    this.estaCargandoHome = true;
-
-      if (!this.utiles.isAppOnDevice()) {
-        //llamada web
-        setTimeout(() => {
-          this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data:any) => {
-            if (data) {
-              let respuesta = data;
-              //falta agregar esto *********
-              if (respuesta.Activo == 0 && respuesta.Eliminado == 1){
-                //esta eliminado
-                this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
-                this.estaCargandoHome = false;
-                return;
-              }
-              //************************** */
-              localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
-              localStorage.setItem('TIENE_REGISTRO', 'true');
-              //nueva funcionalidad
-              this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
-              //************** */
-              let registro = JSON.parse(localStorage.getItem('REGISTRO'));
-  
-              this.autentificarse(registro.Run, password);
-            }
-            else {
-              this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
-              this.estaCargandoHome = false;
-              return;
-            }
-  
-          }, error => {
-            //console.log(error.message);
-            //this.utiles.presentToast("Error de conexión.", "middle", 3000);
-            this.estaCargandoHome = false;
-            this.procesoLocal();
-          })
-        }, 5000);
-      }
-      else {
-        //llamada nativa
-        setTimeout(() => {
-          this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data:any) => {
-            let respuesta = JSON.parse(data.data);
-            if (respuesta) {
+    if (!this.utiles.isAppOnDevice()) {
+      //llamada web
+      setTimeout(() => {
+        this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data: any) => {
+          if (data) {
+            let respuesta = data;
             //falta agregar esto *********
-            if (respuesta.Activo == 0 && respuesta.Eliminado == 1){
+            if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
               //esta eliminado
               this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
               this.estaCargandoHome = false;
               return;
             }
             //************************** */
-              localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
-              localStorage.setItem('TIENE_REGISTRO', 'true');
-              //nueva funcionalidad
-              this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
-              //************** */
-              let registro = JSON.parse(localStorage.getItem('REGISTRO'));
-              this.autentificarse(registro.Run, password);
-            }
-            else {
-              this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
+            localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
+            localStorage.setItem('TIENE_REGISTRO', 'true');
+            //nueva funcionalidad
+            this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
+            //************** */
+            let registro = JSON.parse(localStorage.getItem('REGISTRO'));
+            this.estaCargandoHome = false;
+            this.autentificarse(registro.Run, password);
+          }
+          else {
+            this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
+            this.estaCargandoHome = false;
+            return;
+          }
+
+        }, error => {
+          //console.log(error.message);
+          //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          this.estaCargandoHome = false;
+          this.procesoLocal();
+        })
+      }, 5000);
+    }
+    else {
+      //llamada nativa
+      setTimeout(() => {
+        this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data: any) => {
+          let respuesta = JSON.parse(data.data);
+          if (respuesta) {
+            //falta agregar esto *********
+            if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
+              //esta eliminado
+              this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
               this.estaCargandoHome = false;
               return;
             }
-  
-          }).catch(error => {
-            //console.log(error.message);
-            //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+            //************************** */
+            localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
+            localStorage.setItem('TIENE_REGISTRO', 'true');
+            //nueva funcionalidad
+            this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
+            //************** */
+            let registro = JSON.parse(localStorage.getItem('REGISTRO'));
             this.estaCargandoHome = false;
-            this.procesoLocal();
-          })
-        }, 5000);
-      }
-    
+            this.autentificarse(registro.Run, password);
+          }
+          else {
+            this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
+            this.estaCargandoHome = false;
+
+            return;
+          }
+
+        }).catch(error => {
+          //console.log(error.message);
+          //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          this.estaCargandoHome = false;
+          this.procesoLocal();
+        })
+      }, 5000);
+    }
+
+  }
+  async loguearseRegistroRecordarme(correo, password) {
+    //ahora guardamos
+    this.estaCargandoHome = true;
+
+    if (!this.utiles.isAppOnDevice()) {
+      //llamada web
+      setTimeout(() => {
+        this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data: any) => {
+          if (data) {
+            let respuesta = data;
+            //falta agregar esto *********
+            if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
+              //esta eliminado
+              this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
+              this.estaCargandoHome = false;
+              return;
+            }
+            //************************** */
+            localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
+            localStorage.setItem('TIENE_REGISTRO', 'true');
+            //nueva funcionalidad
+            this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
+            //************** */
+            let registro = JSON.parse(localStorage.getItem('REGISTRO'));
+
+            this.autentificarse(registro.Run, password);
+          }
+          else {
+            this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
+            this.estaCargandoHome = false;
+            return;
+          }
+
+        }, error => {
+          //console.log(error.message);
+          //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          this.estaCargandoHome = false;
+          this.procesoLocal();
+        })
+      }, 5000);
+    }
+    else {
+      //llamada nativa
+      setTimeout(() => {
+        this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data: any) => {
+          let respuesta = JSON.parse(data.data);
+          if (respuesta) {
+            //falta agregar esto *********
+            if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
+              //esta eliminado
+              this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
+              this.estaCargandoHome = false;
+              return;
+            }
+            //************************** */
+            localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
+            localStorage.setItem('TIENE_REGISTRO', 'true');
+            //nueva funcionalidad
+            this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
+            //************** */
+            let registro = JSON.parse(localStorage.getItem('REGISTRO'));
+            this.autentificarse(registro.Run, password);
+          }
+          else {
+            this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
+            this.estaCargandoHome = false;
+            return;
+          }
+
+        }).catch(error => {
+          //console.log(error.message);
+          //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          this.estaCargandoHome = false;
+          this.procesoLocal();
+        })
+      }, 5000);
+    }
+
   }
 
   async loguearseRegistroDirecto(correo, password, uspId, url) {
     //ahora guardamos
     this.estaCargandoHome = true;
 
-      if (!this.utiles.isAppOnDevice()) {
-        //llamada web
-        setTimeout(() => {
-          this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data:any) => {
-            if (data) {
-              let respuesta = data;
-              //falta agregar esto *********
-              if (respuesta.Activo == 0 && respuesta.Eliminado == 1){
-                //esta eliminado
-                this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
-                this.estaCargandoHome = false;
-                return;
-              }
-              //************************** */
-              localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
-              localStorage.setItem('TIENE_REGISTRO', 'true');
-              //nueva funcionalidad
-              this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
-              //************** */
-              let registro = JSON.parse(localStorage.getItem('REGISTRO'));
-  
-              this.autentificarseDirecto(registro.Run, password, uspId, url);
-            }
-            else {
-              this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
-              this.estaCargandoHome = false;
-              return;
-            }
-  
-          }, error => {
-            this.estaCargandoHome = false;
-          })
-        }, 5000);
-      }
-      else {
-        //llamada nativa
-        setTimeout(() => {
-          this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data:any) => {
-            let respuesta = JSON.parse(data.data);
-            if (respuesta) {
+    if (!this.utiles.isAppOnDevice()) {
+      //llamada web
+      setTimeout(() => {
+        this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data: any) => {
+          if (data) {
+            let respuesta = data;
             //falta agregar esto *********
-            if (respuesta.Activo == 0 && respuesta.Eliminado == 1){
+            if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
               //esta eliminado
               this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
               this.estaCargandoHome = false;
               return;
             }
             //************************** */
-              localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
-              localStorage.setItem('TIENE_REGISTRO', 'true');
-              //nueva funcionalidad
-              this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
-              //************** */
-              let registro = JSON.parse(localStorage.getItem('REGISTRO'));
-              this.autentificarseDirecto(registro.Run, password, uspId, url);
-            }
-            else {
-              this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
+            localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
+            localStorage.setItem('TIENE_REGISTRO', 'true');
+            //nueva funcionalidad
+            this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
+            //************** */
+            let registro = JSON.parse(localStorage.getItem('REGISTRO'));
+
+            this.autentificarseDirecto(registro.Run, password, uspId, url);
+          }
+          else {
+            this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
+            this.estaCargandoHome = false;
+            return;
+          }
+
+        }, error => {
+          this.estaCargandoHome = false;
+        })
+      }, 15000);
+    }
+    else {
+      //llamada nativa
+      setTimeout(() => {
+        this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data: any) => {
+          let respuesta = JSON.parse(data.data);
+          if (respuesta) {
+            //falta agregar esto *********
+            if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
+              //esta eliminado
+              this.utiles.presentToast('No tiene registro en la aplicación, presiona REGISTRATE', 'bottom', 5000);
               this.estaCargandoHome = false;
               return;
             }
-  
-          }).catch(error => {
-            //console.log(error.message);
-            //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+            //************************** */
+            localStorage.setItem('REGISTRO', JSON.stringify(respuesta));
+            localStorage.setItem('TIENE_REGISTRO', 'true');
+            //nueva funcionalidad
+            this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
+            //************** */
+            let registro = JSON.parse(localStorage.getItem('REGISTRO'));
+            this.autentificarseDirecto(registro.Run, password, uspId, url);
+          }
+          else {
+            this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
             this.estaCargandoHome = false;
-            this.procesoLocal();
-          })
-        }, 5000);
-      }
-    
+            return;
+          }
+
+        }).catch(error => {
+          //console.log(error.message);
+          //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          this.estaCargandoHome = false;
+          this.procesoLocal();
+        })
+      }, 15000);
+    }
+
   }
 
   async loguearseEnrolamiento() {
@@ -1207,28 +1206,28 @@ export class NuevoLoginPage implements OnInit {
     this.estaCargandoHome = true;
 
 
-      if (!this.utiles.isAppOnDevice()) {
-        //llamada web
-        this.acceso.loginWebDirecto(f).subscribe((response: any) => {
-          this.procesarLogin(response);
-        },
-          (error) => {
-            this.estaCargandoHome = false;
-            return;
-          });
-      }
-      else {
-        //llamada nativa
-        this.acceso.loginWebNative(f).then((response: any) => {
-          this.procesarLogin(JSON.parse(response.data));
-        },
-          (error) => {
-            this.utiles.presentToast('Ocurrió un error de autentificación', 'bottom', 4000);
-            this.estaCargandoHome = false;
-            return;
-          }
-        );
-      }
+    if (!this.utiles.isAppOnDevice()) {
+      //llamada web
+      this.acceso.loginWebDirecto(f).subscribe((response: any) => {
+        this.procesarLogin(response);
+      },
+        (error) => {
+          this.estaCargandoHome = false;
+          return;
+        });
+    }
+    else {
+      //llamada nativa
+      this.acceso.loginWebNative(f).then((response: any) => {
+        this.procesarLogin(JSON.parse(response.data));
+      },
+        (error) => {
+          this.utiles.presentToast('Ocurrió un error de autentificación', 'bottom', 4000);
+          this.estaCargandoHome = false;
+          return;
+        }
+      );
+    }
 
   }
   async autentificarseDirecto(userName, password, uspId, url) {
@@ -1239,28 +1238,28 @@ export class NuevoLoginPage implements OnInit {
     this.estaCargandoHome = true;
 
 
-      if (!this.utiles.isAppOnDevice()) {
-        //llamada web
-        this.acceso.loginWebDirecto(f).subscribe((response: any) => {
-          this.procesarLoginDirecto(response, uspId, url);
-        },
-          (error) => {
-            this.estaCargandoHome = false;
-            return;
-          });
-      }
-      else {
-        //llamada nativa
-        this.acceso.loginWebNative(f).then((response: any) => {
-          this.procesarLoginDirecto(JSON.parse(response.data), uspId, url);
-        },
-          (error) => {
-            this.utiles.presentToast('Ocurrió un error de autentificación', 'bottom', 4000);
-            this.estaCargandoHome = false;
-            return;
-          }
-        );
-      }
+    if (!this.utiles.isAppOnDevice()) {
+      //llamada web
+      this.acceso.loginWebDirecto(f).subscribe((response: any) => {
+        this.procesarLoginDirecto(response, uspId, url);
+      },
+        (error) => {
+          this.estaCargandoHome = false;
+          return;
+        });
+    }
+    else {
+      //llamada nativa
+      this.acceso.loginWebNative(f).then((response: any) => {
+        this.procesarLoginDirecto(JSON.parse(response.data), uspId, url);
+      },
+        (error) => {
+          this.utiles.presentToast('Ocurrió un error de autentificación', 'bottom', 4000);
+          this.estaCargandoHome = false;
+          return;
+        }
+      );
+    }
 
   }
   setDatosUsuario(retorno, user, userFamilia) {
@@ -1292,9 +1291,9 @@ export class NuevoLoginPage implements OnInit {
       localStorage.setItem('FAMILIA-RECHAZADA', JSON.stringify(retorno.FamiliaRechazada));
     }
     //parametros
-    localStorage.setItem('PARAMETROS_NODO',JSON.stringify(retorno.ParametrosNodo));
+    localStorage.setItem('PARAMETROS_NODO', JSON.stringify(retorno.ParametrosNodo));
     //motivos de contacto
-    localStorage.setItem('MOTIVOS_CONTACTO',JSON.stringify(retorno.MotivosContacto));
+    localStorage.setItem('MOTIVOS_CONTACTO', JSON.stringify(retorno.MotivosContacto));
 
 
 
@@ -1314,7 +1313,7 @@ export class NuevoLoginPage implements OnInit {
           //llamada web
           this.servicioGeo.postPersonaRayen(usu.Id).subscribe((data: any) => {
             var datos = data;
-            console.log(datos);
+            //console.log(datos);
             pacientesRayen.push(datos);
             localStorage.setItem('FECHA_ACTUALIZACION_DATOS_RAYEN', moment().format('YYYY-MM-DD HH:mm'));
           }, error => {
@@ -1325,7 +1324,7 @@ export class NuevoLoginPage implements OnInit {
           //llamada nativa
           this.servicioGeo.postPersonaRayenNative(usu.Id).then((data: any) => {
             var datos = JSON.parse(data);
-            console.log(datos);
+            //console.log(datos);
             pacientesRayen.push(datos);
             localStorage.setItem('FECHA_ACTUALIZACION_DATOS_RAYEN', moment().format('YYYY-MM-DD HH:mm'));
           }, error => {
@@ -1334,7 +1333,7 @@ export class NuevoLoginPage implements OnInit {
         }
       });
     }
-    console.log(pacientesRayen);
+    //console.log(pacientesRayen);
   }
 
   procesarLogin(response) {
@@ -1451,14 +1450,14 @@ export class NuevoLoginPage implements OnInit {
         this.crearToken();
         //guardamos el registro de session
         this.registrarEntrada();
-        if (url == 'calendario'){
+        if (url == 'calendario') {
           this.irAHome();
         }
-        else{
+        else {
           //acá implementar otras derivaciones
           //por ejemplo a examenes, etc
         }
-        
+
       }
       else {
         this.loggedIn = false;
@@ -1484,36 +1483,36 @@ export class NuevoLoginPage implements OnInit {
   }
 
   irAHome() {
-    if (this.estaCargandoHome){
+    if (this.estaCargandoHome) {
       this.estaCargandoHome = false;
     }
-    console.log(this.estaCargandoHome);
+    //console.log(this.estaCargandoHome);
     //this.navCtrl.navigateForward('home');
     //this.router.navigate(['/home'], { replaceUrl:true });
     this.navCtrl.navigateRoot('home', { animated: true, animationDirection: 'forward' });
 
   }
   irCalendario(idUsp) {
-    if (this.estaCargandoHome){
+    if (this.estaCargandoHome) {
       this.estaCargandoHome = false;
     }
     const navigationExtras: NavigationExtras = {
-        queryParams: {
-            idUsp: idUsp
-        }
+      queryParams: {
+        idUsp: idUsp
+      }
     };
     this.navCtrl.navigateRoot(['calendario'], navigationExtras);
-}
+  }
   irRecuperarClave() {
     this.navCtrl.navigateRoot('recuperar-clave');
   }
-  onChange(event){
+  onChange(event) {
     var email = this.forma.controls.email.value;
     var pass = this.forma.controls.clave.value;
-    
-    if (event.detail){
+
+    if (event.detail) {
       this.recordarme = event.detail.checked;
-      if (this.recordarme){
+      if (this.recordarme) {
         //guardar los valores en varibales locales
         this.utiles.guardarLogin(email, pass, this.recordarme);
         //set
@@ -1527,7 +1526,7 @@ export class NuevoLoginPage implements OnInit {
           });
         }
       }
-      else{
+      else {
         localStorage.setItem('RECORDARME', this.recordarme.toString());
       }
     }

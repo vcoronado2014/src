@@ -12,11 +12,7 @@ import { ServicioParametrosApp } from '../../app/services/ServicioParametrosApp'
 import { NavigationExtras } from '@angular/router';
 
 import * as moment from 'moment';
-//ojo que cuando llegamos a la pantalla de registro se esta marcando 
-//en la tabla prg_pre_registro_app el elemento con estado 1 cuando debería seguir en estado 0
-//revisar
-//OJO AL COMPLETAR EL REGISTRO NO SE GUARDA LA FECHA DE NACIMIENTO EN LA TABLA RAP_REGISTR_APP
-//HAY QUE GUARDARLO
+
 @Component({
   selector: 'app-inicio',
   templateUrl: './inicio.page.html',
@@ -63,20 +59,6 @@ export class InicioPage implements OnInit {
         var lat = sessionStorage.getItem('latitud');
         var lon = sessionStorage.getItem('longitud');
         this.doGeocode(lat, lon);
-        //obtener la info de registro y setear los campos que corresponden
-/*         if (!this.utiles.isAppOnDevice()) {
-          //this.doGeocode(lat, lon);
-          //console.log('web');
-          this.doGeocode(lat, lon);
-        }
-        else {
-          //this.doGeocodeNative(lat, lon);
-          //console.log('native');
-          this.networkService.initializeNetworkEvents();
-          this.status = this.networkService.getCurrentNetworkStatus();
-          this.doGeocodeNative(lat, lon);
-
-        } */
 
       }).catch((error) => {
         console.log('Error getting location', error);
@@ -115,7 +97,7 @@ export class InicioPage implements OnInit {
   abrirLogin() {
     //this.navCtrl.navigateRoot('nuevo-login');
     //this.navCtrl.navigateForward('nuevo-login');
-    this.router.navigateByUrl('/nuevo-login', { replaceUrl:true });
+    this.router.navigateByUrl('/nuevo-login', { replaceUrl: true });
   }
   abrirPrimerosPasos() {
     const navigationExtras: NavigationExtras = {
@@ -375,7 +357,7 @@ export class InicioPage implements OnInit {
       //buscar el registro mediante el idDispositivo, por lo tanto si ya accedió entonces 
       //ocupamos otras variables de local storage para determinar si enviarlo al login o no
       var tieneUsuPass = this.utiles.tieneUsuarioYPassword();
-      if (tieneUsuPass){
+      if (tieneUsuPass) {
         this.abrirLogin();
       }
       else {
@@ -430,15 +412,11 @@ export class InicioPage implements OnInit {
     }
     else {
       /* if (this.status == ConnectionStatus.Online) { */
-        this.servicioGeo.getMapaNative(lat, lon).then(response => {
-          //console.log(data);
-          this.utiles.procesarRespuestaMapa(JSON.parse(response.data));
+      this.servicioGeo.getMapaNative(lat, lon).then(response => {
+        //console.log(data);
+        this.utiles.procesarRespuestaMapa(JSON.parse(response.data));
 
-        });
-/*       }
-      else{
-        console.log('NO HAY CONEXIÓN A INTERNET');
-      } */
+      });
 
     }
 

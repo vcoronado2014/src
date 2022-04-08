@@ -5,7 +5,7 @@ import { ServicioUtiles } from '../../app/services/ServicioUtiles';
 import { ServicioGeo } from '../../app/services/ServicioGeo';
 import { environment } from 'src/environments/environment';
 import { ServicioParametrosApp } from '../../app/services/ServicioParametrosApp';
-import {DomSanitizer} from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 //moment
 import * as moment from 'moment';
 
@@ -20,7 +20,6 @@ export class ModalCapsulasPage implements OnInit {
   nodId = 0;
 
   usuarioAps = null;
-  //videourl = 'https://www.youtube.com/watch?v=8iN11Pt6LdU';
   videourl = 'https://www.youtube.com/embed/8iN11Pt6LdU';
 
   capsulas = [];
@@ -33,7 +32,7 @@ export class ModalCapsulasPage implements OnInit {
     public menu: MenuController,
     public loading: LoadingController,
     private alertController: AlertController,
-    public  sanitizer:DomSanitizer,
+    public sanitizer: DomSanitizer,
     public global: ServicioGeo,
     public parametrosApp: ServicioParametrosApp,
   ) { }
@@ -54,7 +53,7 @@ export class ModalCapsulasPage implements OnInit {
     this.obtener();
   }
 
-  async obtener(){
+  async obtener() {
     if (this.parametrosApp.USA_CAPSULAS_EDUCATIVAS()) {
       this.estaCargando = true;
       this.tituloLoading = 'Enviando contacto...';
@@ -75,7 +74,7 @@ export class ModalCapsulasPage implements OnInit {
           this.utiles.presentToast('Se presentó un error al obtener las cápsulas, contacte al administrador', 'bottom', 2000);
         })
       }
-      else{
+      else {
         //llamada nativa
         this.global.postCapsulasNative(this.nodId).then((response: any) => {
           //procesar respuesta
@@ -101,7 +100,7 @@ export class ModalCapsulasPage implements OnInit {
     }
   }
 
-  abrirYoutube(item){
+  abrirYoutube(item) {
     console.log(item);
   }
 

@@ -67,7 +67,7 @@ export class ModalAlertasPage implements OnInit {
       this.notificaciones = JSON.parse(this.navParams.get('notificaciones'));
       //lo ccomenttamos por nueva implementacion
       this.procesarAlertas();
-      console.log(this.notificaciones);
+      //console.log(this.notificaciones);
       this.procesarAlertasAgrupadas();
     }
   }
@@ -76,11 +76,11 @@ export class ModalAlertasPage implements OnInit {
       this.notificaciones.forEach(alerta => {
 
         let usu = null;
-        if (alerta.IrA == 'asociar-familia'){
+        if (alerta.IrA == 'asociar-familia') {
           //es una alerta que debe contener al mismo usuario logueado
           usu = this.utiles.entregaUsuarioLogueado();
         }
-        else{
+        else {
           usu = this.utiles.entregaUsuarioNombre(alerta.Subtitulo);
         }
         alerta.UsuarioAps = usu == null ? null : usu;
@@ -121,7 +121,7 @@ export class ModalAlertasPage implements OnInit {
           //console.log(usu);
           //ahora a cada usuario le podemos agregar los eventos
           var notificacionesUsu = this.notificaciones.filter(n => n.UsuarioAps.Id == usu.Id);
-          
+
           usu.Notificaciones = notificacionesUsu;
           usu.Notificaciones.sort((a: any, b: any) => { return this.getTime(a.FechaCompleta) - this.getTime(b.FechaCompleta) });
 
@@ -129,10 +129,10 @@ export class ModalAlertasPage implements OnInit {
       }
       //console.log(usuariosTodos);
       this.notificacionesTodas = usuariosTodos;
-      
+
     }
 
-    console.log(this.notificacionesTodas);
+    //console.log(this.notificacionesTodas);
 
   }
   openNotificacion(modulo) {
@@ -143,11 +143,7 @@ export class ModalAlertasPage implements OnInit {
   }
   //nuevos metodos
   openNotificacionModal(item) {
-    console.log(item);
-    /*         if (modulo && modulo != '') {
-              this.dismiss();
-              this.navCtrl.navigateRoot(modulo);
-            } */
+    //console.log(item);
   }
   dismiss() {
     this.modalCtrl.dismiss();

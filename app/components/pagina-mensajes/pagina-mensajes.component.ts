@@ -25,7 +25,7 @@ import { ServicioUtiles } from '../../../app/services/ServicioUtiles';
     
       ngOnInit() {}
       volver(){
-          console.log('volver');
+          //console.log('volver');
           this.navCtrl.navigateRoot(this.irA);
       }
   }

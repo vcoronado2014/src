@@ -15,16 +15,16 @@ import { environment } from 'src/environments/environment';
 })
 export class ModalSeleccionNodoPage implements OnInit {
 
-    public usuarioAps;
-    idConsultar;
-    listadoNodos = [];
-    estaCargando = false;
-    //ACA HAY 2 COSAS, CUANDO SE BUSCA CITAS PARA EL NODO COSAM DICE QUE EL ESTABLECIMIENTO NO ESTA HABILITADO
-    //LA SEGUNDA ES QUE EL BOTON ATRAS DE ESTA SELECCCION DEBE VOLVER A LLEVARLO A LA PANTALLA DE NODOS
-    //ADEMAS muestra vacio cuando no hay oferta y se gatilla el toast con error, controlar eso.
-    //verificar porque no trae nadA
+  public usuarioAps;
+  idConsultar;
+  listadoNodos = [];
+  estaCargando = false;
+  //ACA HAY 2 COSAS, CUANDO SE BUSCA CITAS PARA EL NODO COSAM DICE QUE EL ESTABLECIMIENTO NO ESTA HABILITADO
+  //LA SEGUNDA ES QUE EL BOTON ATRAS DE ESTA SELECCCION DEBE VOLVER A LLEVARLO A LA PANTALLA DE NODOS
+  //ADEMAS muestra vacio cuando no hay oferta y se gatilla el toast con error, controlar eso.
+  //verificar porque no trae nadA
 
-    constructor(
+  constructor(
     public modalCtrl: ModalController,
     public navParams: NavParams,
     public utiles: ServicioUtiles,
@@ -63,7 +63,7 @@ export class ModalSeleccionNodoPage implements OnInit {
     this.modalCtrl.dismiss();
   }
 
-  irAHome(){
+  irAHome() {
     const navigationExtras: NavigationExtras = {
       queryParams: {
         idUsp: this.idConsultar
@@ -71,8 +71,8 @@ export class ModalSeleccionNodoPage implements OnInit {
     };
     this.navCtrl.navigateBack(['calendario'], navigationExtras);
   }
-  irAReservar(nodo){
-    console.log(nodo);
+  irAReservar(nodo) {
+    //console.log(nodo);
     const navigationExtras: NavigationExtras = {
       queryParams: {
         Id: this.usuarioAps.Id,

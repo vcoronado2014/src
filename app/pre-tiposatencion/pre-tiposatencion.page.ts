@@ -15,7 +15,7 @@ import { FilterPipe } from '../../app/pipes/filter.pipe';
 import { environment } from 'src/environments/environment';
 //modal
 import { ModalOperacionCitaPage } from '../modal-operacion-cita/modal-operacion-cita.page';
-import {combineAll, map, startWith} from 'rxjs/operators';
+import { combineAll, map, startWith } from 'rxjs/operators';
 import { filter, pairwise } from 'rxjs/operators';
 
 @Component({
@@ -90,11 +90,11 @@ export class PreTiposatencionPage implements OnInit {
     /* public global: ServicioGeo */
   ) { }
 
-  changeFiltros(){
-    if (this.ocultarFiltros){
+  changeFiltros() {
+    if (this.ocultarFiltros) {
       this.ocultarFiltros = false;
     }
-    else{
+    else {
       this.ocultarFiltros = true;
     }
   }
@@ -105,31 +105,31 @@ export class PreTiposatencionPage implements OnInit {
       message: mensaje,
       position: posicion,
       buttons: [
-          {
-              text: 'Cerrar',
-              role: 'cancel',
-              handler: () => {
-                  console.log('Cancel clicked');
-                  toast.dismiss();
-              },
+        {
+          text: 'Cerrar',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+            toast.dismiss();
           },
-          {
-              side: 'end',
-              text: 'Reintentar',
-              role: 'alert',
-              handler: () => {
-                  this.load();
-                  toast.dismiss();
-              },
+        },
+        {
+          side: 'end',
+          text: 'Reintentar',
+          role: 'alert',
+          handler: () => {
+            this.load();
+            toast.dismiss();
           },
+        },
 
       ],
     });
     await toast.present();
   }
 
-  changeProfesional(){
-    console.log(this.comboSeleccionadoProf);
+  changeProfesional() {
+    //console.log(this.comboSeleccionadoProf);
     //aca debemos filtrar los tdas de este medico
     this.filtrarTDAProfesional(this.comboSeleccionadoProf);
     //ACA ESTOY
@@ -145,41 +145,41 @@ export class PreTiposatencionPage implements OnInit {
     var indice = 1;
     if (this.citas && this.citas.length > 0) {
       this.citas.forEach(cita => {
-        if (usaProfesional && usaTda){
-          if (cita.TipoAtencion == this.comboSeleccionado && cita.NombreCompletoMedico.toLowerCase() == this.comboSeleccionadoProf.toLocaleLowerCase()){
+        if (usaProfesional && usaTda) {
+          if (cita.TipoAtencion == this.comboSeleccionado && cita.NombreCompletoMedico.toLowerCase() == this.comboSeleccionadoProf.toLocaleLowerCase()) {
             cita.indice = indice;
             this.citasFiltradas.push(cita);
             indice++;
           }
         }
-        else if (usaProfesional && usaTda == false){
-          if (cita.NombreCompletoMedico.toLowerCase() == this.comboSeleccionadoProf.toLocaleLowerCase()){
+        else if (usaProfesional && usaTda == false) {
+          if (cita.NombreCompletoMedico.toLowerCase() == this.comboSeleccionadoProf.toLocaleLowerCase()) {
             cita.indice = indice;
             this.citasFiltradas.push(cita);
             indice++;
           }
         }
-        else if (usaProfesional == false && usaTda){
-          if (cita.TipoAtencion == this.comboSeleccionado){
+        else if (usaProfesional == false && usaTda) {
+          if (cita.TipoAtencion == this.comboSeleccionado) {
             cita.indice = indice;
             this.citasFiltradas.push(cita);
             indice++;
           }
         }
-        else{
+        else {
           this.utiles.presentToast('Debe buscar por algún filtro', 'bottom', 3000);
         }
       });
 
       //las citas filtradas hay que reporcesarlas, ya que un profesional puede tener varios tdas,
       //en este caso es necesario mostrarle al usuario al menos una opcion por tda
-      if (usaProfesional && usaTda == false){
+      if (usaProfesional && usaTda == false) {
         //obtenemos cuantos tdas tiene ese profesional
         var nuevoArreglo = this.utiles.obtenerTdasProfesional(this.citasFiltradas, this.comboSeleccionadoProf);
         this.citasFiltradas = nuevoArreglo;
         //console.log(countTdas);
       }
-      else if (usaProfesional == false && usaTda){
+      else if (usaProfesional == false && usaTda) {
         var nuevoArreglo = this.utiles.obtenerProfesionalTdas(this.citasFiltradas, this.comboSeleccionado);
         this.citasFiltradas = nuevoArreglo;
       }
@@ -188,7 +188,7 @@ export class PreTiposatencionPage implements OnInit {
     if (this.citasFiltradas.length > 1) {
       this.encontroCitas = true;
     }
-    console.log(this.citasFiltradas);
+    //console.log(this.citasFiltradas);
   }
   buscarCitasFiltro() {
     this.mostrarProgress = true;
@@ -224,8 +224,8 @@ export class PreTiposatencionPage implements OnInit {
     }
 
   }
-  async filterList(item){
-    console.log(item.srcElement.value);
+  async filterList(item) {
+    // console.log(item.srcElement.value);
     if (item.srcElement.value != '') {
       this.profesionalesFiltrados = this.profesionales;
 
@@ -239,7 +239,7 @@ export class PreTiposatencionPage implements OnInit {
         }
       })
     }
-    else{
+    else {
       this.profesionalesFiltrados = this.profesionales;
       //dejamos los tdas como estaban
       this.tiposAtencion = sessionStorage.getItem('TIPOS_ATENCION') ? JSON.parse(sessionStorage.getItem('TIPOS_ATENCION')) : [];
@@ -247,41 +247,41 @@ export class PreTiposatencionPage implements OnInit {
     }
 
   }
-  filtrarTDAProfesional(nombreProfesional){
-     this.crearTiposAtencion();
-     //agregamos los tdas sólo del medico
-     var citas = sessionStorage.getItem('CITAS_DISPONIBLES') ? JSON.parse(sessionStorage.getItem('CITAS_DISPONIBLES')) : [];
-     var contador = 1;
-     if (citas){
-       citas.forEach(cita => {
-         if (cita.NombreCompletoMedico.toLowerCase() == nombreProfesional.toLowerCase()){
-           var tda = this.tiposAtencion.filter(t=>t.Texto == cita.TipoAtencion);
-           if (tda.length == 0){
+  filtrarTDAProfesional(nombreProfesional) {
+    this.crearTiposAtencion();
+    //agregamos los tdas sólo del medico
+    var citas = sessionStorage.getItem('CITAS_DISPONIBLES') ? JSON.parse(sessionStorage.getItem('CITAS_DISPONIBLES')) : [];
+    var contador = 1;
+    if (citas) {
+      citas.forEach(cita => {
+        if (cita.NombreCompletoMedico.toLowerCase() == nombreProfesional.toLowerCase()) {
+          var tda = this.tiposAtencion.filter(t => t.Texto == cita.TipoAtencion);
+          if (tda.length == 0) {
             var entidad = {
               Texto: cita.TipoAtencion,
               Valor: contador,
               Selected: false
             }
             this.tiposAtencion.push(entidad);
-           }
-           contador++;
-         }
-         
-       });
-     }
+          }
+          contador++;
+        }
+
+      });
+    }
   }
-  limpiarProfesional(){
+  limpiarProfesional() {
     this.comboSeleccionadoProf = '';
     this.profesionalesFiltrados = this.profesionales;
     var item = {
-      srcElement : {
+      srcElement: {
         value: ''
       }
     };
     this.filterList(item);
     this.buscarCitasFiltro();
   }
-  btnLimpiarFiltros(){
+  btnLimpiarFiltros() {
     this.disabledCombo = false;
     this.comboSeleccionado = 'Selecciona...';
     this.idComboSeleccionado = 0;
@@ -292,13 +292,13 @@ export class PreTiposatencionPage implements OnInit {
     this.textoBotonMostrarMedico = 'MOSTRAR';
 
   }
-  entregaTiposAtencion(){
+  entregaTiposAtencion() {
     this.crearTiposAtencion();
     var contador = 1;
-    if (this.citas){
+    if (this.citas) {
       this.citas.forEach(cita => {
-        var tda = this.tiposAtencion.filter(t=>t.Texto == cita.TipoAtencion);
-        if (tda.length == 0){
+        var tda = this.tiposAtencion.filter(t => t.Texto == cita.TipoAtencion);
+        if (tda.length == 0) {
           var entidadTipo = {
             Texto: cita.TipoAtencion,
             Valor: contador,
@@ -311,14 +311,14 @@ export class PreTiposatencionPage implements OnInit {
       });
     }
   }
-  mostrarChips(){
+  mostrarChips() {
     var ocultar = true;
-    if (this.comboSeleccionadoProf != '' || this.comboSeleccionado != 'Selecciona...'){
+    if (this.comboSeleccionadoProf != '' || this.comboSeleccionado != 'Selecciona...') {
       ocultar = false;
     }
     return ocultar;
   }
-  async load(){
+  async load() {
     this.activatedRoute.queryParams.subscribe(async params => {
       if (params && params.Id && params.CodigoDeis && params.NodId) {
         //this.estaAgregandoFamilia = true;
@@ -329,19 +329,19 @@ export class PreTiposatencionPage implements OnInit {
 
         //obtención del medico de cabecera del nodo y del usuario
         this.establecimientoRayen = this.utiles.entregaEstablecimientoRayen(this.nodId, this.idConsultar);
-        console.log(this.establecimientoRayen);
+        //console.log(this.establecimientoRayen);
         this.tieneEstablecimientoRayen = this.establecimientoRayen && this.establecimientoRayen.id > 0 ? true : false;
         this.tieneMedicoCabecera = this.establecimientoRayen && this.establecimientoRayen.idFuncionarioPrestadorCabecera > 0 ? true : false;
         this.direccionEstablecimiento = this.establecimientoRayen && this.establecimientoRayen.direccion != '' ? this.establecimientoRayen.direccion : '';
         this.nombreEstablecimiento = this.establecimientoRayen && this.establecimientoRayen.razonSocial != '' ? this.establecimientoRayen.razonSocial : '';
 
-        if (this.tieneMedicoCabecera){
+        if (this.tieneMedicoCabecera) {
           this.nombreMedicoCabecera = this.establecimientoRayen && this.establecimientoRayen.nombreFuncionarioPrestadorCabecera != '' ?
             this.establecimientoRayen.nombreFuncionarioPrestadorCabecera : '';
-          this.idMedicoCabecera = this.establecimientoRayen && this.establecimientoRayen.idFuncionarioPrestadorCabecera > 0 ? 
+          this.idMedicoCabecera = this.establecimientoRayen && this.establecimientoRayen.idFuncionarioPrestadorCabecera > 0 ?
             this.establecimientoRayen.idFuncionarioPrestadorCabecera : 0;
         }
-        
+
 
         this.usuarioAps = this.utiles.entregaUsuario(params.Id);
         if (this.usuarioAps != null) {
@@ -378,12 +378,12 @@ export class PreTiposatencionPage implements OnInit {
     moment.locale('es');
     this.previousPage = null;
     this.router.events
-    .pipe(filter((event: any) => event instanceof RoutesRecognized), pairwise())
-    .subscribe((events: RoutesRecognized[]) => {
+      .pipe(filter((event: any) => event instanceof RoutesRecognized), pairwise())
+      .subscribe((events: RoutesRecognized[]) => {
         this.previousPage = events[0].urlAfterRedirects;
         sessionStorage.setItem('PREVIOUS_PAGE_TIPOS_ATENCION', this.previousPage);
-        console.log(this.previousPage);
-    });
+        //console.log(this.previousPage);
+      });
     //debemos recibir por parametro al usuario que le conseguiremos la hora
     this.load();
 
@@ -392,13 +392,13 @@ export class PreTiposatencionPage implements OnInit {
     //var fechaIni = moment().add(environment.HORAS_FECHA_INICIO, 'hour');
     var fechaIni = moment().add(this.parametrosApp.HORAS_FECHA_INICIO(), 'hour');
     var date = new Date();
-    console.log(fechaIni);
+    //console.log(fechaIni);
     date = new Date(fechaIni.year(), fechaIni.month(), fechaIni.date(), 0, 0, 0, 0);
-    console.log(date);
+    //console.log(date);
     var fechaTer = moment().add(1, 'month');
     var dateFin = new Date(fechaTer.year(), fechaTer.month(), fechaTer.date(), 23, 59, 0, 0);
-    console.log(fechaTer);
-    console.log(dateFin);
+    //console.log(fechaTer);
+    //console.log(dateFin);
     this.fechaInicio = fechaIni.format();
     this.fechaTermino = fechaTer.format();
     //guardamos las fechas de consulta para después procesarlas
@@ -551,7 +551,7 @@ export class PreTiposatencionPage implements OnInit {
           //console.log(this.tiposAtencion);
         }
         //acá reprocesaremos la data VC 21-03-2022
-        if (data?.CitasDisponibles){
+        if (data?.CitasDisponibles) {
           data.CitasDisponibles.forEach(cita => {
             var nombre = cita.NombresMedico != '' ? cita.NombresMedico : '';
             var apellidos = cita.ApellidosMedico != '' ? cita.ApellidosMedico : '';
@@ -559,8 +559,8 @@ export class PreTiposatencionPage implements OnInit {
             cita.NombreCompletoMedico = nombre + ' ' + apellidos;
             cita.Sector = cita.Servicio?.NombreServicio ? cita.Servicio.NombreServicio : 'No definido';
             cita.TipoAtencionWeb = cita.TipoServicio?.Nombre ? cita.TipoServicio.Nombre : '';
-            if (this.idMedicoCabecera > 0 && this.nombreMedicoCabecera != ''){
-              if (this.nombreMedicoCabecera.toLowerCase().includes(cita.NombreCompletoMedico.toLowerCase())){
+            if (this.idMedicoCabecera > 0 && this.nombreMedicoCabecera != '') {
+              if (this.nombreMedicoCabecera.toLowerCase().includes(cita.NombreCompletoMedico.toLowerCase())) {
                 this.tieneHorasMedicoCabecera = true;
               }
             }
@@ -629,7 +629,7 @@ export class PreTiposatencionPage implements OnInit {
     //console.log('tipo seleccionado ' + this.idComboSeleccionado);
     //console.log(this.tiposAtencion);
   }
-  crearFiltros(){
+  crearFiltros() {
     this.tiposAtencion = [];
     this.profesionalesFiltrados = [];
     this.profesionales = [];
@@ -646,12 +646,12 @@ export class PreTiposatencionPage implements OnInit {
     this.idComboSeleccionadoProf = 0;
   }
 
-  agregarProfesionales(data){
+  agregarProfesionales(data) {
     var contador = 1;
-    if (data){
+    if (data) {
       data.forEach(cita => {
-        var entidad = this.profesionales.filter(p=>p.Texto == cita.NombreCompletoMedico);
-        if (entidad.length == 0){
+        var entidad = this.profesionales.filter(p => p.Texto == cita.NombreCompletoMedico);
+        if (entidad.length == 0) {
           var entidadProfesional = {
             Texto: cita.NombreCompletoMedico,
             Valor: contador,
@@ -758,19 +758,19 @@ export class PreTiposatencionPage implements OnInit {
     };
     this.navCtrl.navigateRoot(['busqueda-avanzada'], navigationExtras);
   }
-  irAHome(){
+  irAHome() {
     //aca lo correcto sería enviarlo a la página de selección de nodos
     var pagPrevia = this.getPreviousUrl();
-    if (pagPrevia != null && pagPrevia.includes('modal-nodo')){
+    if (pagPrevia != null && pagPrevia.includes('modal-nodo')) {
       ///modal-nodo?Id=14685144
-        const navigationExtras: NavigationExtras = {
-          queryParams: {
-            Id: this.idConsultar
-          }
-        };
-        this.navCtrl.navigateBack(['modal-nodo'], navigationExtras);
+      const navigationExtras: NavigationExtras = {
+        queryParams: {
+          Id: this.idConsultar
+        }
+      };
+      this.navCtrl.navigateBack(['modal-nodo'], navigationExtras);
     }
-    else{
+    else {
       const navigationExtras: NavigationExtras = {
         queryParams: {
           idUsp: this.idConsultar
@@ -784,13 +784,13 @@ export class PreTiposatencionPage implements OnInit {
     var prev = sessionStorage.getItem('PREVIOUS_PAGE_TIPOS_ATENCION') ? sessionStorage.getItem('PREVIOUS_PAGE_TIPOS_ATENCION') : null;
     return prev;
   }
-  seleccionarHorasDelMedico(){
-    console.log(this.establecimientoRayen);
-    if (this.nombreMedicoCabecera != ''){
+  seleccionarHorasDelMedico() {
+    //console.log(this.establecimientoRayen);
+    if (this.nombreMedicoCabecera != '') {
       this.comboSeleccionadoProf = this.nombreMedicoCabecera;
       this.profesionalesFiltrados = this.profesionales;
       var item = {
-        srcElement : {
+        srcElement: {
           value: this.nombreMedicoCabecera
         }
       };

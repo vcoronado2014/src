@@ -15,8 +15,8 @@ export class AntecedentesPage implements OnInit {
   miColor = '#FF4081';
 
   public usuarioAps;
-  public usuarioApsFamilia=[];
-  public listadoUsuario=[];
+  public usuarioApsFamilia = [];
+  public listadoUsuario = [];
 
   estaCargando = false;
   linesAvatar = 'inset';
@@ -27,7 +27,7 @@ export class AntecedentesPage implements OnInit {
     public modalCtrl: ModalController,
     public platform: Platform,
     public loading: LoadingController,
-    public menu:MenuController,
+    public menu: MenuController,
     public utiles: ServicioUtiles,
     public acceso: ServicioAcceso,
     public parametrosApp: ServicioParametrosApp
@@ -36,7 +36,7 @@ export class AntecedentesPage implements OnInit {
   ngOnInit() {
     this.cargarDatosInciales();
   }
-  async cargarDatosInciales(){
+  async cargarDatosInciales() {
     this.estaCargando = true;
     let loader = await this.loading.create({
       cssClass: 'loading-vacio',
@@ -55,15 +55,15 @@ export class AntecedentesPage implements OnInit {
           this.miColor = this.utiles.entregaColor(this.usuarioAps);
         }
       }
-      else{
-        this.usuarioAps = {Nombres: '', PrimerApellido: '', SegundoApellido: '', UrlImagen:''};
+      else {
+        this.usuarioAps = { Nombres: '', PrimerApellido: '', SegundoApellido: '', UrlImagen: '' };
       }
-      
+
       //manejo de los usuarios de la familia
       if (localStorage.UsuariosFamilia) {
         this.usuarioApsFamilia = JSON.parse(localStorage.UsuariosFamilia);
-        if (this.usuarioApsFamilia.length > 0){
-          for(var s in this.usuarioApsFamilia){
+        if (this.usuarioApsFamilia.length > 0) {
+          for (var s in this.usuarioApsFamilia) {
             this.usuarioApsFamilia[s].UrlImagen = this.utiles.entregaImagen(this.usuarioApsFamilia[s]);
             this.usuarioApsFamilia[s].Color = this.utiles.entregaColor(this.usuarioApsFamilia[s]);
           }
@@ -72,12 +72,12 @@ export class AntecedentesPage implements OnInit {
       }
       //ahora vamos a generar un solo listado de usuarios con los datos que necesitamos
       if (this.usuarioAps) {
-        if (this.usuarioAps.Parentezco && this.usuarioAps.Parentezco.Id > 0){
-          if (this.usuarioAps.Parentezco.Nombre.toUpperCase() == 'LA MISMA PERSONA'){
+        if (this.usuarioAps.Parentezco && this.usuarioAps.Parentezco.Id > 0) {
+          if (this.usuarioAps.Parentezco.Nombre.toUpperCase() == 'LA MISMA PERSONA') {
             this.usuarioAps.Parentezco.Nombre = 'Yo';
           }
         }
-        else{
+        else {
           this.usuarioAps.Parentezco.Nombre = 'Yo';
         }
         //this.usuarioAps.Parentezco = "Yo";
@@ -87,7 +87,7 @@ export class AntecedentesPage implements OnInit {
         if (this.usuarioApsFamilia.length > 0) {
           for (var s in this.usuarioApsFamilia) {
             //por mientras el parentezco lo dejamos como no informado.
-            if (!(this.usuarioApsFamilia[s].Parentezco && this.usuarioApsFamilia[s].Parentezco.Id > 0)){
+            if (!(this.usuarioApsFamilia[s].Parentezco && this.usuarioApsFamilia[s].Parentezco.Id > 0)) {
               this.usuarioApsFamilia[s].Parentezco.Nombre = 'No informado';
             }
             //this.usuarioApsFamilia[s].Parentezco = "No informado";
@@ -109,10 +109,10 @@ export class AntecedentesPage implements OnInit {
     this.navCtrl.navigateRoot(['detail-usuario'], navigationExtras);
 
   }
-  irAHome(){
+  irAHome() {
     this.navCtrl.navigateBack('home');
   }
-  logout(){
+  logout() {
     this.acceso.logout();
     this.navCtrl.navigateRoot('login');
   }

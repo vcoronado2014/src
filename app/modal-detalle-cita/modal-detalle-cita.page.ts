@@ -110,7 +110,7 @@ export class ModalDetalleCitaPage implements OnInit {
       else {
         this.miParentezco = this.usuarioAps.Parentezco.Nombre;
       }
-      console.log(this.data);
+      //console.log(this.data);
     }
     else {
       this.miNombre = this.data.DetalleEventoMes.NombrePaciente;
@@ -372,15 +372,15 @@ export class ModalDetalleCitaPage implements OnInit {
       }
     );
   }
-  transformaHora(evento){
+  transformaHora(evento) {
     var retorno = '';
-    if (evento && (evento.DetalleEventoMes.Titulo == 'Vacuna administrada' || evento.HoraInicioFin == '00:00')){
+    if (evento && (evento.DetalleEventoMes.Titulo == 'Vacuna administrada' || evento.HoraInicioFin == '00:00')) {
       let partes = evento.DetalleEventoMes.FechaHora.split(',');
-      if (partes && partes.length == 2){
+      if (partes && partes.length == 2) {
         retorno = partes[0];
       }
     }
-    else{
+    else {
       retorno = evento.DetalleEventoMes.FechaHora;
     }
     return retorno;

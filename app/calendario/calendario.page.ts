@@ -94,8 +94,8 @@ export class CalendarioPage implements OnInit {
   tieneEventosFuturos = false;
   fechaParaHoy;
   //mostrar los usuarios antes
-  public usuarioApsFamilia=[];
-  public listadoUsuario=[];
+  public usuarioApsFamilia = [];
+  public listadoUsuario = [];
   //data local
   EVENTOS_LOCAL = [
     {
@@ -568,14 +568,14 @@ export class CalendarioPage implements OnInit {
   }
 
   //************** implementación con listado de usuarios */
-  construirCategorias(eventosArr){
+  construirCategorias(eventosArr) {
     this.categoriasEventos = [];
-    if (eventosArr && eventosArr.length > 0){
+    if (eventosArr && eventosArr.length > 0) {
       eventosArr.forEach(lista => {
         //recorremos los eventos de la lista
         lista.Eventos.forEach(evento => {
-          if (evento.DetalleEventoMes){
-            console.log(evento.DetalleEventoMes.Titulo);
+          if (evento.DetalleEventoMes) {
+            //console.log(evento.DetalleEventoMes.Titulo);
             var titulo = evento.DetalleEventoMes.Titulo;
             if (titulo != 'Nada planificado para hoy') {
               //verificamos si existe o no el titulo ya en la lista
@@ -590,50 +590,50 @@ export class CalendarioPage implements OnInit {
     }
     //debemos seleccionar la categoria por defecto, puede ser que no se encuentre la categoria por defecto
     //y se tenga que seleccionar otra
-    var existe = this.categoriasEventos.filter(c=>c == this.filtroDefecto)[0] != null ? true : false;
-    if (!existe){
+    var existe = this.categoriasEventos.filter(c => c == this.filtroDefecto)[0] != null ? true : false;
+    if (!existe) {
       this.filtroDefecto = this.categoriasEventos[0];
     }
-    console.log(this.categoriasEventos);
-    console.log('filtro dedfecto: ' + this.filtroDefecto);
+    //console.log(this.categoriasEventos);
+    //console.log('filtro dedfecto: ' + this.filtroDefecto);
   }
-  filtrarCategorias(event){
+  filtrarCategorias(event) {
 
-    if (event.value){
+    if (event.value) {
       this.estaCargando = true;
       this.tituloLoading = 'Buscando ' + event.value;
       //console.log(this.citasVerticalTodasTop);
       this.filtroDefecto = event.value;
-      console.log(this.filtroDefecto);
-      if (this.citasVerticalTodasTop){
-        if (this.citasVerticalTodasTop && this.citasVerticalTodasTop.length > 0){
+      //console.log(this.filtroDefecto);
+      if (this.citasVerticalTodasTop) {
+        if (this.citasVerticalTodasTop && this.citasVerticalTodasTop.length > 0) {
           this.citasVerticalTodasTop.forEach(lista => {
             //recorremos los eventos de la lista
             var eventosEliminados = 0;
             lista.Eventos.forEach(evento => {
-              if (evento.DetalleEventoMes.Titulo != 'Nada planificado para hoy'){
-                if (evento.DetalleEventoMes){
-                  console.log(evento.DetalleEventoMes.Titulo);
-                  if (evento.DetalleEventoMes.Titulo == this.filtroDefecto){
+              if (evento.DetalleEventoMes.Titulo != 'Nada planificado para hoy') {
+                if (evento.DetalleEventoMes) {
+                  //console.log(evento.DetalleEventoMes.Titulo);
+                  if (evento.DetalleEventoMes.Titulo == this.filtroDefecto) {
                     evento.DetalleEventoMes.Mostrar = true;
                   }
-                  else{
+                  else {
                     evento.DetalleEventoMes.Mostrar = false;
                     eventosEliminados++;
                   }
                 }
                 //si la cantidad de eventos eliminados es igual a la cantidad de eventos
                 //existentes en esa fecha se marca también toda la card como mostrar = false
-                if (eventosEliminados == lista.Eventos.length){
+                if (eventosEliminados == lista.Eventos.length) {
                   lista.Mostrar = false;
                 }
-                else{
+                else {
                   lista.Mostrar = true;
                 }
               }
             });
             //aca termina la lista
-            console.log(lista);
+            //console.log(lista);
           });
         }
       }
@@ -644,7 +644,7 @@ export class CalendarioPage implements OnInit {
   }
 
   async cargarTodosLosEventosApiUsuario(usuario) {
-    console.log(usuario);
+    //console.log(usuario);
     //usar citasVerticalTodas
     this.citasVerticalTodas = [];
     this.citasVerticalMostrar = [];
@@ -658,42 +658,14 @@ export class CalendarioPage implements OnInit {
     this.estaCargando = true;
     this.tituloLoading = 'Obteniendo calendario';
 
-      if (!this.utiles.isAppOnDevice()) {
-        //pruebas forkjoin
-        this.cita.entregaPorMesNuevoApiListadoFork(usuario.Id, usuario.IdRyf, usuario.NodId, mesActual.mes, mesActual.anno)
-          .subscribe(async (responseList:any)=>{
-            //console.log(responseList);
-            //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
-            this.citasVerticalTodas = responseList[0];
-            this.citasVerticalTodas = this.citasVerticalTodas.concat(responseList[1]);
-            this.procesarArregloCitasTodas();
-            this.citasVerticalMostrar = this.citasVerticalTodas.filter(e => e.Mostrar == true);
-            this.citasVerticalMostrar.sort((a: any, b: any) => { return this.getTime(a.FechaCompleta) - this.getTime(b.FechaCompleta) });
-            //guardamos la variable de ordenamiento
-            sessionStorage.setItem('ORDEN_EVENTOS', 'descendente');
-            //debemos generar las categorias
-            this.construirCategorias(this.citasVerticalMostrar);
-            //creamos top limit al nuevo arreglo de citas
-            this.citasVerticalTodasTop = this.citasVerticalMostrar.slice(0, this.topLimit);
-            //filtro por defecto
-            this.filtrarCategorias({ value: this.filtroDefecto });
-            //console.log(this.citasVerticalTodasTop);
-            //console.log(this.tieneEventosFuturos);
-            //loader.dismiss();
-            this.estaCargando = false;
-            this.tituloLoading = '';
-          }, error=>{
-            this.estaCargando = false;
-            this.tituloLoading = '';
-          })
-      }
-      else {
-        //llamada nativa
-        this.cita.entregaPorMesNuevoApiListadoNativeFork(usuario.Id, usuario.IdRyf, usuario.NodId, mesActual.mes, mesActual.anno).subscribe(async (responseList:any)=>{
-          console.log(responseList);
+    if (!this.utiles.isAppOnDevice()) {
+      //pruebas forkjoin
+      this.cita.entregaPorMesNuevoApiListadoFork(usuario.Id, usuario.IdRyf, usuario.NodId, mesActual.mes, mesActual.anno)
+        .subscribe(async (responseList: any) => {
+          //console.log(responseList);
           //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
-          this.citasVerticalTodas = JSON.parse(responseList[0].data);
-          this.citasVerticalTodas = this.citasVerticalTodas.concat(JSON.parse(responseList[1].data));
+          this.citasVerticalTodas = responseList[0];
+          this.citasVerticalTodas = this.citasVerticalTodas.concat(responseList[1]);
           this.procesarArregloCitasTodas();
           this.citasVerticalMostrar = this.citasVerticalTodas.filter(e => e.Mostrar == true);
           this.citasVerticalMostrar.sort((a: any, b: any) => { return this.getTime(a.FechaCompleta) - this.getTime(b.FechaCompleta) });
@@ -706,15 +678,43 @@ export class CalendarioPage implements OnInit {
           //filtro por defecto
           this.filtrarCategorias({ value: this.filtroDefecto });
           //console.log(this.citasVerticalTodasTop);
-          console.log(this.tieneEventosFuturos);
+          //console.log(this.tieneEventosFuturos);
           //loader.dismiss();
           this.estaCargando = false;
           this.tituloLoading = '';
-        }, error=>{
+        }, error => {
           this.estaCargando = false;
           this.tituloLoading = '';
         })
-      }
+    }
+    else {
+      //llamada nativa
+      this.cita.entregaPorMesNuevoApiListadoNativeFork(usuario.Id, usuario.IdRyf, usuario.NodId, mesActual.mes, mesActual.anno).subscribe(async (responseList: any) => {
+        //console.log(responseList);
+        //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
+        this.citasVerticalTodas = JSON.parse(responseList[0].data);
+        this.citasVerticalTodas = this.citasVerticalTodas.concat(JSON.parse(responseList[1].data));
+        this.procesarArregloCitasTodas();
+        this.citasVerticalMostrar = this.citasVerticalTodas.filter(e => e.Mostrar == true);
+        this.citasVerticalMostrar.sort((a: any, b: any) => { return this.getTime(a.FechaCompleta) - this.getTime(b.FechaCompleta) });
+        //guardamos la variable de ordenamiento
+        sessionStorage.setItem('ORDEN_EVENTOS', 'descendente');
+        //debemos generar las categorias
+        this.construirCategorias(this.citasVerticalMostrar);
+        //creamos top limit al nuevo arreglo de citas
+        this.citasVerticalTodasTop = this.citasVerticalMostrar.slice(0, this.topLimit);
+        //filtro por defecto
+        this.filtrarCategorias({ value: this.filtroDefecto });
+        //console.log(this.citasVerticalTodasTop);
+        //console.log(this.tieneEventosFuturos);
+        //loader.dismiss();
+        this.estaCargando = false;
+        this.tituloLoading = '';
+      }, error => {
+        this.estaCargando = false;
+        this.tituloLoading = '';
+      })
+    }
 
   }
 
@@ -724,7 +724,7 @@ export class CalendarioPage implements OnInit {
   private getTime(date?: Date) {
     return date != null ? new Date(date).getTime() : 0;
   }
-  cargarDataLocal(){
+  cargarDataLocal() {
     sessionStorage.setItem('EVENTOS_LOCAL', JSON.stringify(this.EVENTOS_LOCAL));
     this.citasVerticalTodas = this.EVENTOS_LOCAL;
     this.procesarArregloCitasTodas();
@@ -769,27 +769,27 @@ export class CalendarioPage implements OnInit {
           //creamos top limit al nuevo arreglo de citas
           this.citasVerticalTodasTop = this.citasVerticalMostrar.slice(0, this.topLimit);
           //console.log(this.citasVerticalTodasTop);
-          console.log(this.tieneEventosFuturos);
+          //console.log(this.tieneEventosFuturos);
           loader.dismiss();
           this.estaCargando = false;
           this.tituloLoading = '';
           this.scrollListVisible();
-          
+
         }, error => {
           //console.log(error.message);
           this.estaCargando = false;
           this.tituloLoading = '';
           loader.dismiss();
           //*** agregado por homologación ***/
-          if (this.utiles.isAppIOS()){
+          if (this.utiles.isAppIOS()) {
             this.cargarDataLocal();
           }
-          else{
+          else {
             this.tiene = false;
             this.utiles.presentToast('Se produjo un error al obtener la información, vuelva a intentarlo más tarde', 'bottom', 3000);
             this.agregarUnElemento(moment().toDate());
           }
-          console.log(this.tieneEventosFuturos);
+          //console.log(this.tieneEventosFuturos);
         });
       }
       else {
@@ -817,7 +817,7 @@ export class CalendarioPage implements OnInit {
           this.tituloLoading = '';
           loader.dismiss();
           //*** agregado por homologación ***/
-          if (this.utiles.isAppIOS()){
+          if (this.utiles.isAppIOS()) {
             this.cargarDataLocal();
           }
           else {
@@ -930,7 +930,7 @@ export class CalendarioPage implements OnInit {
     this.acceso.logout();
     this.navCtrl.navigateRoot('nuevo-login');
   }
-  irHome(){
+  irHome() {
     this.navCtrl.navigateRoot('home');
   }
   procesarArregloCitas() {
@@ -1023,15 +1023,15 @@ export class CalendarioPage implements OnInit {
 
         //console.log('Evento: ' + fechaEvento);
         //console.log('Hoy:' + fechaHoy);
-        if (moment(fechaHoy).format('DD-MM-YYYY') == moment(fechaEvento).format('DD-MM-YYYY')){
+        if (moment(fechaHoy).format('DD-MM-YYYY') == moment(fechaEvento).format('DD-MM-YYYY')) {
           this.tieneEventosHoy = true;
         }
-        if (moment(fechaEvento).isAfter(moment(fechaHoy))){
+        if (moment(fechaEvento).isAfter(moment(fechaHoy))) {
           this.tieneEventosFuturos = true;
         }
         this.fechaParaHoy = moment(fechaHoy).format('DD') + ' de ' + moment(fechaHoy).format('MMMM');
         //console.log(this.fechaParaHoy);
-        
+
         contador++;
 
         if (this.citasVerticalTodas[s].Eventos[t]) {
@@ -1135,48 +1135,48 @@ export class CalendarioPage implements OnInit {
       this.citasVerticalTodas.push(entidadHoy);
     }
 
-  
-}
-agregarUnElemento(fechaHoy){
-  if (this.tieneEventosHoy == false){
-    //contador = 1;
-    var ultimo = this.citasVerticalTodas.length + 1;
-    var entidadHoy = {
-      FechaCompleta: fechaHoy,
-      Id: parseInt(moment(fechaHoy).format('DD')),
-      Mostrar: true,
-      NombreDia: moment(fechaHoy).format('dddd'),
-      NombreDiaReducido: moment(fechaHoy).format('ddd'),
-      NumeroDia: parseInt(moment(fechaHoy).format('DD')),
-      Indice: ultimo,
-      DiferenciaFechas: 10,
-      NoHayEvento: true,
-      Eventos: [{
-        Color: null,
-        HoraInicioFin: '00:00',
-        Imagen: 'agendar_citas.svg',
-        ListaFarmacos: null,
-        NombrePrincipal: 'Nada planificado para hoy',
-        NombreSecundario: 'Nada planificado para hoy',
-        DetalleEventoMes: {
-          DescripcionPrincipal: 'Nada planificado para hoy',
-          DescripcionSecundaria: 'Nada planificado para hoy',
-          Estado: '',
-          FechaHora: fechaHoy,
-          IdElemento: 0,
-          Lugar: '',
-          NombrePaciente: '',
-          Subtitulo: 'Nada planificado para hoy',
-          Titulo: 'Nada planificado para hoy'
-        }
-      }]
-    }
-    //si no tiene eventos hoy lo agregamos
-    this.citasVerticalTodas.push(entidadHoy);
-    this.citasVerticalTodasTop = this.citasVerticalTodas;
-    this.tiene = false;
+
   }
-}
+  agregarUnElemento(fechaHoy) {
+    if (this.tieneEventosHoy == false) {
+      //contador = 1;
+      var ultimo = this.citasVerticalTodas.length + 1;
+      var entidadHoy = {
+        FechaCompleta: fechaHoy,
+        Id: parseInt(moment(fechaHoy).format('DD')),
+        Mostrar: true,
+        NombreDia: moment(fechaHoy).format('dddd'),
+        NombreDiaReducido: moment(fechaHoy).format('ddd'),
+        NumeroDia: parseInt(moment(fechaHoy).format('DD')),
+        Indice: ultimo,
+        DiferenciaFechas: 10,
+        NoHayEvento: true,
+        Eventos: [{
+          Color: null,
+          HoraInicioFin: '00:00',
+          Imagen: 'agendar_citas.svg',
+          ListaFarmacos: null,
+          NombrePrincipal: 'Nada planificado para hoy',
+          NombreSecundario: 'Nada planificado para hoy',
+          DetalleEventoMes: {
+            DescripcionPrincipal: 'Nada planificado para hoy',
+            DescripcionSecundaria: 'Nada planificado para hoy',
+            Estado: '',
+            FechaHora: fechaHoy,
+            IdElemento: 0,
+            Lugar: '',
+            NombrePaciente: '',
+            Subtitulo: 'Nada planificado para hoy',
+            Titulo: 'Nada planificado para hoy'
+          }
+        }]
+      }
+      //si no tiene eventos hoy lo agregamos
+      this.citasVerticalTodas.push(entidadHoy);
+      this.citasVerticalTodasTop = this.citasVerticalTodas;
+      this.tiene = false;
+    }
+  }
   //ordena los elementos de forma descende o ascendente
   ordenar() {
     if (sessionStorage.getItem('ORDEN_EVENTOS')) {
@@ -1480,22 +1480,22 @@ agregarUnElemento(fechaHoy){
     //pasando id
     var usaOtrosNodos = this.parametrosApp.PERMITE_CITAR_OTROS_NODOS();
     var establecimientos = this.utiles.obtenerEstablecimientosRayen(this.usuarioAps.Id);
-    if (usaOtrosNodos){
-      if (establecimientos.length <= 1){
+    if (usaOtrosNodos) {
+      if (establecimientos.length <= 1) {
         this.abrirPreTiposAtencion();
       }
-      else{
+      else {
         this.abrirSelecccionNodo();
       }
-      
+
     }
-    else{
+    else {
       //directo a los pre-tiposatencion
       this.abrirPreTiposAtencion();
     }
-    
+
   }
-  abrirPreTiposAtencion(){
+  abrirPreTiposAtencion() {
     //debemos pasar el codigo deis 2014
     const navigationExtras: NavigationExtras = {
       queryParams: {
@@ -1506,7 +1506,7 @@ agregarUnElemento(fechaHoy){
     };
     this.navCtrl.navigateRoot(['pre-tiposatencion'], navigationExtras);
   }
-  abrirSelecccionNodo(){
+  abrirSelecccionNodo() {
     const navigationExtras: NavigationExtras = {
       queryParams: {
         Id: this.usuarioAps.Id
