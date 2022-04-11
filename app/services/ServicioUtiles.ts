@@ -673,8 +673,12 @@ export class ServicioUtiles{
             //llamada web
             this.servicioGeo.getParametros(strProd).subscribe((response:any)=>{
               //procesar
-              console.log(response);
+              //console.log(response);
+              console.log('Parametros app obtenidos con éxito.');
               localStorage.setItem('PARAMETROS_APP',JSON.stringify(response)) 
+            }, error=>{
+                console.log('error al obtener los parámetros de la app');
+                console.error(error);
             })
           }
           else{
@@ -682,7 +686,11 @@ export class ServicioUtiles{
                 //procesar
                 var data = JSON.parse(response.data);
                 localStorage.setItem('PARAMETROS_APP',JSON.stringify(data)) 
-                console.log(data);
+                //console.log(data);
+                console.log('Parametros app obtenidos con éxito.');
+              }, error=>{
+                console.log('error al obtener los parámetros de la app');
+                console.error(error);
               })
           }
     }

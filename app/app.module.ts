@@ -68,6 +68,7 @@ import {
   MAT_MOMENT_DATE_ADAPTER_OPTIONS,
 } from '@angular/material-moment-adapter';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
+import { enterAnimation } from './animations/nav-animations';
 
 @NgModule({
   declarations: [
@@ -91,7 +92,9 @@ import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    IonicModule.forRoot(), 
+    IonicModule.forRoot({
+      navAnimation: enterAnimation
+    }), 
     AppRoutingModule,
     ComponentsModule, 
     BrowserAnimationsModule,

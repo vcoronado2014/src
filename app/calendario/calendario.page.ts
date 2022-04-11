@@ -680,11 +680,15 @@ export class CalendarioPage implements OnInit {
           //console.log(this.citasVerticalTodasTop);
           //console.log(this.tieneEventosFuturos);
           //loader.dismiss();
+          console.log('Eventos del paciente obtenidos con éxito');
           this.estaCargando = false;
           this.tituloLoading = '';
         }, error => {
+          console.log('Error al obtener los eventos del paciente');
+          console.error(error);
           this.estaCargando = false;
           this.tituloLoading = '';
+
         })
     }
     else {
@@ -708,9 +712,12 @@ export class CalendarioPage implements OnInit {
         //console.log(this.citasVerticalTodasTop);
         //console.log(this.tieneEventosFuturos);
         //loader.dismiss();
+        console.log('Eventos del paciente obtenidos con éxito');
         this.estaCargando = false;
         this.tituloLoading = '';
       }, error => {
+        console.log('Error al obtener los eventos del paciente');
+        console.error(error);
         this.estaCargando = false;
         this.tituloLoading = '';
       })

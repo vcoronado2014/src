@@ -907,6 +907,8 @@ export class NuevoLoginPage implements OnInit {
             //nueva funcionalidad
             this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
             //************** */
+            console.log('Usuario tiene registro en la app.');
+            //*************** */
             let registro = JSON.parse(localStorage.getItem('REGISTRO'));
             this.estaCargandoHome = false;
             this.autentificarse(registro.Run, password);
@@ -944,6 +946,8 @@ export class NuevoLoginPage implements OnInit {
             //nueva funcionalidad
             this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
             //************** */
+            console.log('Usuario tiene registro en la app.');
+            //*************** */
             let registro = JSON.parse(localStorage.getItem('REGISTRO'));
             this.estaCargandoHome = false;
             this.autentificarse(registro.Run, password);
@@ -988,6 +992,8 @@ export class NuevoLoginPage implements OnInit {
             //nueva funcionalidad
             this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
             //************** */
+            console.log('Usuario tiene registro en la app.');
+            //*************** */
             let registro = JSON.parse(localStorage.getItem('REGISTRO'));
 
             this.autentificarse(registro.Run, password);
@@ -1004,7 +1010,7 @@ export class NuevoLoginPage implements OnInit {
           this.estaCargandoHome = false;
           this.procesoLocal();
         })
-      }, 5000);
+      }, 15000);
     }
     else {
       //llamada nativa
@@ -1025,6 +1031,8 @@ export class NuevoLoginPage implements OnInit {
             //nueva funcionalidad
             this.utiles.guardarLogin(correo, this.utiles.desencriptar(password), this.recordarme);
             //************** */
+            console.log('Usuario tiene registro en la app.');
+            //*************** */
             let registro = JSON.parse(localStorage.getItem('REGISTRO'));
             this.autentificarse(registro.Run, password);
           }
@@ -1040,7 +1048,7 @@ export class NuevoLoginPage implements OnInit {
           this.estaCargandoHome = false;
           this.procesoLocal();
         })
-      }, 5000);
+      }, 15000);
     }
 
   }
@@ -1263,6 +1271,7 @@ export class NuevoLoginPage implements OnInit {
 
   }
   setDatosUsuario(retorno, user, userFamilia) {
+    console.log('Usuario autentificado con éxito en el establecimiento.');
     //variable de sessión muy importante para el resto de la app.
     sessionStorage.setItem("UsuarioAps", user);
     localStorage.setItem('MI_RUT', retorno.UsuarioAps.Rut);
@@ -1357,6 +1366,7 @@ export class NuevoLoginPage implements OnInit {
             }
             else {
               //no tiene entidad contratante
+              console.log('No tiene entidad contratante asociada');
               this.utiles.presentToast("No tiene entidad contratante asociada", "middle", 3000);
               this.estaCargandoHome = false;
               return;

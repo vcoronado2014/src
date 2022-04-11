@@ -206,13 +206,14 @@ export class HomePage implements OnInit {
 
               });
             }
-
+            console.log('Establecimientos usuario obtenidos con éxito');
             this.progressRayen = false;
             //seteamos los nodos del usuario
             sessionStorage.setItem('ESTABLECIMIENTOS_USUARIO_RAYEN', JSON.stringify(this.establecimientosRayen));
 
           }, error => {
-            console.log(error);
+            console.log('error al obtener establecimientos usuario rayen');
+            console.error(error);
             this.progressRayen = false;
           });
         }
@@ -238,12 +239,14 @@ export class HomePage implements OnInit {
               });
 
             }
+            console.log('Establecimientos usuario obtenidos con éxito');
             this.progressRayen = false;
             //seteamos los nodos del usuario
             sessionStorage.setItem('ESTABLECIMIENTOS_USUARIO_RAYEN', JSON.stringify(this.establecimientosRayen));
 
           }, error => {
-            console.log(error);
+            console.log('error al obtener establecimientos usuario rayen');
+            console.error(error);
             this.progressRayen = false;
           })
         }
@@ -287,12 +290,14 @@ export class HomePage implements OnInit {
         //console.log(this.pacientesRayen);
         sessionStorage.setItem('USUARIOS_RAYEN', JSON.stringify(this.pacientesRayen));
         localStorage.setItem('FECHA_ACTUALIZACION_DATOS_RAYEN', moment().format('YYYY-MM-DD HH:mm'));
+        console.log('Paciente rayen obtenido con éxito');
         this.progressRayen = false;
         //haremos la llamada para obtener los establecimientos
         this.obtenerEstablecimientosUsuarioRayen();
         //************************************************* */
       }, error => {
-        console.log(error);
+        console.log('error al obtener paciente rayen');
+        console.error(error);
         this.progressRayen = false;
       })
     }
@@ -310,12 +315,14 @@ export class HomePage implements OnInit {
         }
         sessionStorage.setItem('USUARIOS_RAYEN', JSON.stringify(this.pacientesRayen));
         localStorage.setItem('FECHA_ACTUALIZACION_DATOS_RAYEN', moment().format('YYYY-MM-DD HH:mm'));
+        console.log('Paciente rayen obtenido con éxito');
         this.progressRayen = false;
         //haremos la llamada para obtener los establecimientos
         this.obtenerEstablecimientosUsuarioRayen();
         //************************************************* */
       }, error => {
-        console.log(error);
+        console.log('error al obtener paciente rayen');
+        console.error(error);
         this.progressRayen = false;
       });
     }
@@ -608,8 +615,12 @@ export class HomePage implements OnInit {
             //juan moran
             sessionStorage.setItem('LOG_MOVIMIENTOS', JSON.stringify(this.itemsMenu));
             //console.log(this.itemsMenu);
+            console.log('Movimientos obtenidos con éxito');
             loader.dismiss();
             this.estaCargando = false;
+          }, error=>{
+            console.log('error al obtener los movimientos');
+            console.error(error);
           })
         }
         else {
@@ -619,8 +630,12 @@ export class HomePage implements OnInit {
             var data = JSON.parse(response.data);
             this.itemsMenu = this.utiles.entregaArregloHome(data);
             //console.log(this.itemsMenu);
+            console.log('Movimientos obtenidos con éxito');
             loader.dismiss();
             this.estaCargando = false;
+          }, error=>{
+            console.log('error al obtener los movimientos');
+            console.error(error);
           })
         }
       }
@@ -677,10 +692,12 @@ export class HomePage implements OnInit {
         var data = response;
         //console.log(data);
         this.notificaciones = this.servNotificaciones.construyeNotificacionesLocales(data);
+        console.log('Notificaciones obtenidas con éxito');
         this.estaCargando = false;
         this.estaCargandoNotificaciones = false;
       }, error => {
-        console.log(error);
+        console.log('error al obtener las notificaciones');
+        console.error(error);
         this.notificaciones = this.servNotificaciones.construyeNotificacionesLocales([]);
         this.estaCargando = false;
         this.estaCargandoNotificaciones = false;
@@ -692,10 +709,12 @@ export class HomePage implements OnInit {
         var data = JSON.parse(response.data);
         //console.log(data);
         this.notificaciones = this.servNotificaciones.construyeNotificacionesLocales(data);
+        console.log('Notificaciones obtenidas con éxito');
         this.estaCargando = false;
         this.estaCargandoNotificaciones = false;
       }, error => {
-        console.log(error);
+        console.log('error al obtener las notificaciones');
+        console.error(error);
         this.notificaciones = this.servNotificaciones.construyeNotificacionesLocales([]);
         this.estaCargando = false;
         this.estaCargandoNotificaciones = false;
