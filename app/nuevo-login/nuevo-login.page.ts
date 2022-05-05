@@ -730,7 +730,7 @@ export class NuevoLoginPage implements OnInit {
           this.tokenDispositivo = localStorage.getItem('token_dispositivo');
         }
         versionAppName = "Mi salud familiar"
-        versionNumber = "1.0.2";
+        versionNumber = "1.0.3";
         plataforma = "Web";
         //loader.dismiss();
         //otras variables
@@ -758,7 +758,7 @@ export class NuevoLoginPage implements OnInit {
         }
         else {
           versionAppName = "Mi salud familiar"
-          versionNumber = "1.0.2";
+          versionNumber = "1.0.3";
           plataforma = "No informado";
         }
         //crear token para web
@@ -923,9 +923,14 @@ export class NuevoLoginPage implements OnInit {
           //console.log(error.message);
           //this.utiles.presentToast("Error de conexión.", "middle", 3000);
           this.estaCargandoHome = false;
-          this.procesoLocal();
+          if (this.utiles.isAppIOS()) {
+            this.procesoLocal();
+          } else {
+            this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          }
+          
         })
-      }, 5000);
+      }, 15000);
     }
     else {
       //llamada nativa
@@ -963,9 +968,13 @@ export class NuevoLoginPage implements OnInit {
           //console.log(error.message);
           //this.utiles.presentToast("Error de conexión.", "middle", 3000);
           this.estaCargandoHome = false;
-          this.procesoLocal();
+          if (this.utiles.isAppIOS()) {
+            this.procesoLocal();
+          } else {
+            this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          }
         })
-      }, 5000);
+        }, 15000);
     }
 
   }
@@ -1008,7 +1017,11 @@ export class NuevoLoginPage implements OnInit {
           //console.log(error.message);
           //this.utiles.presentToast("Error de conexión.", "middle", 3000);
           this.estaCargandoHome = false;
-          this.procesoLocal();
+          if (this.utiles.isAppIOS()) {
+            this.procesoLocal();
+          } else {
+            this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          }
         })
       }, 15000);
     }
@@ -1046,7 +1059,11 @@ export class NuevoLoginPage implements OnInit {
           //console.log(error.message);
           //this.utiles.presentToast("Error de conexión.", "middle", 3000);
           this.estaCargandoHome = false;
-          this.procesoLocal();
+          if (this.utiles.isAppIOS()) {
+            this.procesoLocal();
+          } else {
+            this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          }
         })
       }, 15000);
     }
@@ -1123,7 +1140,11 @@ export class NuevoLoginPage implements OnInit {
           //console.log(error.message);
           //this.utiles.presentToast("Error de conexión.", "middle", 3000);
           this.estaCargandoHome = false;
-          this.procesoLocal();
+          if (this.utiles.isAppIOS()) {
+            this.procesoLocal();
+          } else {
+            this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          }
         })
       }, 15000);
     }
@@ -1519,27 +1540,37 @@ export class NuevoLoginPage implements OnInit {
   onChange(event) {
     var email = this.forma.controls.email.value;
     var pass = this.forma.controls.clave.value;
-
-    if (event.detail) {
-      this.recordarme = event.detail.checked;
-      if (this.recordarme) {
-        //guardar los valores en varibales locales
-        this.utiles.guardarLogin(email, pass, this.recordarme);
-        //set
-        if (this.utiles.tieneUsuarioYPassword()) {
-          this.nombreCompleto = this.utiles.getMiNombre();
-          this.forma.setValue({
-            run: '',
-            email: this.utiles.getNombreUsuario(),
-            clave: this.utiles.getPassword(),
-            //recordarme: new FormControl(this.recordarme)
-          });
+    /* if (email != '' && pass != '') { */
+      if (event.detail) {
+        this.recordarme = event.detail.checked;
+        if (this.recordarme) {
+          //guardar los valores en varibales locales
+          this.utiles.guardarLogin(email, pass, this.recordarme);
+          //set
+          if (this.utiles.tieneUsuarioYPassword()) {
+            this.nombreCompleto = this.utiles.getMiNombre();
+            this.forma.setValue({
+              run: '',
+              email: this.utiles.getNombreUsuario(),
+              clave: this.utiles.getPassword(),
+              //recordarme: new FormControl(this.recordarme)
+            });
+          }
+        }
+        else {
+          localStorage.setItem('RECORDARME', this.recordarme.toString());
         }
       }
-      else {
-        localStorage.setItem('RECORDARME', this.recordarme.toString());
+/*     }
+    else{
+      this.utiles.presentToast('Debes ingresar usuario y password para recordar tus datos', 'bottom', 3000);
+      if (event.detail){
+        event.detail.checked = false;
+        this.recordarme = false;
       }
-    }
+        
+    } */
+
   }
   get f() { return this.forma.controls; }
 }

@@ -40,7 +40,7 @@
           <!-- <app-avatar [lines]="'none'" [urlImagen] = "miFoto" [nombreCompleto]="'Bienvenido'" [parentezco]="nombreCompleto"></app-avatar> -->
         </ion-row>
         <ion-row>
-          <ion-item lines="none" style="width: 100%; padding: 0; margin: 0;--background:#fafafa;" class="col">
+          <ion-item lines="none" style="width: 100%; padding: 0; margin: 0;--background:#fafafa;" class="col" [disabled]="forma.invalid">
             <ion-label>Recordarme</ion-label>
             <ion-checkbox color="primary" [checked]="recordarme" slot="start" (ionChange)="onChange($event)"
               mode="ios"></ion-checkbox>

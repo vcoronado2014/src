@@ -19,10 +19,10 @@ export class ModalSeleccionNodoPage implements OnInit {
   idConsultar;
   listadoNodos = [];
   estaCargando = false;
-  //ACA HAY 2 COSAS, CUANDO SE BUSCA CITAS PARA EL NODO COSAM DICE QUE EL ESTABLECIMIENTO NO ESTA HABILITADO
-  //LA SEGUNDA ES QUE EL BOTON ATRAS DE ESTA SELECCCION DEBE VOLVER A LLEVARLO A LA PANTALLA DE NODOS
-  //ADEMAS muestra vacio cuando no hay oferta y se gatilla el toast con error, controlar eso.
-  //verificar porque no trae nadA
+
+  modulo = '';
+  texto = '';
+  botones = '';
 
   constructor(
     public modalCtrl: ModalController,
@@ -41,7 +41,11 @@ export class ModalSeleccionNodoPage implements OnInit {
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe(async params => {
       if (params && params.Id) {
-        this.listadoNodos = this.utiles.obtenerEstablecimientosRayen(params.Id);
+        this.modulo = params && params?.Modulo ? params.Modulo : 'AGENDA';
+        console.log(this.modulo);
+        this.setearTitulosBotones();
+        var nodosIntegracion = this.utiles.obtenerEstablecimientosRayen(params.Id);
+        this.listadoNodos = nodosIntegracion.length == 0 ? this.utiles.entregaEstablecimientosUsuariosRayenUsp(params.Id) : nodosIntegracion;
         //this.estaAgregandoFamilia = true;
         this.idConsultar = params.Id;
         this.usuarioAps = this.utiles.entregaUsuario(params.Id);
@@ -59,28 +63,54 @@ export class ModalSeleccionNodoPage implements OnInit {
       }
     });
   }
+  setearTitulosBotones(){
+    if (this.modulo == 'CALENDARIO'){
+      this.texto = 'A continuación podrás seleccionar el establecimiento donde quieres ver tus eventos.';
+      this.botones = 'VER CALENDARIO';
+    }
+    else{
+      this.texto = 'A continuación podrás seleccionar el establecimiento donde quieres tomar una hora para tu atención.';
+      this.botones = 'TOMAR HORA';
+    }
+  }
   dismiss() {
     this.modalCtrl.dismiss();
   }
 
-  irAHome() {
+/*   irAHome() {
     const navigationExtras: NavigationExtras = {
       queryParams: {
         idUsp: this.idConsultar
       }
     };
     this.navCtrl.navigateBack(['calendario'], navigationExtras);
+  } */
+  irAHome() {
+    this.navCtrl.navigateBack('home');
   }
   irAReservar(nodo) {
     //console.log(nodo);
-    const navigationExtras: NavigationExtras = {
-      queryParams: {
-        Id: this.usuarioAps.Id,
-        CodigoDeis: nodo.codigoDeis2014 ? nodo.codigoDeis2014 : this.usuarioAps.ConfiguracionNodo.CodigoDeis2014,
-        NodId: nodo.id ? nodo.id : this.usuarioAps.NodId
-      }
-    };
-    this.navCtrl.navigateRoot(['pre-tiposatencion'], navigationExtras);
+    if (this.modulo == 'AGENDA'){
+      const navigationExtras: NavigationExtras = {
+        queryParams: {
+          Id: this.usuarioAps.Id,
+          CodigoDeis: nodo.codigoDeis2014 ? nodo.codigoDeis2014 : this.usuarioAps.ConfiguracionNodo.CodigoDeis2014,
+          NodId: nodo.nodId ? nodo.nodId : this.usuarioAps.NodId
+        }
+      };
+      this.navCtrl.navigateRoot(['pre-tiposatencion'], navigationExtras);
+    }
+    else if (this.modulo == 'CALENDARIO'){
+      const navigationExtras: NavigationExtras = {
+        queryParams: {
+          idUsp: this.usuarioAps.Id,
+          codigoDeis: nodo.codigoDeis2014 ? nodo.codigoDeis2014 : this.usuarioAps.ConfiguracionNodo.CodigoDeis2014,
+          nodId: nodo.nodId ? nodo.nodId : this.usuarioAps.NodId
+        }
+      };
+      this.navCtrl.navigateForward(['calendario'], navigationExtras);
+    }
+
   }
 
 }

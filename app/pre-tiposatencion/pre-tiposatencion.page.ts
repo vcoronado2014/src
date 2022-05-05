@@ -17,6 +17,7 @@ import { environment } from 'src/environments/environment';
 import { ModalOperacionCitaPage } from '../modal-operacion-cita/modal-operacion-cita.page';
 import { combineAll, map, startWith } from 'rxjs/operators';
 import { filter, pairwise } from 'rxjs/operators';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-pre-tiposatencion',
@@ -130,12 +131,7 @@ export class PreTiposatencionPage implements OnInit {
 
   changeProfesional() {
     //console.log(this.comboSeleccionadoProf);
-    //aca debemos filtrar los tdas de este medico
     this.filtrarTDAProfesional(this.comboSeleccionadoProf);
-    //ACA ESTOY
-    //BUSCAR LAS CITAS DEL MEDICO
-    //LUEGO ATACHHAR LA BUSQUEDA CUANDO SELECCIONE EL TDA.
-    //this.buscarCitasFiltro();
   }
   indexarCitasFiltro() {
     //el tipo de atencion seleccionado
@@ -191,14 +187,22 @@ export class PreTiposatencionPage implements OnInit {
     //console.log(this.citasFiltradas);
   }
   buscarCitasFiltro() {
-    this.mostrarProgress = true;
-    this.encontroCitas = false;
-    this.disabledCombo = false;
-    setTimeout(() => {
-      this.mostrarProgress = false;
-      //this.disabledCombo = true;
-      this.indexarCitasFiltro();
-    }, 2000);
+    var usaProfesional = this.comboSeleccionadoProf != '' ? true : false;
+    var usaTda = this.comboSeleccionado != 'Selecciona...' ? true : false;
+    if (usaProfesional == false && usaTda == false){
+      this.utiles.presentToast('Debe buscar por algún filtro', 'bottom', 3000);
+    }
+    else{
+      this.mostrarProgress = true;
+      this.encontroCitas = false;
+      this.disabledCombo = false;
+      setTimeout(() => {
+        this.mostrarProgress = false;
+        //this.disabledCombo = true;
+        this.indexarCitasFiltro();
+      }, 2000);
+    }
+
   }
   buscarCitas(event) {
     //este lo cambiamos para el control mat-select
@@ -242,7 +246,7 @@ export class PreTiposatencionPage implements OnInit {
     else {
       this.profesionalesFiltrados = this.profesionales;
       //dejamos los tdas como estaban
-      this.tiposAtencion = sessionStorage.getItem('TIPOS_ATENCION') ? JSON.parse(sessionStorage.getItem('TIPOS_ATENCION')) : [];
+      this.tiposAtencion = sessionStorage.getItem('TIPOS_ATENCION_LOCAL') ? JSON.parse(sessionStorage.getItem('TIPOS_ATENCION_LOCAL')) : [];
       this.idComboSeleccionado = 0;
     }
 
@@ -279,13 +283,15 @@ export class PreTiposatencionPage implements OnInit {
       }
     };
     this.filterList(item);
-    this.buscarCitasFiltro();
+    //this.buscarCitasFiltro();
   }
   btnLimpiarFiltros() {
+    this.tiposAtencion = [];
     this.disabledCombo = false;
     this.comboSeleccionado = 'Selecciona...';
     this.idComboSeleccionado = 0;
-    this.entregaTiposAtencion();
+    //lo cambiamos para obtenerlo desde session storage
+    //this.entregaTiposAtencion();
     this.limpiarProfesional();
     this.citasFiltradas = [];
     this.encontroCitas = false;
@@ -297,6 +303,7 @@ export class PreTiposatencionPage implements OnInit {
     var contador = 1;
     if (this.citas) {
       this.citas.forEach(cita => {
+        //si el texto es 
         var tda = this.tiposAtencion.filter(t => t.Texto == cita.TipoAtencion);
         if (tda.length == 0) {
           var entidadTipo = {
@@ -738,7 +745,9 @@ export class PreTiposatencionPage implements OnInit {
         //console.log(accion);        
         const navigationExtras: NavigationExtras = {
           queryParams: {
-            idUsp: this.idConsultar
+            idUsp: this.idConsultar,
+            codigoDeis: this.codigoDeis,
+            nodId: this.nodId
           }
         };
         this.navCtrl.navigateBack(['calendario'], navigationExtras);
@@ -773,7 +782,9 @@ export class PreTiposatencionPage implements OnInit {
     else {
       const navigationExtras: NavigationExtras = {
         queryParams: {
-          idUsp: this.idConsultar
+          idUsp: this.idConsultar,
+          codigoDeis: this.codigoDeis,
+          nodId: this.nodId
         }
       };
       this.navCtrl.navigateBack(['calendario'], navigationExtras);

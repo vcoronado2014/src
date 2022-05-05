@@ -44,6 +44,14 @@
         <ion-label>Establecimiento</ion-label>
         <ion-label class="ion-text-capitalize ion-text-wrap">{{data.DetalleEventoMes.Lugar.toLowerCase()}}  </ion-label>
       </ion-item>
+      <ion-item *ngIf="data.DetalleEventoMes.Subtitulo == 'Próxima Cita' || data.DetalleEventoMes.Subtitulo == 'Próxima Cita Web'">
+        <ion-label>Profesional</ion-label>
+        <ion-label class="ion-text-capitalize ion-text-wrap">{{profesional.toLowerCase()}}</ion-label>
+      </ion-item>
+      <ion-item *ngIf="data.DetalleEventoMes.Subtitulo.toLowerCase().includes('alimento')">
+        <ion-label>Cantidad</ion-label>
+        <ion-label class="ion-text-capitalize ion-text-wrap">{{data.DetalleEventoMes.DescripcionSecundaria.toLowerCase()}}</ion-label>
+      </ion-item>
       <!-- tiene farmacos -->
       <!-- <div *ngIf="farmacos"> -->
         <div *ngIf="farmacos">

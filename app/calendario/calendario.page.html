@@ -65,9 +65,14 @@
           <mat-card-header (click)="goToDetalleCita(evento)">
             
               <mat-card-subtitle *ngIf="evento.DetalleEventoMes.Titulo != 'Vacuna administrada' || evento.HoraInicioFin == '00:00'" class="hora">{{evento.HoraInicioFin}}</mat-card-subtitle>
-              <mat-card-title class="ion-text-capitalize">{{evento.DetalleEventoMes.DescripcionPrincipal.toLowerCase()}}</mat-card-title>
+              <mat-card-title class="ion-text-capitalize" *ngIf="!evento.DetalleEventoMes.Titulo.toLowerCase().includes('fármaco')">{{evento.DetalleEventoMes.DescripcionPrincipal.toLowerCase()}}</mat-card-title>
+              <!-- farmacos -->
+              <mat-card-title class="ion-text-capitalize" *ngIf="evento.DetalleEventoMes.Titulo.toLowerCase().includes('fármaco')">{{evento.DetalleEventoMes.DescripcionSecundaria.toLowerCase()}}</mat-card-title>
               <mat-card-subtitle class="ion-text-capitalize">{{evento.DetalleEventoMes.Titulo}}</mat-card-subtitle>
-            
+              <!-- solo para citas -->
+              <mat-card-subtitle class="ion-text-capitalize" *ngIf="evento.DetalleEventoMes.Subtitulo.toLowerCase().includes('próxima cita')"><strong>{{evento.DetalleEventoMes.Lugar.toLowerCase()}}</strong></mat-card-subtitle>
+              <!-- solo para alimentos -->
+              <mat-card-subtitle class="ion-text-capitalize" *ngIf="evento.DetalleEventoMes.Subtitulo.toLowerCase().includes('alimento')"><strong>Cantidad: {{evento.DetalleEventoMes.DescripcionSecundaria.toLowerCase()}}</strong></mat-card-subtitle>
             <div class="img-card">
               <img class="example-header-image" src="./assets/imgs_svg/{{evento.Imagen}}">
             </div>

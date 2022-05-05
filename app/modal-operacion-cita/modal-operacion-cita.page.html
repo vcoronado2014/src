@@ -32,6 +32,18 @@
           <p class="ion-text-wrap detalle-label-info">{{cita.NombresMedico}}  {{cita.ApellidosMedico}}</p>
         </ion-label>
       </ion-item>
+      <ion-item>
+        <ion-label>
+          <h5 class="label-info">ESTABLECIMIENTO</h5>
+          <p class="ion-text-wrap detalle-label-info">{{cita.Servicio.Nombre}}</p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          <h5 class="label-info">SECTOR</h5>
+          <p class="ion-text-wrap detalle-label-info">{{cita.Servicio.NombreServicio}}</p>
+        </ion-label>
+      </ion-item>
     </ion-list>
     <div class="ion-padding-top">
       <!--boton cancelar -->

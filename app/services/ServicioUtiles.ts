@@ -902,7 +902,7 @@ export class ServicioUtiles{
               entidad.tokenDispositivo = localStorage.getItem('token_dispositivo');
             }
             entidad.versionAppName = "Mi salud familiar"
-            entidad.versionNumber = "1.0.2";
+            entidad.versionNumber = "1.0.3";
             entidad.plataforma = "Web";
             //loader.dismiss();
             //otras variables
@@ -923,12 +923,12 @@ export class ServicioUtiles{
             }
             else if (this.platform.is('mobileweb')){
               entidad.versionAppName = "Mi salud familiar"
-              entidad.versionNumber = "1.0.2";
+              entidad.versionNumber = "1.0.3";
               entidad.plataforma = "Web";
             }
             else {
               entidad.versionAppName = "Mi salud familiar"
-              entidad.versionNumber = "1.0.2";
+              entidad.versionNumber = "1.0.3";
               entidad.plataforma = "No informado";
             }
             //crear token para web
@@ -1154,7 +1154,7 @@ export class ServicioUtiles{
         }
 
         var entidad = {
-            Version: localStorage.getItem('version_number') ? localStorage.getItem('version_number') : '1.0.2',
+            Version: localStorage.getItem('version_number') ? localStorage.getItem('version_number') : '1.0.3',
             EsProduccion: environment.production,
             Nombre: localStorage.getItem('version_app_name') ? localStorage.getItem('version_app_name') : '',
             Ambiente: ambiente
@@ -1471,6 +1471,128 @@ export class ServicioUtiles{
             }
         }
         return agrega;
+    }
+    obtenerEstablecimientoRayenPorNodId(nodId){
+        var array = sessionStorage.getItem('ESTABLECIMIENTOS_USUARIO_RAYEN') ? JSON.parse(sessionStorage.getItem('ESTABLECIMIENTOS_USUARIO_RAYEN')) : [];
+        array = array.filter(e=>e.nodId == nodId)[0];
+        return array;
+    }
+    entregaEstablecimientosUsuariosRayenUsp(uspId) {
+        //buscamos al usuario en local sttorage
+        var arreglo = [];
+        let usuario = null;
+        if (localStorage.getItem('UsuarioAps')) {
+            var usu = JSON.parse(localStorage.getItem('UsuarioAps'));
+            if (usu) {
+                if (usu.UsuarioNodos) {
+                    usu.UsuarioNodos.forEach(usuNodo => {
+                        if (usuNodo.UspId == uspId){
+                            var entidad = {
+                                codigoDeis2014: usuNodo.CodigoDeis2014,
+                                direccion: usuNodo.Direccion,
+                                razonSocial: usuNodo.RazonSocial,
+                                nodId: usuNodo.NodId,
+                                esInscrito: usuNodo.EsInscrito,
+                                idFuncionarioPrestadorCabecera: usuNodo.FnpIdCabecera,
+                                nombreFuncionarioPrestadorCabecera: usuNodo.NombreMedicoCabecera,
+                                uspId: usuNodo.UspId
+                            };
+
+                            arreglo.push(entidad);  
+                        }
+
+                    });
+                }
+            }
+        }
+        if (localStorage.getItem('UsuariosFamilia')) {
+            var existe = false;
+            var usuarios = JSON.parse(localStorage.getItem('UsuariosFamilia'));
+            if (usuarios && usuarios.length > 0) {
+                for (var i = 0; i < usuarios.length; i++) {
+                    if (usuarios[i].UsuarioNodos) {
+                        usuarios[i].UsuarioNodos.forEach(usuNodo => {
+                            if (usuNodo.UspId == uspId) {
+                                var entidad = {
+                                    codigoDeis2014: usuNodo.CodigoDeis2014,
+                                    direccion: usuNodo.Direccion,
+                                    razonSocial: usuNodo.RazonSocial,
+                                    nodId: usuNodo.NodId,
+                                    esInscrito: usuNodo.EsInscrito,
+                                    idFuncionarioPrestadorCabecera: usuNodo.FnpIdCabecera,
+                                    nombreFuncionarioPrestadorCabecera: usuNodo.NombreMedicoCabecera,
+                                    uspId: usuNodo.UspId
+                                };
+
+                                arreglo.push(entidad);
+                            }
+
+                        });
+                    }
+
+                }
+            }
+        }
+        return arreglo;
+
+    }
+
+    construteEstablecimientosLogin() {
+        //buscamos al usuario en local sttorage
+        var arreglo = [];
+        if (localStorage.getItem('UsuarioAps')) {
+            var usu = JSON.parse(localStorage.getItem('UsuarioAps'));
+            if (usu) {
+                if (usu.UsuarioNodos) {
+                    usu.UsuarioNodos.forEach(usuNodo => {
+                            var entidad = {
+                                codigoDeis2014: usuNodo.CodigoDeis2014,
+                                direccion: usuNodo.Direccion,
+                                razonSocial: usuNodo.RazonSocial,
+                                nodId: usuNodo.NodId,
+                                esInscrito: usuNodo.EsInscrito,
+                                idFuncionarioPrestadorCabecera: usuNodo.FnpIdCabecera,
+                                nombreFuncionarioPrestadorCabecera: usuNodo.NombreMedicoCabecera,
+                                uspId: usuNodo.UspId
+                            };
+
+                            arreglo.push(entidad);  
+
+                    });
+                }
+            }
+        }
+        if (localStorage.getItem('UsuariosFamilia')) {
+            var existe = false;
+            var usuarios = JSON.parse(localStorage.getItem('UsuariosFamilia'));
+            if (usuarios && usuarios.length > 0) {
+                for (var i = 0; i < usuarios.length; i++) {
+                    if (usuarios[i].UsuarioNodos) {
+                        usuarios[i].UsuarioNodos.forEach(usuNodo => {
+
+                                var entidad = {
+                                    codigoDeis2014: usuNodo.CodigoDeis2014,
+                                    direccion: usuNodo.Direccion,
+                                    razonSocial: usuNodo.RazonSocial,
+                                    nodId: usuNodo.NodId,
+                                    esInscrito: usuNodo.EsInscrito,
+                                    idFuncionarioPrestadorCabecera: usuNodo.FnpIdCabecera,
+                                    nombreFuncionarioPrestadorCabecera: usuNodo.NombreMedicoCabecera,
+                                    uspId: usuNodo.UspId
+                                };
+
+                                arreglo.push(entidad);
+
+                        });
+                    }
+
+                }
+            }
+        }
+        if (arreglo && arreglo.length > 0){
+            sessionStorage.setItem('ESTABLECIMIENTOS_USUARIO_RAYEN', JSON.stringify(arreglo));
+        }
+
     }
 
 }

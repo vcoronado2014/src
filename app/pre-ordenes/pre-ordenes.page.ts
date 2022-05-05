@@ -127,12 +127,22 @@ export class PreOrdenesPage implements OnInit {
 
     //this.navCtrl.navigateRoot(['ordenes'], navigationExtras);
     if (this.moduloActual == 'CALENDARIO'){
+
+      //ojo aca hay que enviarlo a la seleccion de nodo si es que corresponde
       const navigationExtras: NavigationExtras = {
+        queryParams: {
+          Id: usuario.Id,
+          Modulo: 'CALENDARIO'
+        }
+      };
+      this.navCtrl.navigateForward(['modal-nodo'], navigationExtras);
+
+/*       const navigationExtras: NavigationExtras = {
         queryParams: {
           idUsp: usuario.Id
         }
       };
-      this.navCtrl.navigateForward(['calendario'], navigationExtras);
+      this.navCtrl.navigateForward(['calendario'], navigationExtras); */
     }
     else{
       const navigationExtras: NavigationExtras = {

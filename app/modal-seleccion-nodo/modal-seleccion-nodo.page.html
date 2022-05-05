@@ -12,7 +12,7 @@
   
   <ion-content class="back-app">
     <div style="padding-top: 12px;" [hidden]="estaCargando">
-      <h4 class="m-16">A continuación podrás seleccionar el establecimiento donde quieres tomar una hora para tu atención.</h4>
+      <h4 class="m-16">{{texto}}</h4>
       <!-- acca el contenido para que el usuario seleccione el establecimiento -->
       <div *ngFor="let nodo of listadoNodos">
         <ion-card>
@@ -24,15 +24,15 @@
           <ion-card-content>
               <ion-row *ngIf="nodo.esInscrito">
                   En este establecimiento estás inscrito. 
-                  <div *ngIf="nodo.idFuncionarioPrestadorCabecera && nodo.idFuncionarioPrestadorCabecera > 0">Tienes como médico de cabecera a {{nodo.nombreFuncionarioPrestadorCabecera}}</div>
+                  <div *ngIf="nodo.idFuncionarioPrestadorCabecera && nodo.idFuncionarioPrestadorCabecera > 0 && modulo == 'AGENDA'">Tienes como médico de cabecera a {{nodo.nombreFuncionarioPrestadorCabecera}}</div>
               </ion-row>
               <ion-row *ngIf="!nodo.esInscrito">
                 En este establecimiento estás adscrito.
-                <div *ngIf="nodo.idFuncionarioPrestadorCabecera && nodo.idFuncionarioPrestadorCabecera > 0">Tienes como médico de cabecera a {{nodo.nombreFuncionarioPrestadorCabecera}}</div>
+                <div *ngIf="nodo.idFuncionarioPrestadorCabecera && nodo.idFuncionarioPrestadorCabecera > 0 && modulo == 'AGENDA'">Tienes como médico de cabecera a {{nodo.nombreFuncionarioPrestadorCabecera}}</div>
               </ion-row>
 
               <ion-row style="float: right;">
-                  <a class="ion-margin-bottom ion-margin-top" (click)="irAReservar(nodo)">TOMAR HORA</a> 
+                  <a class="ion-margin-bottom ion-margin-top" (click)="irAReservar(nodo)">{{botones}}</a> 
               </ion-row>
           </ion-card-content>
         </ion-card>

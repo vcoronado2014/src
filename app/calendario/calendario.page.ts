@@ -518,7 +518,7 @@ export class CalendarioPage implements OnInit {
   categoriasEventos: any = [];
   filtroDefecto = 'Atención Realizada';
 
-
+  establecimiento = null;
   constructor(
     public navCtrl: NavController,
     public toast: ToastController,
@@ -547,8 +547,12 @@ export class CalendarioPage implements OnInit {
           this.miColor = this.utiles.entregaColor(this.usuarioAps);
           this.usuarioAps.UrlImagen = environment.URL_FOTOS + this.usuarioAps.UrlImagen;
           this.runPaciente = this.utiles.insertarGuion(this.usuarioAps.Rut);
-          this.codigoDeis = this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
-          this.nodId = this.usuarioAps.ConfiguracionNodo.NodId;
+          //this.codigoDeis = this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
+          //this.nodId = this.usuarioAps.ConfiguracionNodo.NodId;
+          this.codigoDeis = params.codigoDeis ? params.codigoDeis :  this.usuarioAps.ConfiguracionNodo.CodigoDeis2014;
+          this.nodId = params.nodId ? params.nodId : this.usuarioAps.ConfiguracionNodo.NodId;
+          this.establecimiento = this.utiles.obtenerEstablecimientoRayenPorNodId(this.nodId);
+          console.log(this.establecimiento);
 
           //mes seleccionado
           this.mesActualSeleccionado = moment().month() + 1 + ',' + moment().year();
@@ -560,7 +564,7 @@ export class CalendarioPage implements OnInit {
           this.anio = new Date().getFullYear();
           this.tratamientoMeses();
 
-          this.cargarTodosLosEventosApiUsuario(this.usuarioAps);
+          this.cargarTodosLosEventosApiUsuario(this.usuarioAps, this.nodId);
 
         }
       }
@@ -643,7 +647,7 @@ export class CalendarioPage implements OnInit {
     }
   }
 
-  async cargarTodosLosEventosApiUsuario(usuario) {
+  async cargarTodosLosEventosApiUsuario(usuario, nodId) {
     //console.log(usuario);
     //usar citasVerticalTodas
     this.citasVerticalTodas = [];
@@ -660,7 +664,7 @@ export class CalendarioPage implements OnInit {
 
     if (!this.utiles.isAppOnDevice()) {
       //pruebas forkjoin
-      this.cita.entregaPorMesNuevoApiListadoFork(usuario.Id, usuario.IdRyf, usuario.NodId, mesActual.mes, mesActual.anno)
+      this.cita.entregaPorMesNuevoApiListadoFork(usuario.Id, usuario.IdRyf, nodId, mesActual.mes, mesActual.anno)
         .subscribe(async (responseList: any) => {
           //console.log(responseList);
           //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
@@ -693,7 +697,7 @@ export class CalendarioPage implements OnInit {
     }
     else {
       //llamada nativa
-      this.cita.entregaPorMesNuevoApiListadoNativeFork(usuario.Id, usuario.IdRyf, usuario.NodId, mesActual.mes, mesActual.anno).subscribe(async (responseList: any) => {
+      this.cita.entregaPorMesNuevoApiListadoNativeFork(usuario.Id, usuario.IdRyf, nodId, mesActual.mes, mesActual.anno).subscribe(async (responseList: any) => {
         //console.log(responseList);
         //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
         this.citasVerticalTodas = JSON.parse(responseList[0].data);
@@ -1014,6 +1018,9 @@ export class CalendarioPage implements OnInit {
     }
   }
   procesarArregloCitasTodas() {
+    //para agregarlas a una variables de sesión
+    var listaCitas = [];
+
     var contador = 0;
     for (var s in this.citasVerticalTodas) {
       var fechaActual = moment();
@@ -1094,8 +1101,17 @@ export class CalendarioPage implements OnInit {
         if (fechaEvento < fechaHoy && this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo == 'Vacuna') {
           this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo = 'Vacuna por administrar'
         }
+        //aca vamos a agregar a una variables de sesion
+        if (this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Subtitulo == 'Próxima Cita'){
+          listaCitas.push(this.citasVerticalTodas[s].Eventos[t]);
+        }
+
+
       }
     }
+
+    //guardamos 
+    sessionStorage.setItem('CITAS_CALENDARIO', JSON.stringify(listaCitas));
 
     //para determinar si tiene o no eventos
     if (contador == 0) {
@@ -1312,7 +1328,7 @@ export class CalendarioPage implements OnInit {
         }
         if (this.parametrosApp.USA_API_MANAGEMENT()) {
           //this.cargarTodosLosEventosApi();
-          this.cargarTodosLosEventosApiUsuario(this.usuarioAps);
+          this.cargarTodosLosEventosApiUsuario(this.usuarioAps, this.nodId);
         }
         else {
           this.cargarTodosLosEventos();
@@ -1460,7 +1476,7 @@ export class CalendarioPage implements OnInit {
         }
         if (this.parametrosApp.USA_API_MANAGEMENT()) {
           //this.cargarTodosLosEventosApi();
-          this.cargarTodosLosEventosApiUsuario(this.usuarioAps);
+          this.cargarTodosLosEventosApiUsuario(this.usuarioAps, this.nodId);
         }
         else {
           this.cargarTodosLosEventos();
@@ -1488,11 +1504,27 @@ export class CalendarioPage implements OnInit {
     var usaOtrosNodos = this.parametrosApp.PERMITE_CITAR_OTROS_NODOS();
     var establecimientos = this.utiles.obtenerEstablecimientosRayen(this.usuarioAps.Id);
     if (usaOtrosNodos) {
-      if (establecimientos.length <= 1) {
-        this.abrirPreTiposAtencion();
+      //antes de todo verificamos si hay establecimiento seleccionado
+      console.log(this.establecimiento);
+      //vamos a revisar si tiene establecimiento seleccionado
+      if (this.establecimiento && this.establecimiento.id > 0) {
+        //ir directo a la pagina de reservas
+        const navigationExtras: NavigationExtras = {
+          queryParams: {
+            Id: this.usuarioAps.Id,
+            CodigoDeis: this.establecimiento.codigoDeis2014 ? this.establecimiento.codigoDeis2014 : this.usuarioAps.ConfiguracionNodo.CodigoDeis2014,
+            NodId: this.establecimiento.id ? this.establecimiento.id : this.usuarioAps.NodId
+          }
+        };
+        this.navCtrl.navigateRoot(['pre-tiposatencion'], navigationExtras);
       }
       else {
-        this.abrirSelecccionNodo();
+        if (establecimientos.length <= 1) {
+          this.abrirPreTiposAtencion();
+        }
+        else {
+          this.abrirSelecccionNodo();
+        }
       }
 
     }
@@ -1516,7 +1548,8 @@ export class CalendarioPage implements OnInit {
   abrirSelecccionNodo() {
     const navigationExtras: NavigationExtras = {
       queryParams: {
-        Id: this.usuarioAps.Id
+        Id: this.usuarioAps.Id,
+        Modulo: 'AGENDA'
       }
     };
     this.navCtrl.navigateForward(['modal-nodo'], navigationExtras);

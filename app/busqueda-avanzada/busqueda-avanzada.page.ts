@@ -139,7 +139,7 @@ export class BusquedaAvanzadaPage implements OnInit {
     else {
       this.profesionalesFiltrados = this.profesionales;
       //dejamos los tdas como estaban
-      this.tiposAtencion = sessionStorage.getItem('TIPOS_ATENCION') ? JSON.parse(sessionStorage.getItem('TIPOS_ATENCION')) : [];
+      this.tiposAtencion = sessionStorage.getItem('TIPOS_ATENCION_LOCAL') ? JSON.parse(sessionStorage.getItem('TIPOS_ATENCION_LOCAL')) : [];
       this.idComboSeleccionado = 0;
       this.comboSeleccionado = 'Selecciona...';
     }

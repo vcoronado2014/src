@@ -60,6 +60,7 @@ export class RegistroUsuarioPage implements OnInit {
 
   //focus
   @ViewChild('nombreId', { static: true }) nombreInput: MatInput;
+  @ViewChild('apodoId', { static: true }) apodoInput: MatInput;
   constructor(
     private navCtrl: NavController,
     public utiles: ServicioUtiles,
@@ -109,8 +110,8 @@ export class RegistroUsuarioPage implements OnInit {
     this.forma = new FormGroup({
       'run': new FormControl({ value: '', disabled: this.estaEditando }, [Validators.required]),
       'email': new FormControl({ value: '', disabled: this.estaEditando }, [Validators.required, Validators.email]),
-      'nombre': new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.pattern(this.patternOnlyLetter)]),
-      'apellido': new FormControl('', [Validators.required, Validators.pattern(this.patternOnlyLetter)]),
+      'nombre': new FormControl({value:'', disabled: this.estaEditando}, [Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.pattern(this.patternOnlyLetter)]),
+      'apellido': new FormControl({value:'', disabled: this.estaEditando}, [Validators.required, Validators.pattern(this.patternOnlyLetter)]),
       'nombreSocial': new FormControl('', [Validators.maxLength(100)]),
       'telefono': new FormControl('', [Validators.pattern(this.expCelular)]),
       'genero': new FormControl(),

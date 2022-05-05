@@ -214,6 +214,8 @@ export class HomePage implements OnInit {
           }, error => {
             console.log('error al obtener establecimientos usuario rayen');
             console.error(error);
+            console.log('construyendo establecimientos del login');
+            this.utiles.construteEstablecimientosLogin();
             this.progressRayen = false;
           });
         }
@@ -247,6 +249,8 @@ export class HomePage implements OnInit {
           }, error => {
             console.log('error al obtener establecimientos usuario rayen');
             console.error(error);
+            console.log('construyendo establecimientos del login');
+            this.utiles.construteEstablecimientosLogin();
             this.progressRayen = false;
           })
         }
@@ -298,6 +302,8 @@ export class HomePage implements OnInit {
       }, error => {
         console.log('error al obtener paciente rayen');
         console.error(error);
+        console.log('construyendo establecimientos del login');
+        this.utiles.construteEstablecimientosLogin();
         this.progressRayen = false;
       })
     }
@@ -305,7 +311,7 @@ export class HomePage implements OnInit {
       this.servicioGeo.postPersonaRayenForkNative(usuarios).subscribe((responseList: any) => {
         if (responseList && responseList.length > 0) {
           responseList.forEach(usu => {
-            if (usu && usu.data) {
+            if (usu && usu.data && usu.data != 'null') {
               var data = JSON.parse(usu.data);
               let usuRayen = data?.ObtenerUsuarioApsPorFiltroResponse?.usuarios?.UsuarioAps;
               this.pacientesRayen.push(usuRayen);
@@ -323,6 +329,8 @@ export class HomePage implements OnInit {
       }, error => {
         console.log('error al obtener paciente rayen');
         console.error(error);
+        console.log('construyendo establecimientos del login');
+        this.utiles.construteEstablecimientosLogin();
         this.progressRayen = false;
       });
     }
