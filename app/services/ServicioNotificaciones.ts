@@ -568,6 +568,7 @@ export class ServicioNotificaciones{
     //falta definir cuales serán las notificaciones locales y cuales serán las push
     //por lo pronto sólo se dejará cuando haya familia por aceptar
     construyeNotificacionesLocales(todas){
+        var arrAtencionSesion = [];
         var arr = [];
         var indice = 1;
         //familia por aceptar
@@ -633,11 +634,30 @@ export class ServicioNotificaciones{
                             ColaVisto: colaVisto
                         }
                         arr.push(entidad);
+                        //tipos atencion locales occupados
+                        if (estado != '' && estado != 'cancelled'){
+                            //aca creamos y agregamos una nueva entidad
+                            var tipoAten = todas[i].Eventos[s].DetalleEventoMes.DescripcionPrincipal;
+                            var lugar = todas[i].Eventos[s].DetalleEventoMes.Lugar;
+                            //var existe = arrAtencionSesion.filter(c=>c == tipoAten)[0] != null ? true : false;
+                            var existe = arrAtencionSesion.filter(c=>c.Nombre == tipoAten && c.Lugar == lugar)[0] != null ? true : false;
+                            if (!existe){
+                                var tda = {
+                                    Lugar: lugar,
+                                    Nombre: tipoAten
+                                }
+                                //arrAtencionSesion.push(tipoAten);
+                                arrAtencionSesion.push(tda);
+                            }
+
+                        }
                         indice++;
 
                     }
                 }
             }
+            //guardamos en sesion
+            sessionStorage.setItem('TIPOS_ATENCION_OCUPADOS', JSON.stringify(arrAtencionSesion));
         }
         return arr;
     }

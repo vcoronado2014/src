@@ -1595,4 +1595,19 @@ export class ServicioUtiles{
 
     }
 
+    entregaTiposAtencionOcupados(){
+        var tdas = sessionStorage.getItem('TIPOS_ATENCION_OCUPADOS') ?
+            JSON.parse(sessionStorage.getItem('TIPOS_ATENCION_OCUPADOS')) : [];
+
+        return tdas;
+    }
+    entregaTiposAtencionOcupadosNodo(nombre){
+        var tdas = sessionStorage.getItem('TIPOS_ATENCION_OCUPADOS') ?
+            JSON.parse(sessionStorage.getItem('TIPOS_ATENCION_OCUPADOS')) : [];
+
+        var filter = tdas.filter(t=>t.Lugar == nombre);
+        
+        return filter;
+    }
+
 }

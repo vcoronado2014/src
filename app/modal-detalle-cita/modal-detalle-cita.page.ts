@@ -351,6 +351,35 @@ export class ModalDetalleCitaPage implements OnInit {
             this.utiles.removeCitaNotificacionesLocales(idCita);
           }
         }
+        else{
+          //agregamos el tipo de atención ocupado *************
+          var tipoAten = data.TiposAtencion && data.TiposAtencion.length > 0 ? data.TiposAtencion[0] : '';
+          var lugar = data.CitasDisponibles && data.CitasDisponibles.length > 0 ? data.CitasDisponibles[0].Servicio.Nombre : '';
+          if (tipoAten != ''){
+            var arr = [];
+            if (sessionStorage.getItem('TIPOS_ATENCION_OCUPADOS')){
+              arr = JSON.parse(sessionStorage.getItem('TIPOS_ATENCION_OCUPADOS'));
+              var existe = arr.filter(c=>c.Nombre == tipoAten && c.Lugar == lugar)[0] ? true : false;
+              if (!existe){
+                var tda = {
+                  Nombre: tipoAten,
+                  Lugar: lugar
+                }
+                arr.push(tda);
+              }
+            }
+            else{
+              var tda = {
+                Nombre: tipoAten,
+                Lugar: lugar
+              }
+              arr.push(tda);
+            }
+            sessionStorage.setItem('TIPOS_ATENCION_OCUPADOS', JSON.stringify(arr));
+
+          }
+          //***************************************************** */
+        }
         retorno = data;
       }
       else {

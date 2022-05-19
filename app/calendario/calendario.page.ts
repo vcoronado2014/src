@@ -596,7 +596,44 @@ export class CalendarioPage implements OnInit {
     //y se tenga que seleccionar otra
     var existe = this.categoriasEventos.filter(c => c == this.filtroDefecto)[0] != null ? true : false;
     if (!existe) {
-      this.filtroDefecto = this.categoriasEventos[0];
+      //dijimos que ahora por defecto sería
+      //atenciones, citas futuras, alimento, farmacos y al final vacunas
+      //segundo filtro Próxima cita
+      var existeProximaCita = this.categoriasEventos.filter(c => c == 'Próxima cita')[0] != null ? true : false;
+      if (existeProximaCita){
+        this.filtroDefecto = this.categoriasEventos.filter(c => c == 'Próxima cita')[0];
+        return;
+      }
+      
+      var existeFarmacoUso = this.categoriasEventos.filter(c => c == 'Fármaco en uso')[0] != null ? true : false;
+      if (existeFarmacoUso){
+        this.filtroDefecto = this.categoriasEventos.filter(c => c == 'Fármaco en uso')[0];
+        return;
+      }
+
+      var existeAlimentoEntregado = this.categoriasEventos.filter(c => c == 'Alimento entregado')[0] != null ? true : false;
+      if (existeAlimentoEntregado){
+        this.filtroDefecto = this.categoriasEventos.filter(c => c == 'Alimento entregado')[0];
+        return;
+      }
+
+      var existeProximoAlimento = this.categoriasEventos.filter(c => c == 'Próxima entrega de alimento')[0] != null ? true : false;
+      if (existeProximoAlimento){
+        this.filtroDefecto = this.categoriasEventos.filter(c => c == 'Próxima entrega de alimento')[0];
+        return;
+      }
+
+      var existeVacuna = this.categoriasEventos.filter(c => c == 'Vacuna administrada')[0] != null ? true : false;
+      if (existeVacuna){
+        this.filtroDefecto = this.categoriasEventos.filter(c => c == 'Vacuna administrada')[0];
+        return;
+      }
+
+      if (this.categoriasEventos.length > 0){
+        this.filtroDefecto = this.categoriasEventos[0];
+      }
+
+      
     }
     //console.log(this.categoriasEventos);
     //console.log('filtro dedfecto: ' + this.filtroDefecto);
@@ -993,10 +1030,16 @@ export class CalendarioPage implements OnInit {
             this.citasVertical[s].Eventos[t].DetalleEventoMes.Titulo = 'Vacuna';
           }
         }
+        /** alimentos */
         if (fechaEvento < fechaHoy && this.citasVertical[s].Eventos[t].DetalleEventoMes.Titulo == 'Entrega de alimento') {
           this.citasVertical[s].Eventos[t].DetalleEventoMes.Titulo = 'Alimento entregado';
           //console.log(this.citasVertical[s].Eventos[t].DetalleEventoMes);
         }
+        if (fechaEvento >= fechaHoy && this.citasVertical[s].Eventos[t].DetalleEventoMes.Titulo == 'Entrega de alimento') {
+          this.citasVertical[s].Eventos[t].DetalleEventoMes.Titulo = 'Próxima entrega de alimento';
+        }
+        //********************************** */
+
         if (fechaEvento < fechaHoy && this.citasVertical[s].Eventos[t].DetalleEventoMes.Titulo == 'Entrega de fármaco') {
           this.citasVertical[s].Eventos[t].DetalleEventoMes.Titulo = 'Fármaco entregado'
         }
@@ -1091,6 +1134,9 @@ export class CalendarioPage implements OnInit {
         if (fechaEvento < fechaHoy && this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo == 'Entrega de alimento') {
           this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo = 'Alimento entregado';
           //console.log(this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes);
+        }
+        if (fechaEvento >= fechaHoy && this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo == 'Entrega de alimento') {
+          this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo  = 'Próxima entrega de alimento';
         }
         if (fechaEvento < fechaHoy && this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo == 'Entrega de fármaco') {
           this.citasVerticalTodas[s].Eventos[t].DetalleEventoMes.Titulo = 'Fármaco entregado'
@@ -1461,9 +1507,64 @@ export class CalendarioPage implements OnInit {
         this.tituloLoading = '';
         if (accion === 'booked') {
           this.utiles.presentToast('Cita reservada con éxito!!', 'bottom', 3000);
+          //agregamos el tipo de atención ocupado *************
+          var tipoAten = data.TiposAtencion && data.TiposAtencion.length > 0 ? data.TiposAtencion[0] : '';
+          var lugar = data.CitasDisponibles && data.CitasDisponibles.length > 0 ? data.CitasDisponibles[0].Servicio.Nombre : '';
+          if (tipoAten != ''){
+            var arr = [];
+            if (sessionStorage.getItem('TIPOS_ATENCION_OCUPADOS')){
+              arr = JSON.parse(sessionStorage.getItem('TIPOS_ATENCION_OCUPADOS'));
+              var existe = arr.filter(c=>c.Nombre == tipoAten && c.Lugar == lugar)[0] ? true : false;
+              if (!existe){
+                var tda = {
+                  Nombre: tipoAten,
+                  Lugar: lugar
+                }
+                arr.push(tda);
+              }
+            }
+            else{
+              var tda = {
+                Nombre: tipoAten,
+                Lugar: lugar
+              }
+              arr.push(tda);
+            }
+            sessionStorage.setItem('TIPOS_ATENCION_OCUPADOS', JSON.stringify(arr));
+
+          }
+          //***************************************************** */
+
         }
         else if (accion === 'confirmed') {
           this.utiles.presentToast('Cita confirmada con éxito!!', 'bottom', 3000);
+          //agregamos el tipo de atención ocupado *************
+          var tipoAten = data.TiposAtencion && data.TiposAtencion.length > 0 ? data.TiposAtencion[0] : '';
+          var lugar = data.CitasDisponibles && data.CitasDisponibles.length > 0 ? data.CitasDisponibles[0].Servicio.Nombre : '';
+          if (tipoAten != '') {
+            var arr = [];
+            if (sessionStorage.getItem('TIPOS_ATENCION_OCUPADOS')){
+              arr = JSON.parse(sessionStorage.getItem('TIPOS_ATENCION_OCUPADOS'));
+              var existe = arr.filter(c=>c.Nombre == tipoAten && c.Lugar == lugar)[0] ? true : false;
+              if (!existe){
+                var tda = {
+                  Nombre: tipoAten,
+                  Lugar: lugar
+                }
+                arr.push(tda);
+              }
+            }
+            else{
+              var tda = {
+                Nombre: tipoAten,
+                Lugar: lugar
+              }
+              arr.push(tda);
+            }
+            sessionStorage.setItem('TIPOS_ATENCION_OCUPADOS', JSON.stringify(arr));
+
+          }
+                    //***************************************************** */
         }
         else if (accion === 'cancelled') {
           //si la cita es cnacelada hay que quitarla de notificaciones locales

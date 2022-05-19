@@ -48,7 +48,7 @@
         <ion-label>Profesional</ion-label>
         <ion-label class="ion-text-capitalize ion-text-wrap">{{profesional.toLowerCase()}}</ion-label>
       </ion-item>
-      <ion-item *ngIf="data.DetalleEventoMes.Subtitulo.toLowerCase().includes('alimento')">
+      <ion-item *ngIf="data.DetalleEventoMes.Subtitulo.toLowerCase().includes('alimento') && data.DetalleEventoMes.DescripcionSecundaria != ''">
         <ion-label>Cantidad</ion-label>
         <ion-label class="ion-text-capitalize ion-text-wrap">{{data.DetalleEventoMes.DescripcionSecundaria.toLowerCase()}}</ion-label>
       </ion-item>

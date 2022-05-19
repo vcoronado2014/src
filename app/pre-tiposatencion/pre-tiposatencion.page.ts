@@ -75,6 +75,9 @@ export class PreTiposatencionPage implements OnInit {
 
   ocultarFiltros = false;
 
+  mostrarMensajeTdasOcupados = false;
+  mensajeTdasOcupados = '';
+
   constructor(
     public navCtrl: NavController,
     public toast: ToastController,
@@ -597,7 +600,35 @@ export class PreTiposatencionPage implements OnInit {
         this.mostrarProgressDisp = false;
         this.mostrarProgress = false;
         var texto = data.Mensaje.Detalle && data.Mensaje.Detalle.Texto ? data.Mensaje.Detalle.Texto : 'Ocurrió un error al obtener la disponibilidad de citas, inténtelo nuevamente';
-        this.utiles.presentToast(texto, 'bottom', 4000);
+        if (texto == 'Paciente ya tiene cita para el tipo de atencion'){
+          //significa que el paciente tiene citas ya para ese tipo de atención
+          //como no sabemos cual es ya que se pasa un service type lo sacamos desde la variable de sesion
+          //var tdasOcupados = this.utiles.entregaTiposAtencionOcupados();
+          var tdasOcupados = this.utiles.entregaTiposAtencionOcupadosNodo(this.nombreEstablecimiento);
+          if (tdasOcupados && tdasOcupados.length > 0){
+            var nombres = [];
+            tdasOcupados.forEach(tda => {
+              nombres.push(tda.Nombre);
+            });
+            //acá mostrar
+            this.mostrarMensajeTdasOcupados = true;
+            //this.mensajeTdasOcupados = 'Tienes citas tomadas para ' + tdasOcupados.toString();
+            this.mensajeTdasOcupados = 'Tienes citas tomadas para ' + nombres.join(', ');
+
+            this.utiles.presentToast('Ya tienes citas tomadas en el establecimiento de salud.', 'bottom', 4000);
+          }
+          else{
+            //mensaje genérico
+            this.utiles.presentToast('Ya tienes citas tomadas en el establecimiento de salud.', 'bottom', 5000);
+          }
+        }
+        else if (texto == 'OK'){
+          this.utiles.presentToast('Ocurrió un error al obtener la disponibilidad de citas para el establecimiento.', 'bottom', 4000);
+        }
+        else{
+          this.utiles.presentToast(texto, 'bottom', 4000);
+        }
+        
         //this.presentToastWithOptions('Citas','Se ha producido un error al obtener disponibilidad', 'bottom');
       }
       //error

@@ -72,7 +72,7 @@
               <!-- solo para citas -->
               <mat-card-subtitle class="ion-text-capitalize" *ngIf="evento.DetalleEventoMes.Subtitulo.toLowerCase().includes('próxima cita')"><strong>{{evento.DetalleEventoMes.Lugar.toLowerCase()}}</strong></mat-card-subtitle>
               <!-- solo para alimentos -->
-              <mat-card-subtitle class="ion-text-capitalize" *ngIf="evento.DetalleEventoMes.Subtitulo.toLowerCase().includes('alimento')"><strong>Cantidad: {{evento.DetalleEventoMes.DescripcionSecundaria.toLowerCase()}}</strong></mat-card-subtitle>
+              <mat-card-subtitle class="ion-text-capitalize" *ngIf="evento.DetalleEventoMes.Subtitulo.toLowerCase().includes('alimento') && evento.DetalleEventoMes.DescripcionSecundaria != ''"><strong>Cantidad: {{evento.DetalleEventoMes.DescripcionSecundaria.toLowerCase()}}</strong></mat-card-subtitle>
             <div class="img-card">
               <img class="example-header-image" src="./assets/imgs_svg/{{evento.Imagen}}">
             </div>

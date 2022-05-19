@@ -124,6 +124,9 @@
   <div *ngIf="!encontroCitas && mostrarProgress == false && citasFiltradas.length > 0" class="ion-padding-start ion-padding-end centrado">
     <ion-label class="ion-text-center no-encontrado">No existen cupos con los criterios ingresados</ion-label>
   </div>
+  <div *ngIf="mostrarMensajeTdasOcupados" class="ion-padding-start ion-padding-end centrado">
+    <ion-label *ngIf="mostrarMensajeTdasOcupados" class="ion-text-center no-encontrado">{{mensajeTdasOcupados}}</ion-label>
+  </div>
 
 </ion-content>
 <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="mostrarProgress == false && mostrarProgressDisp == false && encontroCitas" style="min-height: 48px;">
