@@ -598,6 +598,15 @@ export class BusquedaAvanzadaPage implements OnInit {
       //console.log(this.fechaInicioBusqueda);
       var fechaActual = moment().format('YYYY-MM-DD');
       var fechaComparar = moment(this.fechaInicioBusqueda).format('YYYY-MM-DD');
+      //esto es por hotfix detectado por experiencia usuaria
+      if (fechaActual == fechaComparar){
+        //si las fechas son las mismas la consulta debe basarse en la fecha registrada en la session
+        this.fechaInicioBusqueda =  sessionStorage.getItem('FECHA_INICIO_CONSULTA');
+      }
+      else{
+        //se debe basar en el valor pero a contar de las 00:00 horas
+        this.fechaInicioBusqueda = fechaComparar;
+      }
       if (fechaActual != fechaComparar) {
         this.comboSeleccionadoFecha = 'Fecha inicio';
       }

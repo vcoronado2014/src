@@ -928,8 +928,13 @@ export class ServicioCitas{
 
         let dataVac = this.httpClient.post(urlVac, bodyVac, options);
 
+        //llamada a las parametros
+        let urlParam = environment.API_ENDPOINT + 'ParametrosNodo?NodId=' + nodId;
 
-        return forkJoin([data, dataVac]);
+        let dataParam = this.httpClient.get(urlParam, {});
+
+
+        return forkJoin([data, dataVac, dataParam]);
     }
     entregaPorMesNuevoApiListadoNativeFork(uspId, idRyf, nodId, numeroMes, annoConsulta) {
         //realizar la llamada post nativa
@@ -948,15 +953,19 @@ export class ServicioCitas{
             "UspId": uspId.toString(),
         };
 
+
         let url = environment.API_ENDPOINT + 'MesNuevoApi';
         //llamada a las vacunas
         let urlVac = environment.API_ENDPOINT + 'VacunasApi';
+        //llamada a parametros
+        let urlParam = environment.API_ENDPOINT + 'ParametrosNodo?NodId=' + nodId;
         this.http.setDataSerializer('json');
 
         let data = this.http.post(url, body, {});
         let dataVac = this.http.post(urlVac, bodyVac, {});
+        let dataParam = this.http.get(urlParam, {}, {});
 
-        return forkJoin([data, dataVac]);
+        return forkJoin([data, dataVac, dataParam]);
 
         //return this.http.post(url, body, {});
     }

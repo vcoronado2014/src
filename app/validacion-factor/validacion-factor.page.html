@@ -18,47 +18,64 @@
           <ion-col size="2">
             <mat-form-field appearance="outline" style="width: 100%; font-size: 2em;">
               <!-- <mat-label>0</mat-label> -->
-              <input #codigo1="matInput" matInput placeholder="0" formControlName="codigoUno" name="codigoUno" min="1" max="1"
-                (keypress)="onKeypressEvent($event)" required>
+<!--               <input #codigo1="matInput" matInput placeholder="0" formControlName="codigoUno" name="codigoUno" min="0" max="9" maxlength="1"
+                (keypress)="onKeypressEvent($event)" (ionInput)="onKeypressEvent($event)" required>
+              <mat-error *ngIf="f.codigoUno.errors && f.codigoUno.errors.required">*</mat-error> -->
+              <input #codigo1="matInput" matInput placeholder="0" formControlName="codigoUno" name="codigoUno" min="0" max="9" maxlength="1"
+              (keydown)="onKeyDown($event)" required>
               <mat-error *ngIf="f.codigoUno.errors && f.codigoUno.errors.required">*</mat-error>
             </mat-form-field>
           </ion-col>
           <ion-col size="2">
             <mat-form-field appearance="outline" style="width: 100%; font-size: 2em;">
               <!-- <mat-label>0</mat-label> -->
-              <input #codigo2="matInput" matInput placeholder="0" formControlName="codigoDos" name="codigoDos" min="1" max="1"
-                (keypress)="onKeypressEvent($event)" (keydown)="onKeyDown($event)" required>
+<!--               <input #codigo2="matInput" matInput placeholder="0" formControlName="codigoDos" name="codigoDos" min="0" max="9" maxlength="1"
+                (keypress)="onKeypressEvent($event)" (ionInput)="onKeypressEvent($event)" (keydown)="onKeyDown($event)" required>
+              <mat-error *ngIf="f.codigoDos.errors && f.codigoDos.errors.required">*</mat-error> -->
+              <input #codigo2="matInput" matInput placeholder="0" formControlName="codigoDos" name="codigoDos" min="0" max="9"
+                maxlength="1" (keydown)="onKeyDown($event)" required>
               <mat-error *ngIf="f.codigoDos.errors && f.codigoDos.errors.required">*</mat-error>
             </mat-form-field>
           </ion-col>
           <ion-col size="2">
             <mat-form-field appearance="outline" style="width: 100%; font-size: 2em;">
               <!-- <mat-label>0</mat-label> -->
-              <input #codigo3="matInput" matInput placeholder="0" formControlName="codigoTres" name="codigoTres" min="1" max="1"
-                (keypress)="onKeypressEvent($event)" (keydown)="onKeyDown($event)" required>
-              <mat-error *ngIf="f.codigoTres.errors && f.codigoTres.errors.required">*</mat-error>
+<!--               <input #codigo3="matInput" matInput placeholder="0" formControlName="codigoTres" name="codigoTres" min="0" max="9" maxlength="1"
+                (keypress)="onKeypressEvent($event)" (ionInput)="onKeypressEvent($event)" (keydown)="onKeyDown($event)" required>
+              <mat-error *ngIf="f.codigoTres.errors && f.codigoTres.errors.required">*</mat-error> -->
+              <input #codigo3="matInput" matInput placeholder="0" formControlName="codigoTres" name="codigoTres" min="0" max="9" maxlength="1"
+              (keydown)="onKeyDown($event)" required>
+            <mat-error *ngIf="f.codigoTres.errors && f.codigoTres.errors.required">*</mat-error>
             </mat-form-field>
           </ion-col>
           <ion-col size="2">
             <mat-form-field appearance="outline" style="width: 100%; font-size: 2em;">
               <!-- <mat-label>0</mat-label> -->
-              <input #codigo4="matInput" matInput placeholder="0" formControlName="codigoCuatro" name="codigoCuatro" min="1" max="1"
-                (keypress)="onKeypressEvent($event)" (keydown)="onKeyDown($event)" required>
-              <mat-error *ngIf="f.codigoCuatro.errors && f.codigoCuatro.errors.required">*</mat-error>
+<!--               <input #codigo4="matInput" matInput placeholder="0" formControlName="codigoCuatro" name="codigoCuatro" min="0" max="9" maxlength="1"
+                (keypress)="onKeypressEvent($event)" (ionInput)="onKeypressEvent($event)" (keydown)="onKeyDown($event)" required>
+              <mat-error *ngIf="f.codigoCuatro.errors && f.codigoCuatro.errors.required">*</mat-error> -->
+              <input #codigo4="matInput" matInput placeholder="0" formControlName="codigoCuatro" name="codigoCuatro" min="0" max="9" maxlength="1"
+               (keydown)="onKeyDown($event)" required>
+            <mat-error *ngIf="f.codigoCuatro.errors && f.codigoCuatro.errors.required">*</mat-error>
             </mat-form-field>
           </ion-col>
           <ion-col size="2">
             <mat-form-field appearance="outline" style="width: 100%; font-size: 2em;">
               <!-- <mat-label>0</mat-label> -->
-              <input #codigo5="matInput" matInput placeholder="0" formControlName="codigoCinco" name="codigoCinco" min="1" max="1"
-                (keypress)="onKeypressEvent($event)" (keydown)="onKeyDown($event)" required>
-              <mat-error *ngIf="f.codigoCinco.errors && f.codigoCinco.errors.required">*</mat-error>
+<!--               <input #codigo5="matInput" matInput placeholder="0" formControlName="codigoCinco" name="codigoCinco" min="0" max="9" maxlength="1"
+                (keypress)="onKeypressEvent($event)" (ionInput)="onKeypressEvent($event)" (keydown)="onKeyDown($event)" required>
+              <mat-error *ngIf="f.codigoCinco.errors && f.codigoCinco.errors.required">*</mat-error> -->
+              <input #codigo5="matInput" matInput placeholder="0" formControlName="codigoCinco" name="codigoCinco" min="0" max="9" maxlength="1"
+              (keydown)="onKeyDown($event)" required>
+            <mat-error *ngIf="f.codigoCinco.errors && f.codigoCinco.errors.required">*</mat-error>
             </mat-form-field>
           </ion-col>
           <ion-col size="2">
             <mat-form-field appearance="outline" style="width: 100%; font-size: 2em;">
               <!-- <mat-label>0</mat-label> -->
-              <input #codigo6="matInput" matInput placeholder="0" formControlName="codigoSeis" name="codigoSeis" min="1" max="1" (keydown)="onKeyDown($event)" required>
+<!--               <input #codigo6="matInput" matInput placeholder="0" formControlName="codigoSeis" name="codigoSeis" min="0" max="9"  maxlength="1" (keydown)="onKeyDown($event)" required>
+              <mat-error *ngIf="f.codigoSeis.errors && f.codigoSeis.errors.required">*</mat-error> -->
+              <input #codigo6="matInput" matInput placeholder="0" formControlName="codigoSeis" name="codigoSeis" min="0" max="9"  maxlength="1" (keydown)="onKeyDown($event)" required>
               <mat-error *ngIf="f.codigoSeis.errors && f.codigoSeis.errors.required">*</mat-error>
             </mat-form-field>
           </ion-col>

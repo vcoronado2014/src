@@ -11,11 +11,12 @@
   </ion-header>
   
   <ion-content class="back-app">
+    <app-progress [mostrar]="estaCargando" [titulo]="tituloLoading"></app-progress>
     <div style="padding-top: 12px;" [hidden]="estaCargando">
       <h4 class="m-16">{{texto}}</h4>
       <!-- acca el contenido para que el usuario seleccione el establecimiento -->
       <div *ngFor="let nodo of listadoNodos">
-        <ion-card>
+        <ion-card *ngIf="!nodo.OcultaBoton">
           <ion-card-header>
             <ion-card-title class="ion-text-capitalize">{{nodo.razonSocial.toLowerCase()}}</ion-card-title>
             <ion-card-subtitle *ngIf="nodo.direccion.length > 5" class="ion-text-capitalize">{{nodo.direccion.toLowerCase()}}</ion-card-subtitle>
@@ -37,6 +38,7 @@
           </ion-card-content>
         </ion-card>
       </div>
+      
     </div>
  
   </ion-content>

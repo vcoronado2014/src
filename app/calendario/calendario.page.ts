@@ -517,6 +517,7 @@ export class CalendarioPage implements OnInit {
   //proccesamiento de datos conforme a grupos de eventos
   categoriasEventos: any = [];
   filtroDefecto = 'Atención Realizada';
+  ocultaBotonReserva = false;
 
   establecimiento = null;
   constructor(
@@ -707,6 +708,9 @@ export class CalendarioPage implements OnInit {
           //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
           this.citasVerticalTodas = responseList[0];
           this.citasVerticalTodas = this.citasVerticalTodas.concat(responseList[1]);
+          //evaluamos si oculta el boton de reserva
+          this.ocultaBotonReserva = this.parametrosApp.OCULTA_BOTON_RESERVA(responseList[2]);
+          //************************************* */
           this.procesarArregloCitasTodas();
           this.citasVerticalMostrar = this.citasVerticalTodas.filter(e => e.Mostrar == true);
           this.citasVerticalMostrar.sort((a: any, b: any) => { return this.getTime(a.FechaCompleta) - this.getTime(b.FechaCompleta) });
@@ -739,6 +743,9 @@ export class CalendarioPage implements OnInit {
         //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
         this.citasVerticalTodas = JSON.parse(responseList[0].data);
         this.citasVerticalTodas = this.citasVerticalTodas.concat(JSON.parse(responseList[1].data));
+        //evaluamos si oculta el boton de reserva
+        this.ocultaBotonReserva = this.parametrosApp.OCULTA_BOTON_RESERVA(JSON.parse(responseList[2].data));
+        //************************************* */
         this.procesarArregloCitasTodas();
         this.citasVerticalMostrar = this.citasVerticalTodas.filter(e => e.Mostrar == true);
         this.citasVerticalMostrar.sort((a: any, b: any) => { return this.getTime(a.FechaCompleta) - this.getTime(b.FechaCompleta) });
@@ -1606,7 +1613,7 @@ export class CalendarioPage implements OnInit {
     var establecimientos = this.utiles.obtenerEstablecimientosRayen(this.usuarioAps.Id);
     if (usaOtrosNodos) {
       //antes de todo verificamos si hay establecimiento seleccionado
-      console.log(this.establecimiento);
+      //console.log(this.establecimiento);
       //vamos a revisar si tiene establecimiento seleccionado
       if (this.establecimiento && this.establecimiento.id > 0) {
         //ir directo a la pagina de reservas

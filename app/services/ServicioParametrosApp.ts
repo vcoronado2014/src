@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { HTTP } from '@ionic-native/http/ngx';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { forkJoin } from 'rxjs';
 
 @Injectable()
 export class ServicioParametrosApp{
@@ -146,6 +147,62 @@ export class ServicioParametrosApp{
         let data = this.http.get(url, {}, {});
         return data;
     }
+    getParametrosNodoNodId(nodId) {
+        let url = environment.API_ENDPOINT + 'ParametrosNodo?NodId=' + nodId;
+        let data = this.httpClient.get(url, {});
+        return data;
+    }
+    getParametrosNodoNativeNodId(nodId) {
+        let url = environment.API_ENDPOINT + 'ParametrosNodo?NodId=' + nodId;
+        let data = this.http.get(url, {}, {});
+        return data;
+    }
+    getParametrosNodoNodIdFork(nodos) {
+        var arrDatos = [];
+
+        let httpHeaders = new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        });
+        httpHeaders.set('Access-Control-Allow-Origin', '*');
+        httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+        httpHeaders.set("Access-Control-Allow-Headers", "*");
+    
+        let options = { headers: httpHeaders };
+
+
+        if (nodos && nodos.length > 0) {
+          nodos.forEach(nodo => {
+
+              let url = environment.API_ENDPOINT + 'ParametrosNodo?NodId=' + nodo.id;
+
+              arrDatos.push(this.httpClient.get(url, {}));
+
+          });
+        }
+
+        return forkJoin(arrDatos);
+
+    }
+    getParametrosNodoNodIdForkNative(nodos) {
+      //realizar la llamada post nativa
+      var arrDatos = [];
+      const headers = new Headers;
+
+      this.http.setDataSerializer('json');
+
+      if (nodos && nodos.length > 0) {
+        nodos.forEach(nodo => {
+            let url = environment.API_ENDPOINT + 'ParametrosNodo?NodId=' + nodo.id;
+
+            arrDatos.push(this.http.get(url, {}, {}));
+
+        });
+      }
+
+      return forkJoin(arrDatos);
+
+  }
     //parametros del nodo
     ENVIA_CORREO_CONTACTO = ()=>{
         let retorno = false;
@@ -249,6 +306,18 @@ export class ServicioParametrosApp{
                 }
             }
         } 
+        return retorno;
+    }
+
+    OCULTA_BOTON_RESERVA = (parametrosNodo)=>{
+        let retorno = false;
+        if (parametrosNodo.ParametrosNodo && parametrosNodo.ParametrosNodo.length > 0){
+            let arrRetorno = parametrosNodo.ParametrosNodo.find(p=>p.Nombre == 'OCULTA_BOTON_RESERVA');
+            if (arrRetorno && arrRetorno.Id > 0){
+                if (parseInt(arrRetorno.Valor) == 1)
+                    retorno = true;
+            }
+        }
         return retorno;
     }
 

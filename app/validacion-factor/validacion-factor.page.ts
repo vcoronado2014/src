@@ -91,9 +91,40 @@ export class ValidacionFactorPage implements OnInit {
         }, 100);
       }
     }
+    else if (event.key){
+      console.log(event);
+      if (event.currentTarget) {
+        if (event.currentTarget.name == "codigoUno") {
+          setTimeout(() => {
+            this.codigoDosInput.focus();
+          }, 100);
+        }
+        if (event.currentTarget.name == "codigoDos") {
+          setTimeout(() => {
+            this.codigoTresInput.focus();
+          }, 100);
+        }
+        if (event.currentTarget.name == "codigoTres") {
+          setTimeout(() => {
+            this.codigoCuatroInput.focus();
+          }, 100);
+        }
+        if (event.currentTarget.name == "codigoCuatro") {
+          setTimeout(() => {
+            this.codigoCincoInput.focus();
+          }, 100);
+        }
+        if (event.currentTarget.name == "codigoCinco") {
+          setTimeout(() => {
+            this.codigoSeisInput.focus();
+          }, 100);
+        }
+      }
+    }
     
 
   }
+
   onKeypressEvent(event: any) {
     console.log(event);
     if (event.currentTarget) {
