@@ -850,12 +850,12 @@ export class DetailUsuarioPage implements OnInit {
     if (arrAltura && arrAltura.length > 0) {
       //console.log('tiene altura');
       //fecha mas actualizada
-      arrAltura.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      arrAltura.sort((a: any, b: any) => { return this.getTime(moment(b.fecha).toDate()) - this.getTime(moment(a.fecha).toDate()) });
       //console.log(arrAltura);
       let entidad = {
         Nombre: 'Altura',
         Valor: arrAltura[0].Valor.toFixed(0),
-        Fecha: moment(arrAltura[0].Fecha).format('DD MMM YYYY'),
+        Fecha: moment(arrAltura[0].fecha).format('DD MMM YYYY'),
         Medida: 'cm'
       }
       this.arrMediciones.push(entidad);
@@ -865,12 +865,12 @@ export class DetailUsuarioPage implements OnInit {
     if (arrPeso && arrPeso.length > 0) {
       //console.log('tiene peso');
       //fecha mas actualizada
-      arrPeso.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      arrPeso.sort((a: any, b: any) => { return this.getTime(moment(b.fecha).toDate()) - this.getTime(moment(a.fecha).toDate()) });
       //console.log(arrPeso);
       let entidad = {
         Nombre: 'Peso',
         Valor: arrPeso[0].Valor.toFixed(0),
-        Fecha: moment(arrPeso[0].Fecha).format('DD MMM YYYY'),
+        Fecha: moment(arrPeso[0].fecha).format('DD MMM YYYY'),
         Medida: 'kg'
       }
       this.arrMediciones.push(entidad);
@@ -880,12 +880,12 @@ export class DetailUsuarioPage implements OnInit {
     if (arrImc && arrImc.length > 0) {
       //console.log('tiene imc');
       //fecha mas actualizada
-      arrImc.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      arrImc.sort((a: any, b: any) => { return this.getTime(moment(b.fecha).toDate()) - this.getTime(moment(a.fecha).toDate()) });
       //console.log(arrImc);
       let entidad = {
         Nombre: 'IMC',
         Valor: arrImc[0].Valor.toFixed(0),
-        Fecha: moment(arrImc[0].Fecha).format('DD MMM YYYY'),
+        Fecha: moment(arrImc[0].fecha).format('DD MMM YYYY'),
         Medida: ''
       }
       this.arrMediciones.push(entidad);
@@ -895,13 +895,13 @@ export class DetailUsuarioPage implements OnInit {
     if (arrGlicemia && arrGlicemia.length > 0) {
       //console.log('tiene glicemia');
       //fecha mas actualizada
-      arrGlicemia.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      arrGlicemia.sort((a: any, b: any) => { return this.getTime(moment(b.fecha).toDate()) - this.getTime(moment(a.fecha).toDate()) });
       //console.log(arrGlicemia);
       //el primer elemento es el más nuevo
       let entidad = {
         Nombre: 'Glicemia',
         Valor: arrGlicemia[0].Valor.toFixed(0),
-        Fecha: moment(arrGlicemia[0].Fecha).format('DD MMM YYYY'),
+        Fecha: moment(arrGlicemia[0].fecha).format('DD MMM YYYY'),
         Medida: 'mg/dl'
       }
       this.arrMediciones.push(entidad);
@@ -912,7 +912,7 @@ export class DetailUsuarioPage implements OnInit {
       let valor = '';
       //console.log('tiene sangre');
       //fecha mas actualizada
-      arrSangre.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      arrSangre.sort((a: any, b: any) => { return this.getTime(moment(b.fecha).toDate()) - this.getTime(moment(a.fecha).toDate()) });
       //console.log(arrSangre);
       //el primer elemento es el más nuevo
       if (arrSangre[0].Valor == 279) {
@@ -933,7 +933,7 @@ export class DetailUsuarioPage implements OnInit {
       let entidad = {
         Nombre: 'Grupo Sangre',
         Valor: valor,
-        Fecha: moment(arrSangre[0].Fecha).format('DD MMM YYYY'),
+        Fecha: moment(arrSangre[0].fecha).format('DD MMM YYYY'),
         Medida: ''
       }
       this.arrMediciones.push(entidad);
@@ -946,7 +946,7 @@ export class DetailUsuarioPage implements OnInit {
     if (arrDiast && arrDiast.length > 0) {
       //console.log('tiene diastolica');
       //fecha mas actualizada
-      arrDiast.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      arrDiast.sort((a: any, b: any) => { return this.getTime(moment(b.fecha).toDate()) - this.getTime(moment(a.fecha).toDate()) });
       //console.log(arrDiast);
       valorDiast = arrDiast[0].Valor;
       tienePresion = true;
@@ -957,10 +957,10 @@ export class DetailUsuarioPage implements OnInit {
     if (arrSist && arrSist.length > 0) {
       //console.log('tiene sistolica');
       //fecha mas actualizada
-      arrSist.sort((a: any, b: any) => { return this.getTime(moment(b.Fecha).toDate()) - this.getTime(moment(a.Fecha).toDate()) });
+      arrSist.sort((a: any, b: any) => { return this.getTime(moment(b.fecha).toDate()) - this.getTime(moment(a.fecha).toDate()) });
       //console.log(arrSist);
       valorSist = arrSist[0].Valor;
-      fechaPresion = moment(arrSist[0].Fecha).format('DD MMM YYYY');
+      fechaPresion = moment(arrSist[0].fecha).format('DD MMM YYYY');
       tienePresionSis = true;
     }
     if (tienePresion && tienePresionSis) {
