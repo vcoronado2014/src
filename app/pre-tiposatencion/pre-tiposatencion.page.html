@@ -70,7 +70,7 @@
   <ion-item *ngIf="ocultarFiltros == false">
     <a mat-raised-button style="margin:8px;" 
     (click)="btnLimpiarFiltros()" slot="end">LIMPIAR</a>
-    <a mat-raised-button color="primary" slot="end" (click)="buscarCitasFiltro($event)">BUSCAR</a>
+    <a mat-raised-button color="primary" slot="end" (click)="buscarCitasFiltro()">BUSCAR</a>
   </ion-item>
   <ion-item lines="none">
     <app-avatar [style]="false" [urlImagen] = "usuarioAps.UrlImagen" [nombreCompleto]="usuarioAps.Nombres + ' ' + usuarioAps.ApellidoPaterno + ' ' + usuarioAps.ApellidoMaterno" [parentezco]="usuarioAps.Parentezco.Nombre"></app-avatar>

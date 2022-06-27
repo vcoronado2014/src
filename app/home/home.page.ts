@@ -81,6 +81,7 @@ export class HomePage implements OnInit {
     Version: '',
     EsProduccion: false,
     Nombre: '',
+    Ambiente: ''
   }
   //acepta CONDICIONES
   rutaAceptoCondiciones;
