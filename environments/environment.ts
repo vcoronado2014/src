@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  API_ENDPOINT: 'https://preapp.rayensalud.com/MiFamilia/Api/',
-  URL_FOTOS: 'https://preapp.rayensalud.com/MiFamilia/',
+  //API_ENDPOINT: 'https://preapp.rayensalud.com/MiFamilia/Api/',
+  //URL_FOTOS: 'https://preapp.rayensalud.com/MiFamilia/',
   //API_ENDPOINT: 'https://app.rayensalud.com/MiFamilia/Api/',
   //URL_FOTOS: 'https://app.rayensalud.com/MiFamilia/',
   //API_ENDPOINT: 'http://190.151.14.104:1465/Api/',
@@ -14,8 +14,8 @@ export const environment = {
   //API_ENDPOINT: 'http://localhost:1960/Api/',
   //API_ENDPOINT: 'https://10.211.55.5:45456/Api/',
   //URL_FOTOS: 'http://localhost:27563/',
-  //API_ENDPOINT: 'http://192.168.0.153/MiFamilia.WebApi/Api/',
-  //URL_FOTOS: 'http://192.168.0.153/MiFamilia.WebApi/',
+  API_ENDPOINT: 'http://192.168.0.153/MiFamilia.WebApi/Api/',
+  URL_FOTOS: 'http://192.168.0.153/MiFamilia.WebApi/',
   API_KEY_MAPA: 'AIzaSyAqx2BInVZJP-xhUh5oSUgKSPh3rpB_Rzc',
   USA_CALENDARIO: false,
   HORAS_FECHA_INICIO: 3,

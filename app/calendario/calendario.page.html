@@ -94,10 +94,10 @@
         </div>
   </div>
   <!-- pruebas con infinite scroll -->
-  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+<!--   <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más eventos...">
     </ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+  </ion-infinite-scroll> -->
  </div>
 </ion-content>
 <!-- este es el fab para abrir reservar horas -->
@@ -106,4 +106,19 @@
     <ion-icon slot="start" name="calendar-outline" style="font-size: 24px;margin-right: 12px;"></ion-icon>
     <span class="botonReservar" style="font-size: 1em;">RESERVAR HORA</span>
   </ion-button>
+</ion-fab>
+<!-- <ion-fab vertical="bottom" horizontal="start" slot="fixed" [hidden]="estaCargando" *ngIf="!ocultaBotonReserva" style="min-height: 48px;">
+  <ion-button color="secondary" (click)="scrollListVisibleTop()" shape="round" style="min-height: 48px;">
+    <ion-icon slot="start" name="calendar-outline" style="font-size: 24px;margin-right: 12px;"></ion-icon>
+  </ion-button>
+</ion-fab> -->
+<ion-fab horizontal="start" vertical="bottom" slot="fixed" [hidden]="estaCargando" *ngIf="muestraArribaAbajo && posicion == 'top'" (click)="scrollListVisible()">
+  <ion-fab-button color="light">
+    <ion-icon name="caret-down"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+<ion-fab horizontal="start" vertical="bottom" slot="fixed" [hidden]="estaCargando" *ngIf="muestraArribaAbajo && posicion == 'bottom'" (click)="scrollListVisibleTop()">
+  <ion-fab-button color="light">
+    <ion-icon name="caret-up"></ion-icon>
+  </ion-fab-button>
 </ion-fab>

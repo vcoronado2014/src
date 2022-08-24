@@ -83,7 +83,7 @@ export class CalendarioPage implements OnInit {
   estaCargando = false;
   tituloLoading = '';
   //para infinity scroll
-  topLimit: number = 100;
+  topLimit: number = 500;
   citasVerticalTodasTop: any = [];
   //para poner la linea en la fecha actual
   fechaActual = '';
@@ -520,6 +520,10 @@ export class CalendarioPage implements OnInit {
   ocultaBotonReserva = false;
 
   establecimiento = null;
+
+  muestraArribaAbajo = false;
+  posicion = 'bottom';
+
   constructor(
     public navCtrl: NavController,
     public toast: ToastController,
@@ -640,9 +644,11 @@ export class CalendarioPage implements OnInit {
     //console.log('filtro dedfecto: ' + this.filtroDefecto);
   }
   filtrarCategorias(event) {
-
+    var fechaHoy = moment().toDate();
+    var cantidadElementosFiltrados = 0;
     if (event.value) {
       this.estaCargando = true;
+      this.tieneEventosHoy = false;
       this.tituloLoading = 'Buscando ' + event.value;
       //console.log(this.citasVerticalTodasTop);
       this.filtroDefecto = event.value;
@@ -658,6 +664,21 @@ export class CalendarioPage implements OnInit {
                   //console.log(evento.DetalleEventoMes.Titulo);
                   if (evento.DetalleEventoMes.Titulo == this.filtroDefecto) {
                     evento.DetalleEventoMes.Mostrar = true;
+                    //para verificar si hay eventos el dia de hoy 
+                    var fechaHora = (evento.DetalleEventoMes.FechaHora);
+                    var fechaEvento = moment(fechaHora, 'YYYY-MM-DD').toDate();
+                    
+      
+                    if (moment(fechaHoy).format('DD-MM-YYYY') == moment(fechaEvento).format('DD-MM-YYYY')) {
+                      this.tieneEventosHoy = true;
+                    }
+                    if (moment(fechaEvento).isAfter(moment(fechaHoy))) {
+                      this.tieneEventosFuturos = true;
+                    }
+                    this.fechaParaHoy = moment(fechaHoy).format('DD') + ' de ' + moment(fechaHoy).format('MMMM');
+
+                    cantidadElementosFiltrados++;
+                    //******************************************* */
                   }
                   else {
                     evento.DetalleEventoMes.Mostrar = false;
@@ -676,11 +697,61 @@ export class CalendarioPage implements OnInit {
             });
             //aca termina la lista
             //console.log(lista);
+
           });
         }
       }
       this.estaCargando = false;
       this.tituloLoading = '';
+
+      if (cantidadElementosFiltrados > 6){
+        this.muestraArribaAbajo = true;
+      }
+      else{
+        this.muestraArribaAbajo = false;
+      }
+
+      if (this.tieneEventosHoy == false) {
+        var tieneNoHay = this.citasVerticalTodasTop.filter(c=>c.NoHayEvento == true);
+        if (tieneNoHay.length == 0){
+          var ultimo = this.citasVerticalTodasTop.length + 1;
+          var entidadHoy = {
+            FechaCompleta: fechaHoy,
+            Id: parseInt(moment(fechaHoy).format('DD')),
+            Mostrar: true,
+            NombreDia: moment(fechaHoy).format('dddd'),
+            NombreDiaReducido: moment(fechaHoy).format('ddd'),
+            NumeroDia: parseInt(moment(fechaHoy).format('DD')),
+            Indice: ultimo,
+            DiferenciaFechas: 10,
+            NoHayEvento: true,
+            Eventos: [{
+              Color: null,
+              HoraInicioFin: '00:00',
+              Imagen: 'agendar_citas.svg',
+              ListaFarmacos: null,
+              NombrePrincipal: 'Nada planificado para hoy',
+              NombreSecundario: 'Nada planificado para hoy',
+              DetalleEventoMes: {
+                DescripcionPrincipal: 'Nada planificado para hoy',
+                DescripcionSecundaria: 'Nada planificado para hoy',
+                Estado: '',
+                FechaHora: fechaHoy,
+                IdElemento: 0,
+                Lugar: '',
+                NombrePaciente: '',
+                Subtitulo: 'Nada planificado para hoy',
+                Titulo: 'Nada planificado para hoy',
+                Mostrar: true
+              }
+            }]
+          }
+          //si no tiene eventos hoy lo agregamos
+          this.citasVerticalTodasTop.push(entidadHoy);
+        } 
+
+      }
+
       this.scrollListVisible();
     }
   }
@@ -1718,12 +1789,29 @@ export class CalendarioPage implements OnInit {
           let yOffset = document.getElementById(entidad.DiferenciaFechas.toString())?.offsetTop;
           if (yOffset != null) {
             this.content.scrollToPoint(0, yOffset, 600);
+            this.posicion = 'bottom';
           }
         }
 
       }
     }, 1000);
+  }
 
+  scrollListVisibleTop() {
+    //this.determinaFechaMasCercana();
+    setTimeout(() => {
+      var max = this.finder(Math.max, this.citasVerticalTodasTop.filter(c=>c.Mostrar == true), 'DiferenciaFechas');
+      if (max) {
+        var entidad = this.citasVerticalTodasTop.filter(p => p.DiferenciaFechas == max)[0];
+        if (entidad) {
+          let yOffset = document.getElementById(entidad.DiferenciaFechas.toString())?.offsetTop;
+          if (yOffset != null) {
+            this.content.scrollToPoint(0, yOffset, 0);
+            this.posicion = 'top';
+          }
+        }
 
+      }
+    }, 1000);
   }
 }
