@@ -356,7 +356,7 @@ export class InicioPage implements OnInit {
       //nueva funcionalidad... el usuario puede haberse logueado y esta validación va a 
       //buscar el registro mediante el idDispositivo, por lo tanto si ya accedió entonces 
       //ocupamos otras variables de local storage para determinar si enviarlo al login o no
-      var tieneUsuPass = this.utiles.tieneUsuarioYPassword();
+      var tieneUsuPass = this.utiles.tieneUsuarioYPassword() && this.validaPreRegistro() == false;
       if (tieneUsuPass) {
         this.abrirLogin();
       }

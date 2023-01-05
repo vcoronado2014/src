@@ -41,6 +41,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServicioFCM } from './services/ServicioFCM';
 import { ServicioNotificacionesLocales } from './services/ServicioNotificacionesLocales';
 import { NetworkService } from './services/network.service';
+import { StorageService } from './services/StorageService';
 /** componentes material  */
 import { MatCardModule  } from '@angular/material/card';
 import { MatButtonModule  } from '@angular/material/button';
@@ -61,6 +62,10 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireMessagingModule } from '@angular/fire/messaging';
 import { FirebaseMessaging } from '@ionic-native/firebase-messaging/ngx';
 import { ComponentsModule } from './components/components.module';
+//ionic storage
+import { IonicStorageModule } from '@ionic/storage-angular';
+import { Drivers } from '@ionic/storage';
+
 //material datepicker
 import {
   MAT_MOMENT_DATE_FORMATS,
@@ -101,7 +106,10 @@ import { enterAnimation } from './animations/nav-animations';
     AngularFireDatabaseModule,
     AngularFireStorageModule,
     AngularFireMessagingModule,
-    AngularFireModule.initializeApp(firebaseConfig)
+    AngularFireModule.initializeApp(firebaseConfig),
+    IonicStorageModule.forRoot({
+      driverOrder: [Drivers.IndexedDB, Drivers.LocalStorage]
+    })
   ],
   providers: [
     StatusBar,
@@ -124,6 +132,7 @@ import { enterAnimation } from './animations/nav-animations';
     ServicioNotificaciones,
     ServicioNotificacionesLocales,
     NetworkService,
+    StorageService,
     ServicioClaveUnica,
     ServicioParametrosApp,
     ServicioFCM,

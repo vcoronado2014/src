@@ -9,6 +9,9 @@ import { ServicioAcceso } from '../../app/services/ServicioAcceso';
 import { ServicioParametrosApp } from '../../app/services/ServicioParametrosApp';
 import * as moment from 'moment';
 
+//usamos el servicio de storage
+import { StorageService } from '../../app/services/StorageService';
+
 
 @Component({
   selector: 'app-detail-usuario',
@@ -86,7 +89,8 @@ export class DetailUsuarioPage implements OnInit {
     public loading: LoadingController,
     public info: ServicioInfoUsuario,
     public acceso: ServicioAcceso,
-    public parametrosApp: ServicioParametrosApp
+    public parametrosApp: ServicioParametrosApp,
+    public storage: StorageService
   ) {
 
   }
@@ -131,51 +135,98 @@ export class DetailUsuarioPage implements OnInit {
   //no se verificcará fecha de actualización
   //se realizarn siempre
   async entregaAntecedentesCompleto(uspId) {
+    //nombres de storages *************
+    var nameIndicadores = 'dataIndicadores';
+    var nameAlergias = 'dataAlergias';
+    var nameAntecedentes = 'dataAntecedentes';
+    //****************** */
+    //data storages
+    var necesitaActualizar = true;
+    var newDataIndicadores = await this.storage.get(nameIndicadores, uspId);
+    var newDataAlergias = await this.storage.get(nameAlergias, uspId);
+    var newDataAntecedentes = await this.storage.get(nameAntecedentes, uspId);
+    if (newDataIndicadores != null && newDataAlergias != null && newDataAntecedentes != null){
+      //hay datos en el storage
+      necesitaActualizar = this.utiles.actualizaAntecedentes(newDataIndicadores?.RespuestaBase?.FechaActualizacion);
+    }
+    console.log(necesitaActualizar, ' necesita actualizar antecedentes');
+
+    //******************* */
     this.arrMediciones = [];
     this.alergias = [];
 
     this.estaCargando = true;
     this.tituloProgress = 'Buscando datos del paciente';
-    //el lodaer tambien esta demás
-    if (!this.utiles.isAppOnDevice()) {
-      //llamada web
-      this.info.entregaAntecedentesFork(uspId).subscribe((responseList: any) => {
-        //0 = indicadores, 1 = alergias, 2 = antecedentes (morbidos)
-        var dataIndicadores = responseList[0];
-        this.procesarNuevoArregloValoresIndependienteSinLoader(dataIndicadores);
-        var dataAlergias = responseList[1];
-        this.procesarAlergiasIndividualSinLoader(dataAlergias);
-        var dataAntecedentes = responseList[2];
-        this.procesarAntecedentesIndividualSinLoader(dataAntecedentes);
 
-        this.estaCargando = false;
-        this.tituloProgress = '';
-      }, error => {
-        console.log(error);
-        this.estaCargando = false;
-        this.tituloProgress = '';
-      })
+    if (necesitaActualizar == false){
+      this.procesarNuevoArregloValoresIndependienteSinLoader(newDataIndicadores);
+      this.procesarAlergiasIndividualSinLoader(newDataAlergias);
+      this.procesarAntecedentesIndividualSinLoader(newDataAntecedentes);
+      this.estaCargando = false;
+      this.tituloProgress = '';
     }
-    else {
-      //llamada nativa
-      this.info.entregaAntecedentesNativeFork(uspId).subscribe((responseList: any) => {
-        //0 = indicadores, 1 = alergias, 2 = antecedentes (morbidos) this.citasVerticalTodas = JSON.parse(responseList[0].data);
-        var dataIndicadores = JSON.parse(responseList[0].data);
-        this.procesarNuevoArregloValoresIndependienteSinLoader(dataIndicadores);
-        var dataAlergias = JSON.parse(responseList[1].data);
-        this.procesarAlergiasIndividualSinLoader(dataAlergias);
-        var dataAntecedentes = JSON.parse(responseList[2].data);
-        this.procesarAntecedentesIndividualSinLoader(dataAntecedentes);
+    else{
+      //el lodaer tambien esta demás
+      if (!this.utiles.isAppOnDevice()) {
+        //llamada web
+        this.info.entregaAntecedentesFork(uspId).subscribe((responseList: any) => {
+          //0 = indicadores, 1 = alergias, 2 = antecedentes (morbidos)
+          var dataIndicadores = responseList[0];
+          //probamos storage ********************************************
+          this.storage.set('dataIndicadores', dataIndicadores, uspId.toString(), moment().format('YYYY-MM-DD HH:mm'));
+          //********************************************************** */
+          this.procesarNuevoArregloValoresIndependienteSinLoader(dataIndicadores);
+          var dataAlergias = responseList[1];
+          //probamos storage ********************************************
+          this.storage.set('dataAlergias', dataAlergias, uspId.toString(), moment().format('YYYY-MM-DD HH:mm'));
+          //********************************************************** */
+          this.procesarAlergiasIndividualSinLoader(dataAlergias);
+          var dataAntecedentes = responseList[2];
+          //probamos storage ********************************************
+          this.storage.set('dataAntecedentes', dataAntecedentes, uspId.toString(), moment().format('YYYY-MM-DD HH:mm'));
+          //********************************************************** */
+          this.procesarAntecedentesIndividualSinLoader(dataAntecedentes);
 
-        this.estaCargando = false;
-        this.tituloProgress = '';
+          this.estaCargando = false;
+          this.tituloProgress = '';
+        }, error => {
+          console.log(error);
+          this.estaCargando = false;
+          this.tituloProgress = '';
+        })
+      }
+      else {
+        //llamada nativa
+        this.info.entregaAntecedentesNativeFork(uspId).subscribe((responseList: any) => {
+          //0 = indicadores, 1 = alergias, 2 = antecedentes (morbidos) this.citasVerticalTodas = JSON.parse(responseList[0].data);
+          var dataIndicadores = JSON.parse(responseList[0].data);
+          //probamos storage ********************************************
+          this.storage.set('dataIndicadores', dataIndicadores, uspId.toString(), moment().format('YYYY-MM-DD HH:mm'));
+          //********************************************************** */
+          this.procesarNuevoArregloValoresIndependienteSinLoader(dataIndicadores);
+          var dataAlergias = JSON.parse(responseList[1].data);
+          //probamos storage ********************************************
+          this.storage.set('dataAlergias', dataAlergias, uspId.toString(), moment().format('YYYY-MM-DD HH:mm'));
+          //********************************************************** */          
+          this.procesarAlergiasIndividualSinLoader(dataAlergias);
+          var dataAntecedentes = JSON.parse(responseList[2].data);
+          //probamos storage ********************************************
+          this.storage.set('dataAntecedentes', dataAntecedentes, uspId.toString(), moment().format('YYYY-MM-DD HH:mm'));
+          //********************************************************** */          
+          this.procesarAntecedentesIndividualSinLoader(dataAntecedentes);
 
-      }, error => {
-        console.log(error);
-        this.estaCargando = false;
-        this.tituloProgress = '';
-      })
+          this.estaCargando = false;
+          this.tituloProgress = '';
+
+        }, error => {
+          console.log(error);
+          this.estaCargando = false;
+          this.tituloProgress = '';
+        })
+      }      
     }
+
+
 
 
   }

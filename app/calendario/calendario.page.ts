@@ -16,6 +16,7 @@ import * as moment from 'moment';
 import { ModalDetalleCitaPage } from '../modal-detalle-cita/modal-detalle-cita.page';
 import { MomentPipe } from '../../app/pipes/fecha.pipe';
 import { MatCard } from '@angular/material/card';
+import { StorageService } from '../services/StorageService';
 
 
 @Component({
@@ -534,7 +535,8 @@ export class CalendarioPage implements OnInit {
     public acceso: ServicioAcceso,
     public cita: ServicioCitas,
     private alertController: AlertController,
-    public parametrosApp: ServicioParametrosApp
+    public parametrosApp: ServicioParametrosApp,
+    public storage: StorageService
   ) { }
 
   ngOnInit() {
@@ -688,6 +690,24 @@ export class CalendarioPage implements OnInit {
   async cargarTodosLosEventosApiUsuario(usuario, nodId) {
     //console.log(usuario);
     //usar citasVerticalTodas
+
+    //nombres de storages *************
+    var nameVacunas = 'dataVacunas';
+    //****************** */
+    //data storages
+    var necesitaActualizar = true;
+    var newDataVacunas = await this.storage.get(nameVacunas, usuario.Id);
+    if (newDataVacunas != null){
+      //hay datos en el storage
+      newDataVacunas.Vacunas.forEach(vacuna => {
+        vacuna.Mostrar = true;
+      });
+      necesitaActualizar = this.utiles.actualizaVacunas(newDataVacunas?.RespuestaBase?.FechaActualizacion);
+    }
+    console.log(necesitaActualizar, ' necesita actualizar vacunas');
+
+
+
     this.citasVerticalTodas = [];
     this.citasVerticalMostrar = [];
     var fechaActual = moment();
@@ -700,16 +720,53 @@ export class CalendarioPage implements OnInit {
     this.estaCargando = true;
     this.tituloLoading = 'Obteniendo calendario';
 
-    if (!this.utiles.isAppOnDevice()) {
-      //pruebas forkjoin
-      this.cita.entregaPorMesNuevoApiListadoFork(usuario.Id, usuario.IdRyf, nodId, mesActual.mes, mesActual.anno)
-        .subscribe(async (responseList: any) => {
+    if (necesitaActualizar == false){
+
+      if (!this.utiles.isAppOnDevice()) {
+        //pruebas forkjoin
+        this.cita.entregaPorMesNuevoApiListadoForkSinVac(usuario.Id, usuario.IdRyf, nodId, mesActual.mes, mesActual.anno)
+          .subscribe(async (responseList: any) => {
+            //console.log(responseList);
+            //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
+            this.citasVerticalTodas = responseList[0];
+            this.citasVerticalTodas = this.citasVerticalTodas.concat(newDataVacunas?.Vacunas);
+            //evaluamos si oculta el boton de reserva
+            this.ocultaBotonReserva = this.parametrosApp.OCULTA_BOTON_RESERVA(responseList[1]);
+            //************************************* */
+            this.procesarArregloCitasTodas();
+            this.citasVerticalMostrar = this.citasVerticalTodas.filter(e => e.Mostrar == true);
+            this.citasVerticalMostrar.sort((a: any, b: any) => { return this.getTime(a.FechaCompleta) - this.getTime(b.FechaCompleta) });
+            //guardamos la variable de ordenamiento
+            sessionStorage.setItem('ORDEN_EVENTOS', 'descendente');
+            //debemos generar las categorias
+            this.construirCategorias(this.citasVerticalMostrar);
+            //creamos top limit al nuevo arreglo de citas
+            this.citasVerticalTodasTop = this.citasVerticalMostrar.slice(0, this.topLimit);
+            //filtro por defecto
+            this.filtrarCategorias({ value: this.filtroDefecto });
+            //console.log(this.citasVerticalTodasTop);
+            //console.log(this.tieneEventosFuturos);
+            //loader.dismiss();
+            console.log('Eventos del paciente obtenidos con éxito');
+            this.estaCargando = false;
+            this.tituloLoading = '';
+          }, error => {
+            console.log('Error al obtener los eventos del paciente');
+            console.error(error);
+            this.estaCargando = false;
+            this.tituloLoading = '';
+  
+          })
+      }
+      else {
+        //llamada nativa
+        this.cita.entregaPorMesNuevoApiListadoNativeForkSinVac(usuario.Id, usuario.IdRyf, nodId, mesActual.mes, mesActual.anno).subscribe(async (responseList: any) => {
           //console.log(responseList);
           //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
-          this.citasVerticalTodas = responseList[0];
-          this.citasVerticalTodas = this.citasVerticalTodas.concat(responseList[1]);
+          this.citasVerticalTodas = JSON.parse(responseList[0].data);
+          this.citasVerticalTodas = this.citasVerticalTodas.concat(newDataVacunas?.Vacunas);
           //evaluamos si oculta el boton de reserva
-          this.ocultaBotonReserva = this.parametrosApp.OCULTA_BOTON_RESERVA(responseList[2]);
+          this.ocultaBotonReserva = this.parametrosApp.OCULTA_BOTON_RESERVA(JSON.parse(responseList[1].data));
           //************************************* */
           this.procesarArregloCitasTodas();
           this.citasVerticalMostrar = this.citasVerticalTodas.filter(e => e.Mostrar == true);
@@ -733,42 +790,91 @@ export class CalendarioPage implements OnInit {
           console.error(error);
           this.estaCargando = false;
           this.tituloLoading = '';
-
         })
+      }      
+
     }
-    else {
-      //llamada nativa
-      this.cita.entregaPorMesNuevoApiListadoNativeFork(usuario.Id, usuario.IdRyf, nodId, mesActual.mes, mesActual.anno).subscribe(async (responseList: any) => {
-        //console.log(responseList);
-        //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
-        this.citasVerticalTodas = JSON.parse(responseList[0].data);
-        this.citasVerticalTodas = this.citasVerticalTodas.concat(JSON.parse(responseList[1].data));
-        //evaluamos si oculta el boton de reserva
-        this.ocultaBotonReserva = this.parametrosApp.OCULTA_BOTON_RESERVA(JSON.parse(responseList[2].data));
-        //************************************* */
-        this.procesarArregloCitasTodas();
-        this.citasVerticalMostrar = this.citasVerticalTodas.filter(e => e.Mostrar == true);
-        this.citasVerticalMostrar.sort((a: any, b: any) => { return this.getTime(a.FechaCompleta) - this.getTime(b.FechaCompleta) });
-        //guardamos la variable de ordenamiento
-        sessionStorage.setItem('ORDEN_EVENTOS', 'descendente');
-        //debemos generar las categorias
-        this.construirCategorias(this.citasVerticalMostrar);
-        //creamos top limit al nuevo arreglo de citas
-        this.citasVerticalTodasTop = this.citasVerticalMostrar.slice(0, this.topLimit);
-        //filtro por defecto
-        this.filtrarCategorias({ value: this.filtroDefecto });
-        //console.log(this.citasVerticalTodasTop);
-        //console.log(this.tieneEventosFuturos);
-        //loader.dismiss();
-        console.log('Eventos del paciente obtenidos con éxito');
-        this.estaCargando = false;
-        this.tituloLoading = '';
-      }, error => {
-        console.log('Error al obtener los eventos del paciente');
-        console.error(error);
-        this.estaCargando = false;
-        this.tituloLoading = '';
-      })
+    else{
+
+      if (!this.utiles.isAppOnDevice()) {
+        //pruebas forkjoin
+        this.cita.entregaPorMesNuevoApiListadoFork(usuario.Id, usuario.IdRyf, nodId, mesActual.mes, mesActual.anno)
+          .subscribe(async (responseList: any) => {
+            //console.log(responseList);
+            //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
+            this.citasVerticalTodas = responseList[0];
+            var dataVacunas = responseList[1];
+            //probamos storage ********************************************
+            this.storage.set('dataVacunas', dataVacunas, usuario.Id.toString(), moment().format('YYYY-MM-DD HH:mm'));
+            //********************************************************** */
+            this.citasVerticalTodas = this.citasVerticalTodas.concat(responseList[1]);
+            //evaluamos si oculta el boton de reserva
+            this.ocultaBotonReserva = this.parametrosApp.OCULTA_BOTON_RESERVA(responseList[2]);
+            //************************************* */
+            this.procesarArregloCitasTodas();
+            this.citasVerticalMostrar = this.citasVerticalTodas.filter(e => e.Mostrar == true);
+            this.citasVerticalMostrar.sort((a: any, b: any) => { return this.getTime(a.FechaCompleta) - this.getTime(b.FechaCompleta) });
+            //guardamos la variable de ordenamiento
+            sessionStorage.setItem('ORDEN_EVENTOS', 'descendente');
+            //debemos generar las categorias
+            this.construirCategorias(this.citasVerticalMostrar);
+            //creamos top limit al nuevo arreglo de citas
+            this.citasVerticalTodasTop = this.citasVerticalMostrar.slice(0, this.topLimit);
+            //filtro por defecto
+            this.filtrarCategorias({ value: this.filtroDefecto });
+            //console.log(this.citasVerticalTodasTop);
+            //console.log(this.tieneEventosFuturos);
+            //loader.dismiss();
+            console.log('Eventos del paciente obtenidos con éxito');
+            this.estaCargando = false;
+            this.tituloLoading = '';
+          }, error => {
+            console.log('Error al obtener los eventos del paciente');
+            console.error(error);
+            this.estaCargando = false;
+            this.tituloLoading = '';
+  
+          })
+      }
+      else {
+        //llamada nativa
+        this.cita.entregaPorMesNuevoApiListadoNativeFork(usuario.Id, usuario.IdRyf, nodId, mesActual.mes, mesActual.anno).subscribe(async (responseList: any) => {
+          //console.log(responseList);
+          //aca vienen 2 listtas, la primera trae el mes y la segunda las vacunas
+          this.citasVerticalTodas = JSON.parse(responseList[0].data);
+          var dataVacunas = JSON.parse(responseList[1].data);
+          //probamos storage ********************************************
+          this.storage.set('dataVacunas', dataVacunas, usuario.Id.toString(), moment().format('YYYY-MM-DD HH:mm'));
+          //********************************************************** */
+          this.citasVerticalTodas = this.citasVerticalTodas.concat(JSON.parse(responseList[1].data));
+          //evaluamos si oculta el boton de reserva
+          this.ocultaBotonReserva = this.parametrosApp.OCULTA_BOTON_RESERVA(JSON.parse(responseList[2].data));
+          //************************************* */
+          this.procesarArregloCitasTodas();
+          this.citasVerticalMostrar = this.citasVerticalTodas.filter(e => e.Mostrar == true);
+          this.citasVerticalMostrar.sort((a: any, b: any) => { return this.getTime(a.FechaCompleta) - this.getTime(b.FechaCompleta) });
+          //guardamos la variable de ordenamiento
+          sessionStorage.setItem('ORDEN_EVENTOS', 'descendente');
+          //debemos generar las categorias
+          this.construirCategorias(this.citasVerticalMostrar);
+          //creamos top limit al nuevo arreglo de citas
+          this.citasVerticalTodasTop = this.citasVerticalMostrar.slice(0, this.topLimit);
+          //filtro por defecto
+          this.filtrarCategorias({ value: this.filtroDefecto });
+          //console.log(this.citasVerticalTodasTop);
+          //console.log(this.tieneEventosFuturos);
+          //loader.dismiss();
+          console.log('Eventos del paciente obtenidos con éxito');
+          this.estaCargando = false;
+          this.tituloLoading = '';
+        }, error => {
+          console.log('Error al obtener los eventos del paciente');
+          console.error(error);
+          this.estaCargando = false;
+          this.tituloLoading = '';
+        })
+      }
+
     }
 
   }

@@ -1035,5 +1035,61 @@ export class ServicioCitas{
 
 
         return this.http.post(url, body, {});
-    }    
+    }
+    
+    //metodos para ionic storage sin vacunas
+    entregaPorMesNuevoApiListadoForkSinVac(uspId, idRyf, nodId, numeroMes, annoConsulta) {
+        const body = JSON.stringify({
+            UspId: uspId.toString(),
+            IdRyf: idRyf.toString(),
+            NodId: nodId.toString(),
+            NumeroMes: numeroMes.toString(),
+            AnnoConsulta: annoConsulta.toString()
+        });
+
+        let url = environment.API_ENDPOINT + 'MesNuevoApi';
+        let httpHeaders = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+        });
+        httpHeaders.set('Access-Control-Allow-Origin', '*');
+        httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+        httpHeaders.set("Access-Control-Allow-Headers", "*");
+
+        let options = { headers: httpHeaders };
+
+        let data = this.httpClient.post(url, body, options);
+
+        //llamada a las parametros
+        let urlParam = environment.API_ENDPOINT + 'ParametrosNodo?NodId=' + nodId;
+
+        let dataParam = this.httpClient.get(urlParam, {});
+
+
+        return forkJoin([data, dataParam]);
+    }
+    entregaPorMesNuevoApiListadoNativeForkSinVac(uspId, idRyf, nodId, numeroMes, annoConsulta) {
+        //realizar la llamada post nativa
+        const headers = new Headers;
+        const body =
+        {
+            "UspId": uspId.toString(),
+            "IdRyf": idRyf.toString(),
+            "NodId": nodId.toString(),
+            "NumeroMes": numeroMes.toString(),
+            "AnnoConsulta": annoConsulta.toString()
+        };
+
+        let url = environment.API_ENDPOINT + 'MesNuevoApi';
+        //llamada a parametros
+        let urlParam = environment.API_ENDPOINT + 'ParametrosNodo?NodId=' + nodId;
+        this.http.setDataSerializer('json');
+
+        let data = this.http.post(url, body, {});
+        let dataParam = this.http.get(urlParam, {}, {});
+
+        return forkJoin([data, dataParam]);
+
+    }
+
 }

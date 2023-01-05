@@ -32,6 +32,10 @@ export class ServicioUtiles{
         semanas: []
     }
     semanas: any = [];
+
+    //pruebas con iionic storage
+    tiempoSegundosActualizacionAntecedentes = 300;
+    tiempoSegundosActualizacionVacunas = 300;
     
     constructor(
         public platform : Platform,
@@ -1608,6 +1612,33 @@ export class ServicioUtiles{
         var filter = tdas.filter(t=>t.Lugar == nombre);
         
         return filter;
+    }
+
+    //metodos para ionic storage
+    actualizaAntecedentes(fechaHoraUltimaActualizacion){
+        var actualiza = false;
+        if (fechaHoraUltimaActualizacion != null){
+            let ultima = moment(fechaHoraUltimaActualizacion);
+            let ahora = moment();
+            let seconds = ahora.diff(ultima, 'seconds');
+            if (seconds > this.tiempoSegundosActualizacionAntecedentes){
+                actualiza = true;
+            }
+        }
+        return actualiza;
+    }
+
+    actualizaVacunas(fechaHoraUltimaActualizacion){
+        var actualiza = false;
+        if (fechaHoraUltimaActualizacion != null){
+            let ultima = moment(fechaHoraUltimaActualizacion);
+            let ahora = moment();
+            let seconds = ahora.diff(ultima, 'seconds');
+            if (seconds > this.tiempoSegundosActualizacionVacunas){
+                actualiza = true;
+            }
+        }
+        return actualiza;
     }
 
 }
