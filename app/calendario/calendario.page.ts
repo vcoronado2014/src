@@ -521,6 +521,11 @@ export class CalendarioPage implements OnInit {
   ocultaBotonReserva = false;
 
   establecimiento = null;
+  usuarioLogueado;
+  registroApp;
+  
+  compartoMiInfo : boolean = false;
+
   constructor(
     public navCtrl: NavController,
     public toast: ToastController,
@@ -541,6 +546,17 @@ export class CalendarioPage implements OnInit {
 
   ngOnInit() {
     moment().locale('es');
+    this.usuarioLogueado = this.utiles.entregaUsuarioLogueado();
+    
+    this.registroApp = this.utiles.obtenerRegistro();
+    console.log('registro app ', this.registroApp);
+
+    if (this.registroApp){
+      this.compartoMiInfo = this.registroApp.ComparteInformacion;
+    }
+
+    console.log('comparto mi info ', this.compartoMiInfo);
+
     this.fechaActual = this.transformDate(moment(), 'YYYY-MM-DD');
     this.anioActual = this.transformDate(moment(), 'YYYY');
     this.activatedRoute.queryParams.subscribe(params => {
@@ -700,7 +716,8 @@ export class CalendarioPage implements OnInit {
     if (newDataVacunas != null){
       //hay datos en el storage
       newDataVacunas.Vacunas.forEach(vacuna => {
-        vacuna.Mostrar = true;
+        var privadas = vacuna.Eventos.filter(ev=>ev.DetalleEventoMes.EsPrivado);
+        vacuna.Mostrar = privadas.length != vacuna.Eventos.length || (this.usuarioLogueado.Id == usuario.Id) ? true : false;
       });
       necesitaActualizar = this.utiles.actualizaVacunas(newDataVacunas?.RespuestaBase?.FechaActualizacion);
     }
@@ -1464,6 +1481,7 @@ export class CalendarioPage implements OnInit {
       }
     );
     modal.onDidDismiss().then((data) => {
+      var esEvento = false;
       if (data.data && data.data.accion) {
         var accion = data.data.accion;
         ////console.log(accion);
@@ -1485,9 +1503,49 @@ export class CalendarioPage implements OnInit {
         else if (accion === 'cancelled') {
           this.utiles.presentToast('Cita anulada con éxito!!', 'bottom', 3000);
         }
-        if (this.parametrosApp.USA_API_MANAGEMENT()) {
+        else if (accion === 'evento') {
+          //this.utiles.presentToast('Cita anulada con éxito!!', 'bottom', 3000);
+          //reemplazar en citasverticaltodastop para no refrescar la página
+
+          esEvento = true;
+          var eventoCambiado = data.data.data;
+          var tipoEvento = eventoCambiado.TipoEvento;
+          if (this.citasVerticalTodasTop && this.citasVerticalTodasTop.length > 0){
+            this.citasVerticalTodasTop.forEach(cita => {
+              if (cita.Eventos && cita.Eventos.length > 0){
+                cita.Eventos.forEach(evento => {
+                  if (tipoEvento == 1){
+                    if (evento.DetalleEventoMes.IdElemento == eventoCambiado.IdElemento &&
+                      evento.DetalleEventoMes.Titulo == eventoCambiado.Titulo &&
+                      evento.DetalleEventoMes.Subtitulo == eventoCambiado.Subtitulo &&
+                      evento.DetalleEventoMes.FechaHoraEvento == eventoCambiado.FechaHoraEvento){
+                        //cambiamos el elemento de la lista
+                        evento.DetalleEventoMes.EsPrivado = eventoCambiado.EsPrivado;
+                      }
+                  }
+                  else{
+                    if (evento.DetalleEventoMes.IdElemento == eventoCambiado.IdElemento &&
+                      evento.DetalleEventoMes.DescripcionPrincipal == eventoCambiado.DescripcionPrincipal &&
+                      evento.DetalleEventoMes.DescripcionSecundaria == eventoCambiado.DescripcionSecundaria){
+                        //cambiamos el elemento de la lista
+                        evento.DetalleEventoMes.EsPrivado = eventoCambiado.EsPrivado;
+
+                        this.storage.setElement('dataVacunas', evento, this.usuarioAps.Id);
+                      }
+                  }
+ 
+                });
+              }
+            });
+          }
+        }
+
+        if (this.parametrosApp.USA_API_MANAGEMENT()) {  
           //this.cargarTodosLosEventosApi();
-          this.cargarTodosLosEventosApiUsuario(this.usuarioAps, this.nodId);
+          if (esEvento == false){
+            this.cargarTodosLosEventosApiUsuario(this.usuarioAps, this.nodId);
+          }
+          
         }
         else {
           this.cargarTodosLosEventos();

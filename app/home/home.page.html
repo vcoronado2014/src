@@ -8,13 +8,28 @@
      </ion-avatar>
      <ion-row class="texAvatarContainer">
        <div class="text-avatar">{{miNombre}}</div>
-       <div class="subtext-avatar">{{miInstitucion}}</div>
+       <div class="subtext-avatar">{{miInstitucion}}</div><br>
      </ion-row>
    </ion-item>
+
    </ion-header>
    <ion-content class="back-app">
  
      <ion-list>
+      <!-- mostrar si comparte info o no -->
+      <ion-item lines="full" class="listItem" *ngIf="compartoMiInfo">
+        <ion-icon name="eye" slot="start"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <p>Estoy compartiendo mi información</p>
+        </ion-label>
+      </ion-item>
+      <ion-item lines="full" class="listItem" *ngIf="compartoMiInfo == false">
+        <ion-icon name="eye-off" slot="start"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <p>Estoy ocultando mi información</p>
+        </ion-label>
+      </ion-item>   
+
        <ion-item *ngFor="let p of pages" (click)="openPage(p)" class="listItem" button lines="none" [ngStyle]="{'margin-left': p.esSubMenu ? '16px' : '0px'}">
          <ion-icon name={{p.icon}} slot="start"></ion-icon>
         <ion-label>

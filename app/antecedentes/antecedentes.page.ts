@@ -21,6 +21,8 @@ export class AntecedentesPage implements OnInit {
   estaCargando = false;
   linesAvatar = 'inset';
 
+  usuarioLogueado;
+
   constructor(
     public navCtrl: NavController,
     public toast: ToastController,
@@ -34,8 +36,10 @@ export class AntecedentesPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.usuarioLogueado = this.utiles.entregaUsuarioLogueado();
     this.cargarDatosInciales();
   }
+
   async cargarDatosInciales() {
     this.estaCargando = true;
     let loader = await this.loading.create({
@@ -86,32 +90,78 @@ export class AntecedentesPage implements OnInit {
       if (this.usuarioApsFamilia) {
         if (this.usuarioApsFamilia.length > 0) {
           for (var s in this.usuarioApsFamilia) {
-            //por mientras el parentezco lo dejamos como no informado.
-            if (!(this.usuarioApsFamilia[s].Parentezco && this.usuarioApsFamilia[s].Parentezco.Id > 0)) {
-              this.usuarioApsFamilia[s].Parentezco.Nombre = 'No informado';
+            if (this.usuarioApsFamilia[s].Parentezco != null) {
+              //por mientras el parentezco lo dejamos como no informado.
+              if (!(this.usuarioApsFamilia[s].Parentezco && this.usuarioApsFamilia[s].Parentezco.Id > 0)) {
+                this.usuarioApsFamilia[s].Parentezco.Nombre = 'No informado';
+              }
+              //this.usuarioApsFamilia[s].Parentezco = "No informado";
+              this.listadoUsuario.push(this.usuarioApsFamilia[s]);
             }
-            //this.usuarioApsFamilia[s].Parentezco = "No informado";
-            this.listadoUsuario.push(this.usuarioApsFamilia[s]);
+            else {
+              this.usuarioApsFamilia[s].Parentezco = {
+                Id: 0,
+                Nombre: 'No informado'
+              };
+
+              this.listadoUsuario.push(this.usuarioApsFamilia[s]);
+            }
+
           }
         }
       }
+
+      //recorremos los usuarios de familia para habilitar el botón o no
+      if (this.listadoUsuario && this.listadoUsuario.length > 0) {
+        this.listadoUsuario.forEach(usu => {
+          if (usu.Id == this.usuarioLogueado.Id) {
+            //es el mismo, debe quedar habilitado
+            usu.Habilitado = true;
+          }
+          else {
+            if (usu.EsPrivadoAlergias && usu.EsPrivadoAntecedentes && usu.EsPrivadoRelevantes) {
+              usu.Habilitado = false;
+            }
+            else {
+              usu.Habilitado = true;
+            }
+          }
+        });
+      }
+
+      console.log('usuarios familia ', this.listadoUsuario);
+
       loader.dismiss();
       this.estaCargando = false;
     });
 
-  }
-  goToDetails(usuario) {
-    const navigationExtras: NavigationExtras = {
-      queryParams: {
-        usuario: JSON.stringify(usuario)
-      }
-    };
-    this.navCtrl.navigateRoot(['detail-usuario'], navigationExtras);
+    //si hay un solo usuario ir de inmediato a la otra página
+/*     if (this.listadoUsuario.length == 1){
+      this.goToDetails(this.listadoUsuario[0]);
+    } */
 
   }
+  
+  goToDetails(usuario) {
+    console.log('ir detalles ', usuario);
+    console.log('logueado ', this.usuarioLogueado);
+    //vemos si el usuario logueado es el mismo que se necsita consultar
+    var puede = usuario.Habilitado;
+    if (puede) {
+      const navigationExtras: NavigationExtras = {
+        queryParams: {
+          usuario: JSON.stringify(usuario)
+        }
+      };
+      this.navCtrl.navigateRoot(['detail-usuario'], navigationExtras);
+    }
+
+  }
+  
   irAHome() {
     this.navCtrl.navigateBack('home');
   }
+  
   logout() {
     this.acceso.logout();
     this.navCtrl.navigateRoot('login');

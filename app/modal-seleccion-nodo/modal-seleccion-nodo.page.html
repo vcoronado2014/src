@@ -13,31 +13,54 @@
   <ion-content class="back-app">
     <app-progress [mostrar]="estaCargando" [titulo]="tituloLoading"></app-progress>
     <div style="padding-top: 12px;" [hidden]="estaCargando">
-      <h4 class="m-16">{{texto}}</h4>
-      <!-- acca el contenido para que el usuario seleccione el establecimiento -->
-      <div *ngFor="let nodo of listadoNodos">
-        <ion-card *ngIf="!nodo.OcultaBoton">
+      <h4 class="m-16" *ngIf="listadoNodos.length > 0">{{texto}}</h4>
+      <!-- 
+        acca el contenido para que el usuario seleccione el establecimiento 
+        hay que considerar por ejemplo que un usuario podría no tener nodos validos
+
+      -->
+      <div *ngIf="listadoNodos.length == 0">
+        <ion-card>
           <ion-card-header>
-            <ion-card-title class="ion-text-capitalize">{{nodo.razonSocial.toLowerCase()}}</ion-card-title>
-            <ion-card-subtitle *ngIf="nodo.direccion.length > 5" class="ion-text-capitalize">{{nodo.direccion.toLowerCase()}}</ion-card-subtitle>
-            <ion-card-subtitle *ngIf="nodo.direccion.length <= 5">No registra dirección</ion-card-subtitle>
+            <ion-card-title class="ion-text-capitalize">No hay establecimientos</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-              <ion-row *ngIf="nodo.esInscrito">
-                  En este establecimiento estás inscrito. 
-                  <div *ngIf="nodo.idFuncionarioPrestadorCabecera && nodo.idFuncionarioPrestadorCabecera > 0 && modulo == 'AGENDA'">Tienes como médico de cabecera a {{nodo.nombreFuncionarioPrestadorCabecera}}</div>
-              </ion-row>
-              <ion-row *ngIf="!nodo.esInscrito">
-                En este establecimiento estás adscrito.
-                <div *ngIf="nodo.idFuncionarioPrestadorCabecera && nodo.idFuncionarioPrestadorCabecera > 0 && modulo == 'AGENDA'">Tienes como médico de cabecera a {{nodo.nombreFuncionarioPrestadorCabecera}}</div>
+              <ion-row>
+                  Estimado {{usuarioAps.Nombres}} su establecimiento {{usuarioAps.Establecimiento.RazonSocial}} no está configurado.
               </ion-row>
 
               <ion-row style="float: right;">
-                  <a class="ion-margin-bottom ion-margin-top" (click)="irAReservar(nodo)">{{botones}}</a> 
+                  <a class="ion-margin-bottom ion-margin-top" (click)="irAHome()">Volver</a> 
               </ion-row>
           </ion-card-content>
         </ion-card>
       </div>
+      <div *ngIf="listadoNodos.length > 0">
+        <div *ngFor="let nodo of listadoNodos">
+          <ion-card *ngIf="!nodo.OcultaBoton">
+            <ion-card-header>
+              <ion-card-title class="ion-text-capitalize">{{nodo.razonSocial.toLowerCase()}}</ion-card-title>
+              <ion-card-subtitle *ngIf="nodo.direccion.length > 5" class="ion-text-capitalize">{{nodo.direccion.toLowerCase()}}</ion-card-subtitle>
+              <ion-card-subtitle *ngIf="nodo.direccion.length <= 5">No registra dirección</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+                <ion-row *ngIf="nodo.esInscrito">
+                    En este establecimiento estás inscrito. 
+                    <div *ngIf="nodo.idFuncionarioPrestadorCabecera && nodo.idFuncionarioPrestadorCabecera > 0 && modulo == 'AGENDA'">Tienes como médico de cabecera a {{nodo.nombreFuncionarioPrestadorCabecera}}</div>
+                </ion-row>
+                <ion-row *ngIf="!nodo.esInscrito">
+                  En este establecimiento estás adscrito.
+                  <div *ngIf="nodo.idFuncionarioPrestadorCabecera && nodo.idFuncionarioPrestadorCabecera > 0 && modulo == 'AGENDA'">Tienes como médico de cabecera a {{nodo.nombreFuncionarioPrestadorCabecera}}</div>
+                </ion-row>
+  
+                <ion-row style="float: right;">
+                    <a class="ion-margin-bottom ion-margin-top" (click)="irAReservar(nodo)">{{botones}}</a> 
+                </ion-row>
+            </ion-card-content>
+          </ion-card>
+        </div>
+      </div>
+
       
     </div>
  

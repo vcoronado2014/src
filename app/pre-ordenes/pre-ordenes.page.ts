@@ -99,12 +99,23 @@ export class PreOrdenesPage implements OnInit {
       if (this.usuarioApsFamilia) {
         if (this.usuarioApsFamilia.length > 0) {
           for (var s in this.usuarioApsFamilia) {
-            //por mientras el parentezco lo dejamos como no informado.
-            if (!(this.usuarioApsFamilia[s].Parentezco && this.usuarioApsFamilia[s].Parentezco.Id > 0)) {
-              this.usuarioApsFamilia[s].Parentezco.Nombre = 'No informado';
+            if (this.usuarioApsFamilia[s].Parentezco != null) {
+              //por mientras el parentezco lo dejamos como no informado.
+              if (!(this.usuarioApsFamilia[s].Parentezco && this.usuarioApsFamilia[s].Parentezco?.Id > 0)) {
+                this.usuarioApsFamilia[s].Parentezco.Nombre = 'No informado';
+              }
+              //this.usuarioApsFamilia[s].Parentezco = "No informado";
+              this.listadoUsuario.push(this.usuarioApsFamilia[s]);
             }
-            //this.usuarioApsFamilia[s].Parentezco = "No informado";
-            this.listadoUsuario.push(this.usuarioApsFamilia[s]);
+            else{
+              this.usuarioApsFamilia[s].Parentezco = {
+                Id : 0,
+                Nombre : 'No informado'
+              };
+              
+              this.listadoUsuario.push(this.usuarioApsFamilia[s]);
+            }
+
           }
         }
       }

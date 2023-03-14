@@ -757,4 +757,23 @@ export class ServicioNotificaciones{
         return arrRuts.toString();
     }
 
+    entregaArregloRutsUsps(){
+        var usuarios = this.utiles.entregaArregloUsuarios();
+        //de los usuarios necesitamos sus respectivos ids
+        var arrRuts = [];
+        if (usuarios && usuarios.length > 0){
+            usuarios.forEach(usuario => {
+                var run = usuario.Rut;
+                var uspId = usuario.Id;
+                var nodId = usuario.NodId;
+                var comparte = usuario.ComparteInformacion;
+                var visualiza = usuario.VisualizaInformacion;
+                var data = run + '|' + uspId + '|' + nodId + '|' + comparte + '|' + visualiza;
+                arrRuts.push(data);
+            });
+        }
+        console.log(arrRuts.toString());
+        return arrRuts.toString();
+    }    
+
 }

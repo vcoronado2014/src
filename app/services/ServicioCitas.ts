@@ -740,12 +740,16 @@ export class ServicioCitas{
         return this.http.post(url, {}, {});
       }
     entregaPorMesNuevoApi(uspId, idRyf, nodId, numeroMes, annoConsulta) {
+
+        var uspIdLogueado = this.utiles.entregaUsuarioLogueado();
+
         const body = JSON.stringify({
             UspId: uspId.toString(),
             IdRyf: idRyf.toString(),
             NodId: nodId.toString(),
             NumeroMes: numeroMes.toString(),
-            AnnoConsulta: annoConsulta.toString()
+            AnnoConsulta: annoConsulta.toString(),
+            UspIdLogueado: uspIdLogueado.Id.toString(),
         });
 
         let url = environment.API_ENDPOINT + 'MesNuevoApi';
@@ -764,6 +768,7 @@ export class ServicioCitas{
     }
     entregaPorMesNuevoApiNative(uspId, idRyf, nodId, numeroMes, annoConsulta) {
         //realizar la llamada post nativa
+        var uspIdLogueado = this.utiles.entregaUsuarioLogueado();
         const headers = new Headers;
         const body =
         {
@@ -771,7 +776,8 @@ export class ServicioCitas{
             "IdRyf": idRyf.toString(),
             "NodId": nodId.toString(),
             "NumeroMes": numeroMes.toString(),
-            "AnnoConsulta": annoConsulta.toString()
+            "AnnoConsulta": annoConsulta.toString(),
+            "UspIdLogueado": uspIdLogueado.Id.toString()
         };
 
         let url = environment.API_ENDPOINT + 'MesNuevoApi';
@@ -824,12 +830,15 @@ export class ServicioCitas{
     }
     //** implementación por usuario de un listado */
     entregaPorMesNuevoApiListado(uspId, idRyf, nodId, numeroMes, annoConsulta) {
+
+        var uspIdLogueado = this.utiles.entregaUsuarioLogueado();
         const body = JSON.stringify({
             UspId: uspId.toString(),
             IdRyf: idRyf.toString(),
             NodId: nodId.toString(),
             NumeroMes: numeroMes.toString(),
-            AnnoConsulta: annoConsulta.toString()
+            AnnoConsulta: annoConsulta.toString(),
+            UspIdLogueado: uspIdLogueado.Id.toString()
         });
 
         let url = environment.API_ENDPOINT + 'MesNuevoApi';
@@ -848,6 +857,7 @@ export class ServicioCitas{
     }
     entregaPorMesNuevoApiListadoNative(uspId, idRyf, nodId, numeroMes, annoConsulta) {
         //realizar la llamada post nativa
+        var uspIdLogueado = this.utiles.entregaUsuarioLogueado();
         const headers = new Headers;
         const body =
         {
@@ -855,7 +865,8 @@ export class ServicioCitas{
             "IdRyf": idRyf.toString(),
             "NodId": nodId.toString(),
             "NumeroMes": numeroMes.toString(),
-            "AnnoConsulta": annoConsulta.toString()
+            "AnnoConsulta": annoConsulta.toString(),
+            "UspIdLogueado": uspIdLogueado.Id.toString()
         };
 
         let url = environment.API_ENDPOINT + 'MesNuevoApi';
@@ -899,12 +910,14 @@ export class ServicioCitas{
     }
     //2 llamadas en una
     entregaPorMesNuevoApiListadoFork(uspId, idRyf, nodId, numeroMes, annoConsulta) {
+        var uspIdLogueado = this.utiles.entregaUsuarioLogueado();
         const body = JSON.stringify({
             UspId: uspId.toString(),
             IdRyf: idRyf.toString(),
             NodId: nodId.toString(),
             NumeroMes: numeroMes.toString(),
-            AnnoConsulta: annoConsulta.toString()
+            AnnoConsulta: annoConsulta.toString(),
+            UspIdLogueado: uspIdLogueado.Id.toString()
         });
 
         let url = environment.API_ENDPOINT + 'MesNuevoApi';
@@ -924,6 +937,7 @@ export class ServicioCitas{
         let urlVac = environment.API_ENDPOINT + 'VacunasApi';
         const bodyVac = JSON.stringify({
             UspId: uspId.toString(),
+            UspIdLogueado: uspIdLogueado.Id.toString()
         });
 
         let dataVac = this.httpClient.post(urlVac, bodyVac, options);
@@ -938,6 +952,7 @@ export class ServicioCitas{
     }
     entregaPorMesNuevoApiListadoNativeFork(uspId, idRyf, nodId, numeroMes, annoConsulta) {
         //realizar la llamada post nativa
+        var uspIdLogueado = this.utiles.entregaUsuarioLogueado();
         const headers = new Headers;
         const body =
         {
@@ -945,12 +960,14 @@ export class ServicioCitas{
             "IdRyf": idRyf.toString(),
             "NodId": nodId.toString(),
             "NumeroMes": numeroMes.toString(),
-            "AnnoConsulta": annoConsulta.toString()
+            "AnnoConsulta": annoConsulta.toString(),
+            "UspIdLogueado": uspIdLogueado.Id.toString()
         };
 
         const bodyVac =
         {
             "UspId": uspId.toString(),
+            "UspIdLogueado": uspIdLogueado.Id.toString()
         };
 
 
@@ -970,7 +987,11 @@ export class ServicioCitas{
         //return this.http.post(url, body, {});
     }
     postCitasWebFuturas(ruts) {
-        const body = JSON.stringify({ ruts: ruts });
+        var uspIdLogueado = this.utiles.entregaUsuarioLogueado();
+        const body = JSON.stringify({ 
+            ruts: ruts,
+            UspIdLogueado: uspIdLogueado.Id.toString()
+         });
 
         let url = environment.API_ENDPOINT + 'CitaWeb';
         let httpHeaders = new HttpHeaders({
@@ -987,11 +1008,13 @@ export class ServicioCitas{
         return data;
     }
     postCitasWebFuturasNative(ruts) {
+        var uspIdLogueado = this.utiles.entregaUsuarioLogueado();
         //realizar la llamada post nativa
         const headers = new Headers;
         const body =
         {
-            "ruts": ruts
+            "ruts": ruts,
+            "UspIdLogueado": uspIdLogueado.Id.toString()
         };
 
         let url = environment.API_ENDPOINT + 'CitaWeb';
@@ -1039,12 +1062,14 @@ export class ServicioCitas{
     
     //metodos para ionic storage sin vacunas
     entregaPorMesNuevoApiListadoForkSinVac(uspId, idRyf, nodId, numeroMes, annoConsulta) {
+        var uspIdLogueado = this.utiles.entregaUsuarioLogueado();
         const body = JSON.stringify({
             UspId: uspId.toString(),
             IdRyf: idRyf.toString(),
             NodId: nodId.toString(),
             NumeroMes: numeroMes.toString(),
-            AnnoConsulta: annoConsulta.toString()
+            AnnoConsulta: annoConsulta.toString(),
+            UspIdLogueado: uspIdLogueado.Id.toString()
         });
 
         let url = environment.API_ENDPOINT + 'MesNuevoApi';
@@ -1070,6 +1095,7 @@ export class ServicioCitas{
     }
     entregaPorMesNuevoApiListadoNativeForkSinVac(uspId, idRyf, nodId, numeroMes, annoConsulta) {
         //realizar la llamada post nativa
+        var uspIdLogueado = this.utiles.entregaUsuarioLogueado();
         const headers = new Headers;
         const body =
         {
@@ -1077,7 +1103,8 @@ export class ServicioCitas{
             "IdRyf": idRyf.toString(),
             "NodId": nodId.toString(),
             "NumeroMes": numeroMes.toString(),
-            "AnnoConsulta": annoConsulta.toString()
+            "AnnoConsulta": annoConsulta.toString(),
+            "UspIdLogueado": uspIdLogueado.Id.toString()
         };
 
         let url = environment.API_ENDPOINT + 'MesNuevoApi';
@@ -1091,5 +1118,6 @@ export class ServicioCitas{
         return forkJoin([data, dataParam]);
 
     }
+
 
 }

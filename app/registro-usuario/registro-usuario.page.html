@@ -106,6 +106,18 @@
               coincidir</mat-error>
           </mat-form-field>
         </ion-row>
+        <!-- check para COMPARTIR INFORMACIÓN -->
+        <ion-grid class="ion-no-padding">
+          <ion-row class="ion-no-padding">
+            <ion-col size="12" class="ion-no-padding ion-padding-bottom">
+              <ion-item lines="none" style="--ion-item-background: transparent;" class="ion-no-padding">
+                <ion-label style="word-wrap: break-word;font-size: 0.9em;white-space: break-spaces;">Compartir información</ion-label>
+                <ion-toggle name="comparteInformacion" formControlName="comparteInformacion" (ionChange)="onChangeComparte($event)" mode="ios"></ion-toggle>
+              </ion-item> 
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
         <!-- check para EL ACEPTA CONDICIONES -->
         <ion-grid [hidden]="estaEditando">
           <ion-row>

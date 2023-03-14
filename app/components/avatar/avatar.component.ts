@@ -12,6 +12,7 @@ export class AvatarComponent implements OnInit {
   //inset: solo la parte del texto y no avatar full: todo none: ninguna
   @Input() lines = 'none';
   @Input() style = true;
+  @Input() habilitado: boolean = true;
   constructor() { }
 
   ngOnInit() {

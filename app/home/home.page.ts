@@ -96,6 +96,8 @@ export class HomePage implements OnInit {
   pacientesRayen = [];
   establecimientosRayen = [];
   private previousPage: string;
+  //compartir información
+  compartoMiInfo = false;
 
   constructor(
     public navCtrl: NavController,
@@ -154,6 +156,11 @@ export class HomePage implements OnInit {
     this.obtenerNotificacionesApiLocales();
     //nueva implementación
     this.miembrosPorAceptar();
+    //compartir info
+    var registro = this.utiles.obtenerRegistro();
+    if (registro && registro?.Id > 0){
+      this.compartoMiInfo = registro.ComparteInformacion;
+    }
     if (this.utiles.necesitaActualizarDatosRayen(false))
       this.llamadaObtenerPacienteRayen();
   }
@@ -694,10 +701,12 @@ export class HomePage implements OnInit {
     this.notificaciones = [];
     this.estaCargando = true;
     this.estaCargandoNotificaciones = true;
-    var ruts = this.servNotificaciones.entregaArregloRuts();
+    //lo cambiamos para agregar más datos
+    //var ruts = this.servNotificaciones.entregaArregloRuts();
+    var datos = this.servNotificaciones.entregaArregloRutsUsps();
     if (!this.utiles.isAppOnDevice()) {
       //web
-      this.cita.postCitasWebFuturas(ruts).subscribe((response: any) => {
+      this.cita.postCitasWebFuturas(datos).subscribe((response: any) => {
         var data = response;
         //console.log(data);
         this.notificaciones = this.servNotificaciones.construyeNotificacionesLocales(data);
@@ -714,7 +723,7 @@ export class HomePage implements OnInit {
     }
     else {
       //nativa
-      this.cita.postCitasWebFuturasNative(ruts).then((response: any) => {
+      this.cita.postCitasWebFuturasNative(datos).then((response: any) => {
         var data = JSON.parse(response.data);
         //console.log(data);
         this.notificaciones = this.servNotificaciones.construyeNotificacionesLocales(data);

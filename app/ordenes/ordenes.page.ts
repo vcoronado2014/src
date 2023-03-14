@@ -7,6 +7,7 @@ import { ServicioUtiles } from '../../app/services/ServicioUtiles';
 import { ServicioLaboratorio } from '../../app/services/ServicioLaboratorio';
 import { ServicioAcceso } from '../../app/services/ServicioAcceso';
 import { ServicioParametrosApp } from '../../app/services/ServicioParametrosApp';
+import { ServicioGeo } from '../../app/services/ServicioGeo';
 //modal
 import { ModalExamenesPage } from '../modal-examenes/modal-examenes.page';
 //modal
@@ -40,6 +41,10 @@ export class OrdenesPage implements OnInit {
   //actualiza
   actualiza = 'false';
 
+  compartoMiInfo: boolean = false;
+  usuarioLogueado;
+  registroApp;
+
   constructor(
     public navCtrl: NavController,
     public toast: ToastController,
@@ -52,11 +57,20 @@ export class OrdenesPage implements OnInit {
     public loading: LoadingController,
     private lab: ServicioLaboratorio,
     public acceso: ServicioAcceso,
-    public parametrosApp: ServicioParametrosApp
+    public parametrosApp: ServicioParametrosApp,
+    private global: ServicioGeo,
   ) { }
   //var arrPresiones = this.presiones.sort((a: any, b: any) => { return this.getTime(moment(b.FechaPresion).toDate()) - this.getTime(moment(a.FechaPresion).toDate()) });
   ngOnInit() {
     moment.locale('es');
+    this.usuarioLogueado = this.utiles.entregaUsuarioLogueado();
+
+    this.registroApp = this.utiles.obtenerRegistro();
+    console.log('registro app ', this.registroApp);
+
+    if (this.registroApp) {
+      this.compartoMiInfo = this.registroApp.ComparteInformacion;
+    }
     this.activatedRoute.queryParams.subscribe(params => {
       if (params && params.usuario) {
         this.usuarioAps = JSON.parse(params.usuario);
@@ -629,5 +643,81 @@ export class OrdenesPage implements OnInit {
       retorno = partes[2] + '-' + partes[1] + '-' + partes[0];
     }
     return retorno;
+  }
+
+  async onChangeEsPrivado(event, exa){
+    console.log('evento ', event);
+    if (event.detail) {
+      
+        console.log('enviar a guardar ', exa);
+        let loader = await this.loading.create({
+          cssClass: 'loading-vacio',
+          showBackdrop: false,
+          spinner: null,
+        });
+        this.estaCargando = true;
+        this.tituloProgress = 'Marcando privado';
+
+        //entidad
+        var evento = {
+          Id: 0,
+          UspId: this.usuarioAps.Id,
+          IdElemento: exa.IdExamen,
+          Titulo: exa.NombreExamen,
+          Subtitulo: exa.NombreExamen,
+          EsPrivado: exa.EsPrivado,
+          Run: this.utiles.insertarGuion(this.usuarioAps.Rut),
+          FechaHoraEvento: exa.FechaSolicitud,
+          ColaId: 0,
+          ColaVisto: 0,
+          DescripcionPrincipal: exa.NombreExamen,
+          DescripcionSecundaria: exa.NombreExamen,
+          Lugar: this.usuarioAps.Establecimiento.RazonSocial,
+          Estado: '',
+          TipoEvento: 6 //examenes
+        };
+
+        console.log('evento a enviar ', evento);
+
+        await loader.present().then(async () => {
+
+          if (!this.utiles.isAppOnDevice()) {
+            //llamada web
+            this.global.postEventosPrivados(evento).subscribe((response: any) => {
+              console.log(response);
+              //this.eventoPrivadoGuardado = response;
+              loader.dismiss();
+              this.estaCargando = false;
+              this.tituloProgress = '';
+
+            }, (error) => {
+              console.log(error);
+              loader.dismiss();
+              this.estaCargando = false;
+              this.tituloProgress = '';
+            });
+
+          }
+          else {
+            //llamada nativa
+            this.global.postEventosPrivadosNative(evento).then((response: any) => {
+              var datos = JSON.parse(response.data);
+              console.log(datos);
+              //this.eventoPrivadoGuardado = datos;
+              loader.dismiss();
+              this.estaCargando = false;
+              this.tituloProgress = '';
+
+            }, (error) => {
+              console.log(error);
+              loader.dismiss();
+              this.estaCargando = false;
+              this.tituloProgress = '';
+            })
+          }
+
+        });
+      
+    }
   }
 }

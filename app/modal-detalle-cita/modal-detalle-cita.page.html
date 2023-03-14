@@ -18,7 +18,7 @@
     <ion-list>
       <ion-item lines="none">
         <!-- poner avatar -->
-        <app-avatar [style]="styleAvatar" [urlImagen] = "miImagen" [nombreCompleto]="miNombre" [parentezco]="miParentezco"></app-avatar>
+        <app-avatar [style]="styleAvatar" [urlImagen] = "miImagen" [nombreCompleto]="miNombre" [parentezco]="miParentezco" [habilitado] = "true" ></app-avatar>
       </ion-item>
     </ion-list>
     <ion-list>
@@ -67,11 +67,20 @@
         </ion-item>
       <!-- </ion-list> -->
     </ion-list>
+    
+    
+    <ion-item lines="none" slot="end" *ngIf="usuarioLogueado.Id == usuarioAps.Id">
+      <ion-label>Evento privado</ion-label>
+      <ion-toggle mode="ios" [checked]="data.DetalleEventoMes.EsPrivado" [(ngModel)]="data.DetalleEventoMes.EsPrivado" (ionChange)="onChangeEsPrivado($event)"></ion-toggle>
+    </ion-item>
+    
+
     <ion-row class="ion-padding-top ion-padding-start" *ngIf="(data.DetalleEventoMes.Subtitulo == 'Próxima Cita Web' || data.DetalleEventoMes.Subtitulo == 'Próxima Cita') && data.DetalleEventoMes.Estado != ''">
         <button *ngIf="botonConfirmar.Visible" (click)="presentAlertConfirm(botonConfirmar)" mat-raised-button color="primary" style="margin-right: 16px;">{{botonConfirmar.Titulo}}</button>
         <button  *ngIf="botonReservar.Visible" (click)="presentAlertConfirm(botonReservar)" mat-raised-button color="primary" style="margin-right: 16px;">{{botonReservar.Titulo}}</button>
         <button *ngIf="botonCancelar.Visible" (click)="presentAlertConfirm(botonCancelar)" mat-stroked-button color="primary">{{botonCancelar.Titulo}}</button>
     </ion-row>
   </div>
+
 
 </ion-content>

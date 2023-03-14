@@ -23,30 +23,57 @@ export class StorageService {
   // call, for example:
   public set(key: string, value: any, uspId: string, fecha: string) {
     let newKey = key + '-' + uspId;
-    if (value.RespuestaBase != null){
-      value.RespuestaBase.UspId = uspId;
-      value.RespuestaBase.FechaActualizacion = fecha;
-    }
-    else{
-      if (key == 'dataVacunas'){
-        value = {
-          Vacunas: value,
-          RespuestaBase : {
+    if (value != null) {
+      if (value.RespuestaBase != null) {
+        value.RespuestaBase.UspId = uspId;
+        value.RespuestaBase.FechaActualizacion = fecha;
+      }
+      else {
+        if (key == 'dataVacunas') {
+          value = {
+            Vacunas: value,
+            RespuestaBase: {
+              UspId: uspId,
+              FechaActualizacion: fecha
+            }
+          };
+        }
+        else {
+          value.RespuestaBase = {
             UspId: uspId,
             FechaActualizacion: fecha
           }
-        };
-      }
-      else{
-        value.RespuestaBase = {
-          UspId: uspId,
-          FechaActualizacion: fecha
         }
+
       }
 
+      this._storage?.set(newKey, value);
+    }
+  }
+
+  public async setElement(key: string, element: any, uspId: string) {
+    let newKey = key + '-' + uspId;
+
+    var data = await this.get(key, uspId);
+    if (data != null){
+      data.Vacunas.forEach(vacuna => {
+        if (vacuna.Eventos){
+
+          for(var i=0; i < vacuna.Eventos.length; i++){
+            if (vacuna.Eventos[i].DetalleEventoMes.IdElemento == element.DetalleEventoMes.IdElemento){
+              vacuna.Eventos[i] = element;
+            }
+          }
+        }
+
+
+      });
+
+      this._storage?.set(newKey, data);
+
+      
     }
 
-    this._storage?.set(newKey, value);
   }
 
   public get(key: string, uspId: string) {

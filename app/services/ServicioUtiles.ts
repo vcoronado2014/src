@@ -821,6 +821,12 @@ export class ServicioUtiles{
             for(var i=0; i < usuarios.length; i++){
               if (usuarios[i].Id == id){
                 usuario = usuarios[i];
+                if (usuario.Parentezco == null){
+                    usuario.Parentezco = {
+                        Id: 0,
+                        Nombre: 'No informado',
+                    }
+                }
               }
             }
           }
@@ -1639,6 +1645,38 @@ export class ServicioUtiles{
             }
         }
         return actualiza;
+    }
+
+    actualizaUsuarioAps(nuevoUsuario){
+        if (localStorage.getItem('UsuarioAps')) {
+            var usu = JSON.parse(localStorage.getItem('UsuarioAps'));
+            if (usu) {
+                if (usu.Id == nuevoUsuario.Id) {
+                    usu = nuevoUsuario;
+                    localStorage.setItem('UsuarioAps', JSON.stringify(usu));
+                }
+            }
+        }
+        if (sessionStorage.getItem('UsuarioAps')) {
+            var usu = JSON.parse(sessionStorage.getItem('UsuarioAps'));
+            if (usu) {
+                if (usu.Id == nuevoUsuario.Id) {
+                    usu = nuevoUsuario;
+                    sessionStorage.setItem('UsuarioAps', JSON.stringify(usu));
+                }
+            }
+        }
+        if (localStorage.getItem('UsuariosFamilia')) {
+            var usuarios = JSON.parse(localStorage.getItem('UsuariosFamilia'));
+            if (usuarios && usuarios.length > 0) {
+                for (var i = 0; i < usuarios.length; i++) {
+                    if (usuarios[i].Id == nuevoUsuario.Id) {
+                        usuarios[i] = nuevoUsuario;
+                    }
+                }
+                localStorage.setItem('UsuariosFamilia', JSON.stringify(usuarios));
+            }
+        }        
     }
 
 }

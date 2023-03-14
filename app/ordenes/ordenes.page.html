@@ -34,39 +34,123 @@
 </div>
 <!-- nueva implementación -->
 <div [hidden]="estaCargando">
-  <ion-item lines="full"  *ngFor="let exa of listadoExamenesCompleto" (click)="ordenSelectedCompleto(exa)">
-    <ion-grid>
-      <ion-row style=" width: 100%;">
-        <ion-col size="8">
-          <div class="text-avatar-1">{{exa.NombreExamen}}</div>
-        </ion-col>
-        <ion-col size="4">
-          <div class="text-solicitud" style="float: right;">{{exa.FechaSolicitud}}</div>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col>
-          <ion-row class="subtext-avatar-1" *ngIf="exa.Resultados?.length == 0">
-            <ion-col *ngIf="exa.FechaMuestra != '01-01-0001'" size="10">
-              Fecha de toma {{exa.FechaMuestra}}
-            </ion-col>
-            <ion-col size="2">
-              <ion-icon name="checkmark-outline" color="danger"></ion-icon>
-            </ion-col>
-          </ion-row>
-          <ion-row class="subtext-avatar-1" *ngIf="exa.Resultados?.length != 0">
-            <ion-col size="10">
-              Fecha resultados {{exa.FechaResultado}}
-            </ion-col>
-            <ion-col size="2">
-              <ion-icon name="checkmark-done-outline" color="success"></ion-icon>
-            </ion-col>
-            
-          </ion-row>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-</ion-item>
+  <div *ngFor="let exa of listadoExamenesCompleto">
+    <ion-card *ngIf="usuarioLogueado.Id == usuarioAps.Id || (usuarioLogueado.Id != usuarioAps.Id && exa.EsPrivado == false)">
+      <ion-card-header style="padding-bottom: 0;">
+        <ion-card-title class="ion-text-justify">
+          <ion-item lines="none" class="ion-no-padding">
+            <ion-toggle mode="ios" [checked]="exa.EsPrivado" [(ngModel)]="exa.EsPrivado"
+              (ionChange)="onChangeEsPrivado($event, exa)" *ngIf="usuarioLogueado.Id == usuarioAps.Id && compartoMiInfo"></ion-toggle>
+            <ion-label class="ion-padding-start" *ngIf="usuarioLogueado.Id == usuarioAps.Id && compartoMiInfo">Es Privado</ion-label>
+            <ion-badge slot="end">{{exa.FechaSolicitud}}</ion-badge>
+          </ion-item>
+          <ion-item lines="none" class="ion-no-padding">
+            <ion-label class="ion-text-wrap text-avatar-1">{{exa.NombreExamen}}</ion-label>
+          </ion-item>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="none" *ngIf="exa.Resultados?.length == 0">
+          <ion-icon name="checkmark-outline" color="danger"></ion-icon>
+          <ion-label class="ion-padding-start" *ngIf="exa.FechaMuestra != '01-01-0001'">
+            Fecha de toma {{exa.FechaMuestra}}
+          </ion-label>
+        </ion-item>
+
+        <ion-item lines="none" *ngIf="exa.Resultados?.length != 0">
+          <ion-icon name="checkmark-done-outline" color="success"></ion-icon>
+          <ion-label class="ion-padding-start">
+            Fecha resultados {{exa.FechaResultado}}
+          </ion-label>
+          <ion-button fill="outline" slot="end" (click)="ordenSelectedCompleto(exa)">Ver</ion-button>
+        </ion-item>
+        
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+
+    <!-- <ion-item lines="full" *ngFor="let exa of listadoExamenesCompleto"> -->
+<!--       <ion-grid>
+        <ion-row style=" width: 100%;" *ngIf="usuarioLogueado.Id == usuarioAps.Id && compartoMiInfo">
+          <ion-col size="12"> 
+          <ion-label>Es Privado</ion-label>
+          <ion-toggle mode="ios" [checked]="exa.EsPrivado" [(ngModel)]="exa.EsPrivado" 
+            (ionChange)="onChangeEsPrivado($event)"></ion-toggle>
+          </ion-col>
+        </ion-row>
+        <ion-row style=" width: 100%;"><ion-col size="12">
+          <ion-grid (click)="ordenSelectedCompleto(exa)">
+            <ion-row style=" width: 100%;">
+              <ion-col size="8">
+                <div class="text-avatar-1">{{exa.NombreExamen}}</div>
+              </ion-col>
+              <ion-col size="4">
+                <div class="text-solicitud" style="float: right;">{{exa.FechaSolicitud}}</div>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <ion-row class="subtext-avatar-1" *ngIf="exa.Resultados?.length == 0">
+                  <ion-col *ngIf="exa.FechaMuestra != '01-01-0001'" size="10">
+                    Fecha de toma {{exa.FechaMuestra}}
+                  </ion-col>
+                  <ion-col size="2">
+                    <ion-icon name="checkmark-outline" color="danger"></ion-icon>
+                  </ion-col>
+                </ion-row>
+                <ion-row class="subtext-avatar-1" *ngIf="exa.Resultados?.length != 0">
+                  <ion-col size="10">
+                    Fecha resultados {{exa.FechaResultado}}
+                  </ion-col>
+                  <ion-col size="2">
+                    <ion-icon name="checkmark-done-outline" color="success"></ion-icon>
+                  </ion-col>
+        
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-col></ion-row>
+      </ion-grid> -->
+<!--       <ion-item lines="none" slot="end" *ngIf="usuarioLogueado.Id == usuarioAps.Id && compartoMiInfo">
+        <ion-label>Es Privado</ion-label>
+        <ion-toggle mode="ios" [checked]="exa.EsPrivado" [(ngModel)]="exa.EsPrivado"
+          (ionChange)="onChangeEsPrivado($event)"></ion-toggle>
+      </ion-item> -->
+    
+<!--       <ion-grid (click)="ordenSelectedCompleto(exa)">
+        <ion-row style=" width: 100%;">
+          <ion-col size="8">
+            <div class="text-avatar-1">{{exa.NombreExamen}}</div>
+          </ion-col>
+          <ion-col size="4">
+            <div class="text-solicitud" style="float: right;">{{exa.FechaSolicitud}}</div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-row class="subtext-avatar-1" *ngIf="exa.Resultados?.length == 0">
+              <ion-col *ngIf="exa.FechaMuestra != '01-01-0001'" size="10">
+                Fecha de toma {{exa.FechaMuestra}}
+              </ion-col>
+              <ion-col size="2">
+                <ion-icon name="checkmark-outline" color="danger"></ion-icon>
+              </ion-col>
+            </ion-row>
+            <ion-row class="subtext-avatar-1" *ngIf="exa.Resultados?.length != 0">
+              <ion-col size="10">
+                Fecha resultados {{exa.FechaResultado}}
+              </ion-col>
+              <ion-col size="2">
+                <ion-icon name="checkmark-done-outline" color="success"></ion-icon>
+              </ion-col>
+    
+            </ion-row>
+          </ion-col>
+        </ion-row>
+      </ion-grid> -->
+    <!-- </ion-item> -->
 </div>
 <!-- NO HAY ORDENES -->
 <div [hidden]="estaCargando" *ngIf="tiene == false" style="position: relative; height: 30vh;">

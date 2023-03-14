@@ -4,6 +4,7 @@ import { ModalController, NavParams, NavController, ToastController, Platform, L
 import { ServicioUtiles } from '../../app/services/ServicioUtiles';
 import { ServicioLaboratorio } from '../../app/services/ServicioLaboratorio';
 import { ServicioCitas } from '../../app/services/ServicioCitas';
+import { ServicioGeo } from '../../app/services/ServicioGeo';
 import { environment } from 'src/environments/environment';
 //moment
 import * as moment from 'moment';
@@ -66,6 +67,10 @@ export class ModalDetalleCitaPage implements OnInit {
   estaCargando = false;
   tituloLoading = '';
   styleAvatar = false;
+
+  //eventos privados
+  usuarioLogueado;
+  eventoPrivadoGuardado = null;
   constructor(
     public modalCtrl: ModalController,
     public navParams: NavParams,
@@ -78,6 +83,7 @@ export class ModalDetalleCitaPage implements OnInit {
     private lab: ServicioLaboratorio,
     private alertController: AlertController,
     private agendar: ServicioCitas,
+    private global: ServicioGeo,
   ) { }
 
   ngOnInit() {
@@ -85,8 +91,11 @@ export class ModalDetalleCitaPage implements OnInit {
     this.loadInicio();
   }
   loadInicio() {
+    this.usuarioLogueado = this.utiles.entregaUsuarioLogueado();
+    console.log('usuario logueado', this.usuarioLogueado);
+
     this.data = JSON.parse(this.navParams.get('evento'));
-    //console.log(this.data);
+    console.log('Eventos', this.data);
 
     this.farmacos = this.data.ListaFarmacos;
     //console.log(this.farmacos);
@@ -119,7 +128,17 @@ export class ModalDetalleCitaPage implements OnInit {
         var usuariosFamilia = JSON.parse(localStorage.getItem('UsuariosFamilia'));
         if (usuariosFamilia && usuariosFamilia.length > 0) {
           usuariosFamilia.forEach(usu => {
-            if (usu.Nombres + ' ' + usu.ApellidoPaterno + ' ' + usu.ApellidoMaterno == this.data.DetalleEventoMes.NombrePaciente) {
+/*             if (usu.Nombres + ' ' + usu.ApellidoPaterno + ' ' + usu.ApellidoMaterno == this.data.DetalleEventoMes.NombrePaciente) {
+              this.miImagen = this.utiles.entregaImagen(usu);
+              if (usu.Parentezco && usu.Parentezco.Id > 0) {
+                this.miParentezco = usu.Parentezco.Nombre;
+              }
+              else {
+                this.miParentezco = 'No informado';
+              }
+            } */
+            if (usu.Id == this.usuarioAps.Id) {
+              this.miNombre = usu.Nombres + ' ' + usu.ApellidoPaterno + ' ' + usu.ApellidoMaterno;
               this.miImagen = this.utiles.entregaImagen(usu);
               if (usu.Parentezco && usu.Parentezco.Id > 0) {
                 this.miParentezco = usu.Parentezco.Nombre;
@@ -265,7 +284,20 @@ export class ModalDetalleCitaPage implements OnInit {
     }
   }
   dismiss() {
-    this.modalCtrl.dismiss();
+    //REVISAR ACA, CUANDO RETORNA LA DATA COMO EVENTO PRIVADO
+    //NO ACTUALIZAR TODO, SOLO CAMBIAR LA INFO DE DICHO EVENTO
+    //VER COMO HACER ESO
+    if (this.eventoPrivadoGuardado != null){
+      var data = {
+        data : this.eventoPrivadoGuardado,
+        accion: 'evento'
+      };
+      this.modalCtrl.dismiss(data);
+    }
+    else{
+      this.modalCtrl.dismiss();
+    }
+    
   }
   split(input: string, sep: string, inx: number) {
     var pi = new SplitPipe();
@@ -413,6 +445,88 @@ export class ModalDetalleCitaPage implements OnInit {
       retorno = evento.DetalleEventoMes.FechaHora;
     }
     return retorno;
+  }
+
+  async onChangeEsPrivado(event) {
+    console.log('event:', event);
+    console.log('es privado', this.data.DetalleEventoMes.EsPrivado);
+
+    this.eventoPrivadoGuardado = null;
+    var tipoEvento = this.data.DetalleEventoMes.Titulo == 'Vacuna administrada' ? 2 : 1;
+
+    if (event.detail) {
+      if (event.detail.checked == this.data.DetalleEventoMes.EsPrivado) {
+        let loader = await this.loading.create({
+          cssClass: 'loading-vacio',
+          showBackdrop: false,
+          spinner: null,
+        });
+        this.estaCargando = true;
+        this.tituloLoading = 'Marcando privado';
+
+        //entidad
+        var evento = {
+          Id: 0,
+          UspId: this.usuarioAps.Id,
+          IdElemento: this.data.DetalleEventoMes.IdElemento,
+          Titulo: this.data.DetalleEventoMes.Titulo,
+          Subtitulo: this.data.DetalleEventoMes.Subtitulo,
+          EsPrivado: this.data.DetalleEventoMes.EsPrivado,
+          Run: this.utiles.insertarGuion(this.usuarioAps.Rut),
+          FechaHoraEvento: this.data.DetalleEventoMes.FechaHoraEvento,
+          ColaId: this.data.DetalleEventoMes.ColaId,
+          ColaVisto: this.data.DetalleEventoMes.ColaVisto,
+          DescripcionPrincipal: this.data.DetalleEventoMes.DescripcionPrincipal,
+          DescripcionSecundaria: this.data.DetalleEventoMes.DescripcionSecundaria,
+          Lugar: this.data.DetalleEventoMes.Lugar,
+          Estado: this.data.DetalleEventoMes.Estado,
+          TipoEvento: tipoEvento //calendario
+        };
+
+        console.log('evento a enviar ', evento);
+
+        await loader.present().then(async () => {
+
+          if (!this.utiles.isAppOnDevice()) {
+            //llamada web
+            this.global.postEventosPrivados(evento).subscribe((response: any) => {
+              console.log(response);
+              this.eventoPrivadoGuardado = response;
+              loader.dismiss();
+              this.estaCargando = false;
+              this.tituloLoading = '';
+
+            }, (error) => {
+              console.log(error);
+              loader.dismiss();
+              this.estaCargando = false;
+              this.tituloLoading = '';
+            });
+
+          }
+          else {
+            //llamada nativa
+            this.global.postEventosPrivadosNative(evento).then((response: any) => {
+              var datos = JSON.parse(response.data);
+              console.log(datos);
+              this.eventoPrivadoGuardado = datos;
+              loader.dismiss();
+              this.estaCargando = false;
+              this.tituloLoading = '';
+
+            }, (error) => {
+              console.log(error);
+              loader.dismiss();
+              this.estaCargando = false;
+              this.tituloLoading = '';
+            })
+          }
+
+        });
+      }
+    }
+
+
   }
 
 }

@@ -1,4 +1,4 @@
-<ion-item [lines]="lines" [ngClass]="{'avatar-padding':style, 'avatar-no-padding': style == false }" style="width: 100%;">
+<ion-item [lines]="lines" [ngClass]="{'avatar-padding':style, 'avatar-no-padding': style == false }" style="width: 100%;" [disabled]="!habilitado">
   <!-- poner avatar -->
   <ion-avatar slot="start">
     <img *ngIf="urlImagen != ''" src={{urlImagen}}>
@@ -8,6 +8,7 @@
     <div class="text-avatar">{{nombreCompleto}}</div>
     <div class="subtext-avatar">{{parentezco}}</div>
   </ion-row>
+  <ion-icon *ngIf="!habilitado" name="eye-off" size="large" slot="end"></ion-icon>
 </ion-item>
 
 

@@ -117,7 +117,9 @@ export class RegistroUsuarioPage implements OnInit {
       'genero': new FormControl(),
       'aceptaCondiciones': new FormControl(true, [Validators.requiredTrue]),
       'clave': new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(10)]),
-      'repetirClave': new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(10)])
+      'repetirClave': new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(10)]),
+      //agregado para compartir información
+      'comparteInformacion': new FormControl(false),
     }, { validators: this.EmailIgualesValidator });
     if (this.registro && this.registro.Id >= 0) {
       let sexo = this.registro.Sexo != null ? this.registro.Sexo.toString() : "-1";
@@ -130,6 +132,7 @@ export class RegistroUsuarioPage implements OnInit {
         telefono: this.registro.TelefonoContacto ? this.registro.TelefonoContacto : '',
         genero: sexo,
         aceptaCondiciones: true,
+        comparteInformacion: this.registro.ComparteInformacion,
         clave: '',
         repetirClave: ''
       })
@@ -137,6 +140,7 @@ export class RegistroUsuarioPage implements OnInit {
       if (this.estaEditando) {
         this.forma.get('clave').clearValidators();
         this.forma.get('repetirClave').clearValidators();
+        this.forma.setErrors(null);
       }
       else {
         //esto no esta claro, yo creo que siempre debería estar deshabilitado
@@ -301,6 +305,20 @@ export class RegistroUsuarioPage implements OnInit {
     if (this.forma.invalid) {
       return;
     }
+
+    var uspId = 0;
+    var nodId = 0;
+
+    //si esta editando podemos enviar eel uspId y el nodId
+    if (this.estaEditando){
+      var logueado = this.utiles.entregaUsuarioLogueado();
+      if (logueado && logueado?.Id > 0 && logueado?.NodId > 0){
+        uspId = logueado.Id;
+        nodId = logueado.NodId;
+      }
+    }
+
+
     //aca seguir con el formulario
     //seteamos los valores para enviar el formulario
     var fechaNac = moment();
@@ -337,7 +355,10 @@ export class RegistroUsuarioPage implements OnInit {
       Longitud: sessionStorage.getItem('longitud'),
       Eliminado: '0',
       Activo: '1',
-      Run: this.forma.controls.run ? this.forma.controls.run.value : ''
+      Run: this.forma.controls.run ? this.forma.controls.run.value : '',
+      UspId: uspId.toString(),
+      NodId: nodId.toString(),
+      ComparteInformacion: this.forma.controls.comparteInformacion.value == null ? false : this.forma.controls.comparteInformacion.value,
     };
     //console.log(entidadRegistro);
     //antes de guardar
@@ -543,6 +564,14 @@ export class RegistroUsuarioPage implements OnInit {
       }
     }
   }
+
+  onChangeComparte(event) {
+    if (event.detail) {
+      //this.aceptaCondiciones = event.detail.checked;
+      console.log('comparte información ', event.detail.checked);
+    }
+  }
+
   abrirPDF(){
     if (this.rutaAceptoCondiciones != '#'){
       //abrir en una ventana nueva

@@ -728,4 +728,42 @@ export class ServicioGeo{
 
     return this.http.post(url, body, {});
   }
+  //nuevos metodos para borrar registro
+  postEventosPrivados(evento) {
+
+    const body = JSON.stringify(evento);
+
+    let url = environment.API_ENDPOINT + 'EventosPrivados';
+    let httpHeaders = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache'
+    });
+    httpHeaders.set('Access-Control-Allow-Origin', '*');
+    httpHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+    httpHeaders.set("Access-Control-Allow-Headers", "*");
+
+    let options = { headers: httpHeaders };
+
+    let data = this.httpClient.post(url, body, options);
+    return data;
+
+
+  }
+    postEventosPrivadosNative(evento){
+        
+/*         let objetoRegistro = {
+            IdRegistro : idRegistro.toString(),
+            UserName: userName,
+            Password: userPass
+        }; */
+        const body = evento;
+    
+    
+        let url = environment.API_ENDPOINT + 'EventosPrivados';
+        this.http.setDataSerializer('json');
+    
+    
+        return this.http.post(url, body, {});
+
+    }
 }
