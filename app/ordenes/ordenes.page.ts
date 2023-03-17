@@ -44,6 +44,9 @@ export class OrdenesPage implements OnInit {
   compartoMiInfo: boolean = false;
   usuarioLogueado;
   registroApp;
+  todosPrivados = false;
+  totalExamenes = 0;
+  totalExamenesPrivados = 0;
 
   constructor(
     public navCtrl: NavController,
@@ -199,6 +202,16 @@ export class OrdenesPage implements OnInit {
                   exa.FechaSolicitud = fechaSolicitud;
                   exa.FechaResultado = fechaResultado;
 
+                  //contadores
+                  if (this.usuarioLogueado.Id != this.usuarioAps.Id){
+                    this.totalExamenes++;
+                    if (exa.EsPrivado){
+                      this.totalExamenesPrivados++;
+                    }
+/*                     console.log('total examenes ', this.totalExamenes);
+                    console.log('total examenes privados ', this.totalExamenesPrivados); */
+                  }
+                  //******* */
                   entidad.Examenes.push(exa);
                   this.listadoExamenesCompleto.push(exa);
                 });
@@ -207,6 +220,13 @@ export class OrdenesPage implements OnInit {
               this.listadoOrdenesCompleto.push(entidad);
               this.listadoExamenesCompletoBackUp = this.listadoExamenesCompleto;
             }
+            //evaluamos si los debe mostrar o no
+            console.log('total examenes ', this.totalExamenes);
+            console.log('total examenes privados ', this.totalExamenesPrivados);
+            this.todosPrivados = this.totalExamenes > 0 && this.totalExamenesPrivados > 0
+                                && this.totalExamenes == this.totalExamenesPrivados ? true : false;
+            console.log('todos privados ', this.todosPrivados);
+
             //guardamos
             //guardaremos en la sesion estos resultados para no volver a actualizarlos cuando el usuario vuelva atrás
             sessionStorage.setItem('ORDENES_COMPLETO', JSON.stringify(this.listadoOrdenesCompleto));
@@ -269,6 +289,16 @@ export class OrdenesPage implements OnInit {
                   exa.FechaMuestra = fechaMuestra;
                   exa.FechaSolicitud = fechaSolicitud;
                   exa.FechaResultado = fechaResultado;
+                  //contadores
+                  if (this.usuarioLogueado.Id != this.usuarioAps.Id){
+                    this.totalExamenes++;
+                    if (exa.EsPrivado){
+                      this.totalExamenesPrivados++;
+                    }
+/*                     console.log('total examenes ', this.totalExamenes);
+                    console.log('total examenes privados ', this.totalExamenesPrivados); */
+                  }
+                  //******* */
 
                   entidad.Examenes.push(exa);
                   this.listadoExamenesCompleto.push(exa);
@@ -278,6 +308,13 @@ export class OrdenesPage implements OnInit {
               this.listadoOrdenesCompleto.push(entidad);
               this.listadoExamenesCompletoBackUp = this.listadoExamenesCompleto;
             }
+            //evaluamos si los debe mostrar o no
+            console.log('total examenes ', this.totalExamenes);
+            console.log('total examenes privados ', this.totalExamenesPrivados);
+            this.todosPrivados = this.totalExamenes > 0 && this.totalExamenesPrivados > 0
+                                && this.totalExamenes == this.totalExamenesPrivados ? true : false;
+            console.log('todos privados ', this.todosPrivados);
+
             //guardamos
             //guardaremos en la sesion estos resultados para no volver a actualizarlos cuando el usuario vuelva atrás
             sessionStorage.setItem('ORDENES_COMPLETO', JSON.stringify(this.listadoOrdenesCompleto));

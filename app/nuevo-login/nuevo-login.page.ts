@@ -376,7 +376,7 @@ export class NuevoLoginPage implements OnInit {
       "Avatar": "",
       "VersionAppName": "Mi familia app",
       "Plataforma": "Android",
-      "VersionAppNumber": "1.0.0",
+      "VersionAppNumber": "1.0.4",
       "IdDispositivo": "4e30592675cc75d1",
       "Pais": "Chile",
       "Provincia": "Cordillera Province",
@@ -730,7 +730,7 @@ export class NuevoLoginPage implements OnInit {
           this.tokenDispositivo = localStorage.getItem('token_dispositivo');
         }
         versionAppName = "Mi salud familiar"
-        versionNumber = "1.0.3";
+        versionNumber = "1.0.4";
         plataforma = "Web";
         //loader.dismiss();
         //otras variables
@@ -758,7 +758,7 @@ export class NuevoLoginPage implements OnInit {
         }
         else {
           versionAppName = "Mi salud familiar"
-          versionNumber = "1.0.3";
+          versionNumber = "1.0.4";
           plataforma = "No informado";
         }
         //crear token para web

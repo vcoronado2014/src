@@ -912,7 +912,7 @@ export class ServicioUtiles{
               entidad.tokenDispositivo = localStorage.getItem('token_dispositivo');
             }
             entidad.versionAppName = "Mi salud familiar"
-            entidad.versionNumber = "1.0.3";
+            entidad.versionNumber = "1.0.4";
             entidad.plataforma = "Web";
             //loader.dismiss();
             //otras variables
@@ -933,12 +933,12 @@ export class ServicioUtiles{
             }
             else if (this.platform.is('mobileweb')){
               entidad.versionAppName = "Mi salud familiar"
-              entidad.versionNumber = "1.0.3";
+              entidad.versionNumber = "1.0.4";
               entidad.plataforma = "Web";
             }
             else {
               entidad.versionAppName = "Mi salud familiar"
-              entidad.versionNumber = "1.0.3";
+              entidad.versionNumber = "1.0.4";
               entidad.plataforma = "No informado";
             }
             //crear token para web
@@ -1164,7 +1164,7 @@ export class ServicioUtiles{
         }
 
         var entidad = {
-            Version: localStorage.getItem('version_number') ? localStorage.getItem('version_number') : '1.0.3',
+            Version: localStorage.getItem('version_number') ? localStorage.getItem('version_number') : '1.0.4',
             EsProduccion: environment.production,
             Nombre: localStorage.getItem('version_app_name') ? localStorage.getItem('version_app_name') : '',
             Ambiente: ambiente

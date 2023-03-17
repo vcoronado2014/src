@@ -153,9 +153,17 @@
     <!-- </ion-item> -->
 </div>
 <!-- NO HAY ORDENES -->
-<div [hidden]="estaCargando" *ngIf="tiene == false" style="position: relative; height: 30vh;">
+<div [hidden]="estaCargando" *ngIf="tiene == false && todosPrivados == false" style="position: relative; height: 30vh;">
   <div style="position: absolute; display: table; height: 100%; font-size: 16pt; text-align: center;width: 100%;letter-spacing: 0.5pt;">
     <p style="display: table-cell; vertical-align: middle">No tiene exámenes  <br>registrados
+    </p>
+  </div>
+</div>
+
+<!-- TODOS PRIVADOS -->
+<div [hidden]="estaCargando" *ngIf="tiene == true && todosPrivados == true" style="position: relative; height: 30vh;">
+  <div style="position: absolute; display: table; height: 100%; font-size: 16pt; text-align: center;width: 100%;letter-spacing: 0.5pt;">
+    <p style="display: table-cell; vertical-align: middle">Los exámenes se encuentran  <br>privados
     </p>
   </div>
 </div>
