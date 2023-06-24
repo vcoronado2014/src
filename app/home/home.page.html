@@ -39,11 +39,19 @@
        </ion-item>
        <!-- términos y condiciones -->
        <ion-item button lines="none" (click)="abrirTerminos()" class="listItem">
-        <ion-icon name="link" slot="start"></ion-icon>
+        <ion-icon name="newspaper" slot="start"></ion-icon>
         <ion-label>
           Términos y condiciones
         </ion-label>
-      </ion-item>       
+      </ion-item>
+      <!-- agreegado por req. de play store -->       
+      <!-- politicas de privacidad -->
+      <ion-item button lines="none" (click)="abrirPrivacidad()" class="listItem">
+        <ion-icon name="checkbox" slot="start"></ion-icon>
+        <ion-label>
+          Políticas de privacidad
+        </ion-label>
+      </ion-item>
        <!-- ajustes de la cuenta -->
        <ion-item button lines="none" (click)="abrirEditar()" class="listItem">
          <ion-icon name="heart" slot="start"></ion-icon>

@@ -85,6 +85,7 @@ export class HomePage implements OnInit {
   }
   //acepta CONDICIONES
   rutaAceptoCondiciones;
+  rutaPoliticasPrivacidad;
   options: InAppBrowserOptions = {
     location: 'yes',
   };
@@ -132,6 +133,8 @@ export class HomePage implements OnInit {
     this.usaCapsulasEducativas = this.parametrosApp.USA_CAPSULAS_EDUCATIVAS();
     //obtención ruta acepto condiciones
     this.rutaAceptoCondiciones = this.parametrosApp.URL_ACEPTA_CONDICIONES();
+    //obtención ruta politicas privacidad
+    this.rutaPoliticasPrivacidad = this.parametrosApp.URL_POLITICAS_PRIVACIDAD();
     this.infoApp = this.utiles.entregaInfoApp();
     //this.miColor = this.utiles.entregaMiColor();
     this.usuarioAps = JSON.parse(sessionStorage.UsuarioAps);
@@ -896,6 +899,20 @@ export class HomePage implements OnInit {
   }
   abrirTerminos() {
     if (this.rutaAceptoCondiciones != '#') {
+      //abrir en una ventana nueva
+      if (this.utiles.isAppOnDevice()) {
+        let target = "_system";
+        this.inap.create(encodeURI(this.rutaAceptoCondiciones), target, this.options);
+      }
+      else {
+        //web
+        window.open(encodeURI(this.rutaAceptoCondiciones), "_system", "location=yes");
+      }
+    }
+  }
+
+  abrirPrivacidad() {
+    if (this.rutaPoliticasPrivacidad != '#') {
       //abrir en una ventana nueva
       if (this.utiles.isAppOnDevice()) {
         let target = "_system";

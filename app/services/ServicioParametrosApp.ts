@@ -135,6 +135,20 @@ export class ServicioParametrosApp{
         return retorno;
     }
 
+    URL_POLITICAS_PRIVACIDAD = ()=>{
+        let retorno = '#';
+        if (localStorage.getItem('PARAMETROS_APP')){
+            let elementos = JSON.parse(localStorage.getItem('PARAMETROS_APP'));
+            if (elementos && elementos.length > 0){
+                let arrRetorno = elementos.find(p=>p.Nombre == 'URL_POLITICAS_PRVACIDAD');
+                if (arrRetorno && arrRetorno.Id > 0){
+                    retorno = arrRetorno.Valor;
+                }
+            }
+        } 
+        return retorno;
+    }
+
     getParametrosNodo() {
         var nodId = localStorage.getItem('UsuarioAps') ? JSON.parse(localStorage.getItem('UsuarioAps'))?.NodId : 0;
         let url = environment.API_ENDPOINT + 'ParametrosNodo?NodId=' + nodId;
