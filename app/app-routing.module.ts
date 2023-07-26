@@ -147,7 +147,15 @@ const routes: Routes = [
   {
     path: 'error',
     loadChildren: () => import('./error/error.module').then( m => m.ErrorPageModule)
-  }
+  },
+  {
+    path: 'step-uno-registro',
+    loadChildren: () => import('./step-uno-registro/step-uno-registro.module').then( m => m.StepUnoRegistroPageModule)
+  },
+  {
+    path: 'validacion-registro',
+    loadChildren: () => import('./validacion-registro/validacion-registro.module').then( m => m.ValidacionRegistroPageModule)
+  },
 
 
 ];

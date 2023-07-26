@@ -132,7 +132,7 @@ export class RegistroUsuarioPage implements OnInit {
         telefono: this.registro.TelefonoContacto ? this.registro.TelefonoContacto : '',
         genero: sexo,
         aceptaCondiciones: true,
-        comparteInformacion: this.registro.ComparteInformacion,
+        comparteInformacion: this.registro.ComparteInformacion ? this.registro.ComparteInformacion : false,
         clave: '',
         repetirClave: ''
       })
@@ -270,6 +270,7 @@ export class RegistroUsuarioPage implements OnInit {
       if (!this.utiles.isAppOnDevice()) {
         //llamada web
         this.acceso.loginWebDirecto(f).subscribe((response: any) => {
+          this.utiles.guardarLogin(userName, password, false);
           this.procesarLogin(response, loader);
         }, error => {
           console.log(error.message);
@@ -281,6 +282,7 @@ export class RegistroUsuarioPage implements OnInit {
       else {
         //llamada nativa
         this.acceso.loginWebNative(f).then((response: any) => {
+          this.utiles.guardarLogin(userName, password, false);
           this.procesarLogin(JSON.parse(response.data), loader);
         },
           (error) => {
@@ -684,6 +686,11 @@ export class RegistroUsuarioPage implements OnInit {
         }
 
 
+    }
+    else{
+      this.tituloLoading = '';
+      this.estaCargando = false;
+      this.procesarEliminacionRegistro();
     }
   }
 

@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { TextAvatarModule } from '../../directives/text-avatar/index'
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 import { CardCalendarioComponent } from './card-calendario/card-calendario.component'
 import { AvatarComponent } from './avatar/avatar.component'
@@ -35,6 +36,7 @@ import { ProgressMinimoComponent } from './progress-minimo/progress-minimo.compo
     TextAvatarModule,
     MatCardModule,
     MatButtonModule,
+    MatAutocompleteModule,
   ],
   exports: [
     CardCalendarioComponent,

@@ -121,6 +121,38 @@ export class ServicioParametrosApp{
         } 
         return retorno;
     }
+
+    //nuevos
+
+    INTENTOS_INSCRIPCION = ()=>{
+        let retorno = 3;
+        if (localStorage.getItem('PARAMETROS_APP')){
+            let elementos = JSON.parse(localStorage.getItem('PARAMETROS_APP'));
+            if (elementos && elementos.length > 0){
+                let arrRetorno = elementos.find(p=>p.Nombre == 'INTENTOS_INSCRIPCION');
+                if (arrRetorno && arrRetorno.Id > 0){
+                    retorno = parseInt(arrRetorno.Valor);
+                }
+            }
+        } 
+        return retorno;
+    }
+
+    MINUTOS_ULTIMO_INTENTO = ()=>{
+        //24 horas por defecto
+        let retorno = 1440;
+        if (localStorage.getItem('PARAMETROS_APP')){
+            let elementos = JSON.parse(localStorage.getItem('PARAMETROS_APP'));
+            if (elementos && elementos.length > 0){
+                let arrRetorno = elementos.find(p=>p.Nombre == 'MINUTOS_ULTIMO_INTENTO');
+                if (arrRetorno && arrRetorno.Id > 0){
+                    retorno = parseInt(arrRetorno.Valor);
+                }
+            }
+        } 
+        return retorno;
+    }
+
     URL_ACEPTA_CONDICIONES = ()=>{
         let retorno = '#';
         if (localStorage.getItem('PARAMETROS_APP')){
@@ -140,7 +172,7 @@ export class ServicioParametrosApp{
         if (localStorage.getItem('PARAMETROS_APP')){
             let elementos = JSON.parse(localStorage.getItem('PARAMETROS_APP'));
             if (elementos && elementos.length > 0){
-                let arrRetorno = elementos.find(p=>p.Nombre == 'URL_POLITICAS_PRVACIDAD');
+                let arrRetorno = elementos.find(p=>p.Nombre == 'URL_POLITICAS_PRIVACIDAD');
                 if (arrRetorno && arrRetorno.Id > 0){
                     retorno = arrRetorno.Valor;
                 }

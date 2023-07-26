@@ -106,7 +106,8 @@ export class InicioPage implements OnInit {
       }
     }
     //this.navCtrl.navigateRoot(['pre-registro-uno'], navigationExtras);
-    this.navCtrl.navigateForward(['pre-registro-uno'], navigationExtras);
+    //this.navCtrl.navigateForward(['pre-registro-uno'], navigationExtras);
+    this.navCtrl.navigateRoot(['step-uno-registro'], navigationExtras);
   }
   irARegistro(registroIncompleto) {
     //enviar registroIncompleto

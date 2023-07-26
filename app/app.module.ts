@@ -51,6 +51,7 @@ import { MatDatepickerModule  } from '@angular/material/datepicker';
 import { MatSelectModule  } from '@angular/material/select'
 import { MatIconModule  } from '@angular/material/icon';
 import { MatAutocompleteModule  } from '@angular/material/autocomplete';
+import { MatStepperModule  } from '@angular/material/stepper';
 /* import { MatSelectModule  } from '@angular/material/select';
 import { MatFormField  } from '@angular/material/form-field/form-field';
 import { MatFormField  } from '@angular/material/form-field/label'; */
@@ -95,6 +96,7 @@ import { enterAnimation } from './animations/nav-animations';
     MatIconModule,
     MatDatepickerModule,
     MatAutocompleteModule,
+    MatStepperModule,
     FormsModule,
     ReactiveFormsModule,
     IonicModule.forRoot({

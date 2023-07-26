@@ -13,6 +13,9 @@ import { ServicioUtiles } from '../../../app/services/ServicioUtiles';
     @Input() titulo: any;
     @Input() contenido: any;
     @Input() irA: string = 'inicio';
+    @Input() textoBoton?: string = 'Volver';
+    @Input() usaIcon?: boolean = false;
+    @Input() iconName?: string = 'eye-off';
     constructor(
         public navCtrl: NavController,
         public toast: ToastController,

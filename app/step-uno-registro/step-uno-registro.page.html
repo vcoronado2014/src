@@ -1,0 +1,50 @@
+<ion-content [ngClass]="{'ion-no-padding':muestraMensaje, 'ion-padding': muestraMensaje == false }">
+    <ion-row class="mt-24" [hidden]="muestraMensaje">
+        <button mat-icon-button aria-label="Example icon-button with a heart icon" (click)="volver()">
+            <mat-icon>arrow_back_ios</mat-icon>
+        </button>
+    </ion-row>
+    <div [hidden]="muestraMensaje">
+        <ion-row class="mt-16">
+            <h1>Hola, un gusto en conocerte</h1>
+        </ion-row>
+        <ion-row>
+            <p class="texto-1">A continuación procederemos a solicitarte algunos datos para iniciar el proceso de registro y validación en la app, te pediremos que llenes tu
+                <strong> correo electrónico, tu run y tu nombre.</strong>
+            </p>
+        </ion-row>
+        <form [formGroup]="forma" novalidate>
+            <!-- run -->
+            <ion-row class="mt-16">
+                <mat-form-field appearance="outline" style="width: 100%;">
+                    <mat-label>Run (Sin puntos y con guión)</mat-label>
+                    <input matInput placeholder="12535301-1" formControlName="run" name="run" required>
+                    <mat-error *ngIf="f.run.errors && f.run.errors.required">Run requerido</mat-error>
+                    <mat-error *ngIf="f.run.errors && f.run.errors.runInvalido == false">Rut inválido</mat-error>
+                </mat-form-field>
+            </ion-row>
+            <!-- nombre -->
+            <ion-row>
+                <mat-form-field appearance="outline" style="width: 100%;">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput placeholder="Nombre" formControlName="nombre" name="nombre" required>
+                    <mat-error *ngIf="f.nombre.errors && f.nombre.errors.required">Requerido</mat-error>
+                  </mat-form-field>
+            </ion-row>
+            <ion-row>
+                <mat-form-field appearance="outline" style="width: 100%;">
+                    <mat-label>Correo electrónico</mat-label>
+                    <!-- <input matInput placeholder="ejemplo@gmail.com" formControlName="email" name="email" required> -->
+                    <input matInput type="email" placeholder="ejemplo@gmail.com" formControlName="email" name="email" required>
+                    <mat-error [hidden]="!(f.email.errors && f.email.errors.required)">Correo requerido</mat-error>
+                    <mat-error [hidden]="!(f.email.errors && f.email.errors.email)">Correo inválido</mat-error>
+                </mat-form-field>
+            </ion-row>
+            <ion-row class="mt-24">
+                <button [disabled]="forma.invalid" mat-flat-button color="primary" style="width: 90%; margin-left: 5%;"
+                    (click)="irPreguntasNew()">CONTINUAR</button>
+            </ion-row>
+        </form>
+    </div>
+
+</ion-content>

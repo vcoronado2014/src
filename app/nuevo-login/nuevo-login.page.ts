@@ -376,7 +376,7 @@ export class NuevoLoginPage implements OnInit {
       "Avatar": "",
       "VersionAppName": "Mi familia app",
       "Plataforma": "Android",
-      "VersionAppNumber": "1.0.4",
+      "VersionAppNumber": "1.0.6",
       "IdDispositivo": "4e30592675cc75d1",
       "Pais": "Chile",
       "Provincia": "Cordillera Province",
@@ -618,6 +618,8 @@ export class NuevoLoginPage implements OnInit {
   nombreCompleto = '';
   miFoto = '';
 
+  //pre-registro
+  preRegistro: any;
 
   constructor(
     private navCtrl: NavController,
@@ -640,8 +642,39 @@ export class NuevoLoginPage implements OnInit {
   ) {
   }
 
+  //verificacion de pre-registro
+  validaPreRegistro() {
+    var retorno = false;
+    if (localStorage.getItem('PRE-REGISTRO')) {
+      this.preRegistro = JSON.parse(localStorage.getItem('PRE-REGISTRO'));
+      if (this.preRegistro.Id > 0) {
+        retorno = true;
+      }
+    }
+    return retorno;
+  }
+
+  abrirValidacionFactor() {
+    //this.navCtrl.navigateRoot('validacion-factor');
+    this.navCtrl.navigateForward('validacion-factor');
+  }
+  limpiarRegistro() {
+    localStorage.removeItem("REGISTRO");
+    localStorage.removeItem("MI_NOMBRE");
+    localStorage.removeItem("MI_RUT");
+    localStorage.removeItem("UsuarioAps");
+    localStorage.setItem("TIENE_REGISTRO", "false");
+  }
+
   ngOnInit() {
     moment.locale('es');
+    //antes verificaremos si tiene un prte-registro pendiente
+    if (this.validaPreRegistro() === true){
+      console.log('tiene pre-registro pendiente');
+      this.limpiarRegistro();
+      this.abrirValidacionFactor();
+    }
+
     this.miFoto = this.utiles.entregaMiImagenLogin();
     //console.log(this.miFoto);
     //vamos a obtener las notificaciones push en esta pantalla
@@ -676,7 +709,9 @@ export class NuevoLoginPage implements OnInit {
         modulo: 'nuevo-login'
       }
     }
-    this.navCtrl.navigateRoot(['pre-registro-uno'], navigationExtras);
+    //this.navCtrl.navigateRoot(['pre-registro-uno'], navigationExtras);
+    //nueva implementacion
+    this.navCtrl.navigateRoot(['step-uno-registro'], navigationExtras);
   }
   cargarForma() {
 
@@ -730,7 +765,7 @@ export class NuevoLoginPage implements OnInit {
           this.tokenDispositivo = localStorage.getItem('token_dispositivo');
         }
         versionAppName = "Mi salud familiar"
-        versionNumber = "1.0.4";
+        versionNumber = "1.0.6";
         plataforma = "Web";
         //loader.dismiss();
         //otras variables
@@ -758,7 +793,7 @@ export class NuevoLoginPage implements OnInit {
         }
         else {
           versionAppName = "Mi salud familiar"
-          versionNumber = "1.0.4";
+          versionNumber = "1.0.6";
           plataforma = "No informado";
         }
         //crear token para web
