@@ -143,8 +143,8 @@ export class StepUnoRegistroPage implements OnInit {
         this.servicioGeo.postValidarCorreoNative(correo).then((response: any) => {
           //procesar JSON.parse(response.data)
           var responseData = JSON.parse(response.data);
-          if (response && response.CodigoMensaje != 0) {
-            this.utiles.presentToast(response.Mensaje, "middle", 3000);
+          if (responseData && responseData.CodigoMensaje != 0) {
+            this.utiles.presentToast(responseData.Mensaje, "middle", 3000);
             this.forma.controls.email.setValue('');
           }
         },
@@ -192,8 +192,8 @@ export class StepUnoRegistroPage implements OnInit {
         this.servicioGeo.postValidarCorreoNative(correo).then((response: any) => {
           // Procesar JSON.parse(response.data)
           var responseData = JSON.parse(response.data);
-          if (response && response.CodigoMensaje != 0) {
-            this.utiles.presentToast(response.Mensaje, "bottom", 3000);
+          if (responseData && responseData.CodigoMensaje != 0) {
+            this.utiles.presentToast(responseData.Mensaje, "bottom", 3000);
             this.forma.controls.email.setValue('');
             reject('Correo no válido');
           } else {
