@@ -396,7 +396,7 @@ export class ValidacionRegistroPage implements OnInit {
     if (pregunta.Campo == 'TipoProfesional'){
       //myControlTProfesional
       let objMasReciente = this.obtenerObjetoMasReciente(this.atenciones);
-      let tipoProf = objMasReciente.TipoProfesional.Nombre ?  objMasReciente.TipoProfesional.Nombre : '';
+      let tipoProf = objMasReciente.TipoProfesional ?  objMasReciente.TipoProfesional : '';
       console.log(tipoProf);
       let valor = this.myControlTProfesional.value;
       correcto = tipoProf != '' && tipoProf.toUpperCase() === valor.toUpperCase() ? true : false; 
