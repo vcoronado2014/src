@@ -67,6 +67,9 @@ export class ContactabilidadPage implements OnInit {
         if (this.usuarioAps && this.usuarioApsRegistro && this.registro) {
           if (this.usuarioAps.Id == this.usuarioApsRegistro.Id) {
             this.modificaRegistro = true;
+            //en este caso es el mismo usuario, los datos mas actualizados de contactabilidad están
+            //en usuarioApsRegistro, por lo que los cambiamos
+            this.usuarioAps.Contactabilidad = this.usuarioApsRegistro.Contactabilidad;
           }
         }
         //console.log(this.usuarioAps);
@@ -84,7 +87,8 @@ export class ContactabilidadPage implements OnInit {
       'telefono': new FormControl('', [Validators.pattern(this.expCelular)]),
     });
     //precargar los datos del usuario. solo si modifica registro
-    if (this.modificaRegistro) {
+    //V.C. 22-08-2023 no aplica el modifica registro ya que la contactabilidad es aparte
+/*     if (this.modificaRegistro) {
       if (this.registro && this.registro != null) {
         this.forma.setValue({
           nombreSocial: this.registro.Apodo,
@@ -93,7 +97,7 @@ export class ContactabilidadPage implements OnInit {
         })
       }
     }
-    else {
+    else { */
       //no tiene registro, pero puede tener datos de contactabilidad en el local storage
       if (this.usuarioAps.Contactabilidad != null) {
         this.forma.setValue({
@@ -102,7 +106,7 @@ export class ContactabilidadPage implements OnInit {
           telefono: this.usuarioAps.Contactabilidad.Telefono ? this.usuarioAps.Contactabilidad.Telefono : '',
         })
       }
-    }
+    /* } */
   }
   async onSumbit() {
     if (this.parametrosApp.USA_API_MANAGEMENT()) {

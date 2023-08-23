@@ -73,7 +73,8 @@ export class ValidacionRegistroPage implements OnInit {
       contenido: ''
     }
 
-
+    cantidadIntentos = 3;
+    tiempoBloqueo = '';
 
   constructor(
     private navCtrl: NavController,
@@ -130,8 +131,21 @@ export class ValidacionRegistroPage implements OnInit {
     await alert.present();
   }
 
+  private convertirTiempo(valor: string){
+    const minutos = parseInt(valor);
+
+    if (minutos >= 60) {
+      const horas = Math.floor(minutos / 60);
+      return `${horas} hora${horas !== 1 ? 's' : ''}`;
+    } else {
+      return `${minutos} minuto${minutos !== 1 ? 's' : ''}`;
+    }
+  }
+
   ngOnInit() {
     moment.locale('es');
+    this.cantidadIntentos = this.parametros.INTENTOS_INSCRIPCION();
+    this.tiempoBloqueo = this.convertirTiempo(this.parametros.MINUTOS_ULTIMO_INTENTO().toString());
     //stepeer
 /*       this.firstFormGroup = this.formBuilder.group({
           firstCtrl: ['', Validators.required]
@@ -531,7 +545,7 @@ export class ValidacionRegistroPage implements OnInit {
           });
         } else {
           console.log('SEGUIR INTENTANDO INTENTO NRO. ', contador)
-          let sms = (3 - contador).toString() + " de sus preguntas son incorrectas le queda(n) " + (parametroIntentos - intentosFallidos).toString() + " intento(s).";
+          let sms = (3 - contador).toString() + " de sus respuestas son incorrectas le queda(n) " + (parametroIntentos - intentosFallidos).toString() + " intento(s).";
           let header = "Intento fallido";
           this.presentAlertConfirm(header, sms, false);
         }
