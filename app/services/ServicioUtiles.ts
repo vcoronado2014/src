@@ -1165,7 +1165,7 @@ export class ServicioUtiles{
 
         let version = '';
         if (this.isAppIOS()){
-            version = '1.3.4';
+            version = '1.3.5';
         }
         else{
             localStorage.getItem('version_number') ? localStorage.getItem('version_number') : '1.0.6'
