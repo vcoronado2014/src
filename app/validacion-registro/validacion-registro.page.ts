@@ -38,6 +38,8 @@ export class ValidacionRegistroPage implements OnInit {
     listaPreguntas = [];
     atenciones = [];
     data;
+    newData;
+    newListaPreguntas = [];
 
     myControlComNac = new FormControl('');
     listaComunasNacimiento: [];
@@ -217,7 +219,7 @@ export class ValidacionRegistroPage implements OnInit {
               //procesar
               console.log('Respuesta ********', response);
               let data = response;
-              this.procesarRespuesta(data);
+              this.procesarRespuestaNew(data);
               loader.dismiss();
             })
           }
@@ -226,7 +228,7 @@ export class ValidacionRegistroPage implements OnInit {
               //procesar
               console.log('Respuesta ********', JSON.parse(response.data));
               let data = JSON.parse(response.data);
-              this.procesarRespuesta(data);
+              this.procesarRespuestaNew(data);
               loader.dismiss();
             },
               (error) => {
@@ -367,6 +369,100 @@ export class ValidacionRegistroPage implements OnInit {
       startWith(''),
       map(value => this._filterTProfesional(value || '')),
     );
+
+  }
+  decodeBase64(encodedString: string): string {
+    const decodedString = atob(encodedString); 
+    return decodedString;
+  }
+
+  procesarRespuestaNew(data) {
+    if (data && parseInt(data.UspId) > 0) {
+      this.tieneHisSalud = true;
+    }
+    this.newData = data;
+    //datos
+/*     if (data && data.ComunaNacimiento.Lista){
+      this.listaComunasNacimiento = data.ComunaNacimiento.Lista;
+    }
+    if (data && data.ComunaResidencia.Lista){
+      this.listaComunasResidencia = data.ComunaResidencia.Lista;
+    }
+    if (data && data.EstadoCivil.Lista){
+      this.listaEstadoCivil = data.EstadoCivil.Lista;
+    }
+    if (data && data.Nacionalidad.Lista){
+      this.listaNacionalidad = data.Nacionalidad.Lista;
+    }
+    if (data && data.Prevision.Lista){
+      this.listaPrevision = data.Prevision?.Lista;
+    }
+    if (data && data.Sector.Lista){
+      this.listaSector = data.Sector?.Lista;
+    }
+    if (data && data.TipoProfesional?.Lista){
+      this.listaTipoProfesional = data.TipoProfesional.Lista;
+    } */
+    //*************** */
+    
+    // reeprocesamos ya que vienen las respuestas ofuzcadas
+    data.ListaPreguntas[0].forEach(pregunta => {
+      if (pregunta.Respuesta && pregunta.Respuesta.Texto){
+        const nuevoTexto = this.decodeBase64(pregunta.Respuesta.Texto);
+        //const nuevoTexto = this.utiles.desencriptar(pregunta.Respuesta.Texto);
+        console.log('NUEVO TEXTO ****', nuevoTexto);
+        pregunta.Respuesta.Texto = nuevoTexto;
+      }
+    });
+
+    this.newListaPreguntas = data.ListaPreguntas[0];
+    console.log('***** nuevo preguntas *****', this,this.newListaPreguntas);
+    // this.atenciones = data.Atenciones;
+
+    this.firstFormGroup = this.formBuilder.group({
+      firstCtrl: ['']
+    });
+    this.secondFormGroup = this.formBuilder.group({
+      secondCtrl: ['']
+    });
+    this.threeFormGroup = this.formBuilder.group({
+      threeCtrl: ['']
+    });
+
+/*     this.filteredOptionsComunasNacimiento = this.myControlComNac.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterComNac(value || '')),
+    );
+
+    this.filteredOptionsComunasResidencia = this.myControlComRes.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterComRes(value || '')),
+    );
+
+    this.filteredOptionsEstadoCivil = this.myControlECivil.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterECivil(value || '')),
+    );
+
+    this.filteredOptionsNacionalidad = this.myControlNac.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterNac(value || '')),
+    );
+
+    this.filteredOptionsPrevision = this.myControlPrevision.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterPrevision(value || '')),
+    );
+
+    this.filteredOptionsSector = this.myControlSector.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterSector(value || '')),
+    );
+
+    this.filteredOptionsTProfesional = this.myControlTProfesional.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterTProfesional(value || '')),
+    ); */
 
   }
 
