@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  API_ENDPOINT: 'https://app.rayensalud.com/MiFamilia/Api/',
-  URL_FOTOS: 'https://app.rayensalud.com/MiFamilia/',
+  API_ENDPOINT: 'http://127.0.0.1:8080/Api/',
+  URL_FOTOS: 'http://127.0.0.1:8080/',
   API_KEY_MAPA: 'AIzaSyAqx2BInVZJP-xhUh5oSUgKSPh3rpB_Rzc',
   USA_CALENDARIO: false,
   HORAS_FECHA_INICIO: 3,
