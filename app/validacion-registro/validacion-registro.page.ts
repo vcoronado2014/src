@@ -41,33 +41,18 @@ export class ValidacionRegistroPage implements OnInit {
     newData;
     newListaPreguntas = [];
 
-    myControlComNac = new FormControl('');
-    listaComunasNacimiento: [];
-    filteredOptionsComunasNacimiento: Observable<string[]>;
+    myControlCombo1 = new FormControl('');
+    listaCombo1: [];
+    filteredOptionsCombo1: Observable<string[]>;  
 
-    listaComunasResidencia: [];
-    myControlComRes = new FormControl('');
-    filteredOptionsComunasResidencia: Observable<string[]>;
+    myControlCombo2 = new FormControl('');
+    listaCombo2: [];
+    filteredOptionsCombo2: Observable<string[]>;
 
-    listaEstadoCivil: [];
-    myControlECivil = new FormControl('');
-    filteredOptionsEstadoCivil: Observable<string[]>;
+    myControlCombo3 = new FormControl('');
+    listaCombo3: [];
+    filteredOptionsCombo3: Observable<string[]>;
 
-    listaNacionalidad: [];
-    myControlNac = new FormControl('');
-    filteredOptionsNacionalidad: Observable<string[]>;
-
-    listaPrevision: [];
-    myControlPrevision = new FormControl('');
-    filteredOptionsPrevision: Observable<string[]>;
-
-    listaSector: [];
-    myControlSector = new FormControl('');
-    filteredOptionsSector: Observable<string[]>;
-
-    listaTipoProfesional: [];
-    myControlTProfesional = new FormControl('');
-    filteredOptionsTProfesional: Observable<string[]>;
 
     objetoMensaje = {
       irA: 'inicio',
@@ -91,23 +76,7 @@ export class ValidacionRegistroPage implements OnInit {
   ) {
 
   }
-  /*
-  esta es la lista de preguntas
 
-  FechaAtencion
-  TipoProfesional
-  ComunaNacimiento
-  ApellidoPaterno
-  ApellidoMaterno
-  Edad
-  EstadoCivil
-  Nacionalidad
-  Prevision
-  ComunaResidencia
-  Sector
-
-  
-  */
   async presentAlertConfirm(header, message, esIntentosFallidos) {
     const alert = await this.alertController.create({
       //cssClass: 'my-custom-class',
@@ -118,7 +87,7 @@ export class ValidacionRegistroPage implements OnInit {
         {
           text: 'Aceptar',
           handler: () => {
-            console.log('Confirm aceptar');
+            // console.log('Confirm aceptar');
             if (esIntentosFallidos){
               this.navCtrl.navigateRoot('nuevo-login');
             }
@@ -217,7 +186,7 @@ export class ValidacionRegistroPage implements OnInit {
           if (!this.utiles.isAppOnDevice()) {
             this.servicioGeo.getPreguntas(this.run).subscribe((response: any) => {
               //procesar
-              console.log('Respuesta ********', response);
+              //console.log('Respuesta ********', response);
               let data = response;
               this.procesarRespuestaNew(data);
               loader.dismiss();
@@ -226,7 +195,7 @@ export class ValidacionRegistroPage implements OnInit {
           else {
             this.servicioGeo.getPreguntasNative(this.run).then((response: any) => {
               //procesar
-              console.log('Respuesta ********', JSON.parse(response.data));
+              //console.log('Respuesta ********', JSON.parse(response.data));
               let data = JSON.parse(response.data);
               this.procesarRespuestaNew(data);
               loader.dismiss();
@@ -246,131 +215,29 @@ export class ValidacionRegistroPage implements OnInit {
     });
     
   }
-  private _filterComNac(value: string): string[] {
+
+  private _filterCombo1(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.listaComunasNacimiento.filter((option:any) => option.toLowerCase().includes(filterValue));
+    return this.listaCombo1.filter((option:any) => option.toLowerCase().includes(filterValue));
   }
 
-  private _filterComRes(value: string): string[] {
+  private _filterCombo2(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.listaComunasResidencia.filter((option:any) => option.toLowerCase().includes(filterValue));
+    return this.listaCombo2.filter((option:any) => option.toLowerCase().includes(filterValue));
   }
 
-  private _filterECivil(value: string): string[] {
+  private _filterCombo3(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.listaEstadoCivil.filter((option:any) => option.toLowerCase().includes(filterValue));
-  }
-
-  private _filterNac(value: string): string[] {
-    const filterValue = value.toLowerCase();
-
-    return this.listaNacionalidad.filter((option:any) => option.toLowerCase().includes(filterValue));
-  }
-
-  private _filterPrevision(value: string): string[] {
-    const filterValue = value.toLowerCase();
-
-    return this.listaPrevision.filter((option:any) => option.toLowerCase().includes(filterValue));
-  }
-
-  private _filterSector(value: string): string[] {
-    const filterValue = value.toLowerCase();
-
-    return this.listaSector.filter((option:any) => option.toLowerCase().includes(filterValue));
-  }
-
-  private _filterTProfesional(value: string): string[] {
-    const filterValue = value.toLowerCase();
-
-    return this.listaTipoProfesional.filter((option:any) => option.toLowerCase().includes(filterValue));
+    return this.listaCombo3.filter((option:any) => option.toLowerCase().includes(filterValue));
   }
 
   separateWords(texto: string): string {
     return texto.replace(/([A-Z])/g, ' $1').trim();
   }
 
-  procesarRespuesta(data) {
-    if (data && data.UspId > 0) {
-      this.tieneHisSalud = true;
-    }
-    this.data = data;
-    //datos
-    if (data && data.ComunaNacimiento.Lista){
-      this.listaComunasNacimiento = data.ComunaNacimiento.Lista;
-    }
-    if (data && data.ComunaResidencia.Lista){
-      this.listaComunasResidencia = data.ComunaResidencia.Lista;
-    }
-    if (data && data.EstadoCivil.Lista){
-      this.listaEstadoCivil = data.EstadoCivil.Lista;
-    }
-    if (data && data.Nacionalidad.Lista){
-      this.listaNacionalidad = data.Nacionalidad.Lista;
-    }
-    if (data && data.Prevision.Lista){
-      this.listaPrevision = data.Prevision?.Lista;
-    }
-    if (data && data.Sector.Lista){
-      this.listaSector = data.Sector?.Lista;
-    }
-    if (data && data.TipoProfesional?.Lista){
-      this.listaTipoProfesional = data.TipoProfesional.Lista;
-    }
-    //*************** */
-
-
-    this.listaPreguntas = data.ListaPreguntas;
-    this.atenciones = data.Atenciones;
-
-    this.firstFormGroup = this.formBuilder.group({
-      firstCtrl: ['']
-    });
-    this.secondFormGroup = this.formBuilder.group({
-      secondCtrl: ['']
-    });
-    this.threeFormGroup = this.formBuilder.group({
-      threeCtrl: ['']
-    });
-
-    this.filteredOptionsComunasNacimiento = this.myControlComNac.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterComNac(value || '')),
-    );
-
-    this.filteredOptionsComunasResidencia = this.myControlComRes.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterComRes(value || '')),
-    );
-
-    this.filteredOptionsEstadoCivil = this.myControlECivil.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterECivil(value || '')),
-    );
-
-    this.filteredOptionsNacionalidad = this.myControlNac.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterNac(value || '')),
-    );
-
-    this.filteredOptionsPrevision = this.myControlPrevision.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterPrevision(value || '')),
-    );
-
-    this.filteredOptionsSector = this.myControlSector.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterSector(value || '')),
-    );
-
-    this.filteredOptionsTProfesional = this.myControlTProfesional.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterTProfesional(value || '')),
-    );
-
-  }
   decodeBase64(encodedString: string): string {
     const decodedString = atob(encodedString); 
     return decodedString;
@@ -381,42 +248,48 @@ export class ValidacionRegistroPage implements OnInit {
       this.tieneHisSalud = true;
     }
     this.newData = data;
-    //datos
-/*     if (data && data.ComunaNacimiento.Lista){
-      this.listaComunasNacimiento = data.ComunaNacimiento.Lista;
-    }
-    if (data && data.ComunaResidencia.Lista){
-      this.listaComunasResidencia = data.ComunaResidencia.Lista;
-    }
-    if (data && data.EstadoCivil.Lista){
-      this.listaEstadoCivil = data.EstadoCivil.Lista;
-    }
-    if (data && data.Nacionalidad.Lista){
-      this.listaNacionalidad = data.Nacionalidad.Lista;
-    }
-    if (data && data.Prevision.Lista){
-      this.listaPrevision = data.Prevision?.Lista;
-    }
-    if (data && data.Sector.Lista){
-      this.listaSector = data.Sector?.Lista;
-    }
-    if (data && data.TipoProfesional?.Lista){
-      this.listaTipoProfesional = data.TipoProfesional.Lista;
-    } */
-    //*************** */
     
     // reeprocesamos ya que vienen las respuestas ofuzcadas
     data.ListaPreguntas[0].forEach(pregunta => {
       if (pregunta.Respuesta && pregunta.Respuesta.Texto){
         const nuevoTexto = this.decodeBase64(pregunta.Respuesta.Texto);
+        const nuevoTexto2 = decodeURIComponent(escape(nuevoTexto));
         //const nuevoTexto = this.utiles.desencriptar(pregunta.Respuesta.Texto);
-        console.log('NUEVO TEXTO ****', nuevoTexto);
-        pregunta.Respuesta.Texto = nuevoTexto;
+        // console.log('NUEVO TEXTO ****', nuevoTexto2);
+        pregunta.Respuesta.Texto = nuevoTexto2;
       }
     });
 
     this.newListaPreguntas = data.ListaPreguntas[0];
-    console.log('***** nuevo preguntas *****', this,this.newListaPreguntas);
+    //console.log('***** nuevo preguntas *****', this.newListaPreguntas);
+
+    if (data.ListaPreguntas[0][0] && data.ListaPreguntas[0][0].Respuesta.Lista){
+      this.listaCombo1 = data.ListaPreguntas[0][0].Respuesta.Lista;
+    }
+    if (data.ListaPreguntas[0][1] && data.ListaPreguntas[0][1].Respuesta.Lista){
+      this.listaCombo2 = data.ListaPreguntas[0][1].Respuesta.Lista;
+    }
+    if (data.ListaPreguntas[0][2] && data.ListaPreguntas[0][2].Respuesta.Lista){
+      this.listaCombo3 = data.ListaPreguntas[0][2].Respuesta.Lista;
+    }
+
+    //datos
+    this.filteredOptionsCombo1 = this.myControlCombo1.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterCombo1(value || '')),
+    );
+
+    this.filteredOptionsCombo2 = this.myControlCombo2.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterCombo2(value || '')),
+    );
+
+    this.filteredOptionsCombo3 = this.myControlCombo3.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterCombo3(value || '')),
+    );
+
+
     // this.atenciones = data.Atenciones;
 
     this.firstFormGroup = this.formBuilder.group({
@@ -428,45 +301,7 @@ export class ValidacionRegistroPage implements OnInit {
     this.threeFormGroup = this.formBuilder.group({
       threeCtrl: ['']
     });
-
-/*     this.filteredOptionsComunasNacimiento = this.myControlComNac.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterComNac(value || '')),
-    );
-
-    this.filteredOptionsComunasResidencia = this.myControlComRes.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterComRes(value || '')),
-    );
-
-    this.filteredOptionsEstadoCivil = this.myControlECivil.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterECivil(value || '')),
-    );
-
-    this.filteredOptionsNacionalidad = this.myControlNac.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterNac(value || '')),
-    );
-
-    this.filteredOptionsPrevision = this.myControlPrevision.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterPrevision(value || '')),
-    );
-
-    this.filteredOptionsSector = this.myControlSector.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterSector(value || '')),
-    );
-
-    this.filteredOptionsTProfesional = this.myControlTProfesional.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterTProfesional(value || '')),
-    ); */
-
   }
-
-
   volver() {
     if (this.paginaAnterior) {
       this.navCtrl.navigateRoot(this.paginaAnterior);
@@ -476,140 +311,51 @@ export class ValidacionRegistroPage implements OnInit {
     }
   }
 
-  private obtenerObjetoMasReciente(datos: any[]): any {
-    let objetoMasReciente = null;
-    let fechaMasReciente = new Date(0);
-  
-    for (const objeto of datos) {
-      const fechaAtencion = new Date(objeto.FechaAtencion);
-  
-      if (fechaAtencion > fechaMasReciente) {
-        fechaMasReciente = fechaAtencion;
-        objetoMasReciente = objeto;
-      }
-    }
-  
-    return objetoMasReciente;
-  }
-  
 
-  private extraerRespuesta(pregunta, index){
+  private extraerRespuestaNew(pregunta, index){
     let correcto = false;
     let valorEvaluar = null;
-    if (pregunta.Campo == 'FechaAtencion'){
-      let objMasReciente = this.obtenerObjetoMasReciente(this.atenciones);
-      let fecha = objMasReciente.FechaAtencion ?  moment(objMasReciente.FechaAtencion).format("MM-YYYY") : '';
-      console.log(fecha);
-      let valor = this.firstFormGroup.controls.firstCtrl.value;
-      correcto = fecha != '' && fecha === valor ? true : false; 
-    }
-    if (pregunta.Campo == 'TipoProfesional'){
-      //myControlTProfesional
-      let objMasReciente = this.obtenerObjetoMasReciente(this.atenciones);
-      let tipoProf = objMasReciente.TipoProfesional ?  objMasReciente.TipoProfesional : '';
-      console.log(tipoProf);
-      let valor = this.myControlTProfesional.value;
-      correcto = tipoProf != '' && tipoProf.toUpperCase() === valor.toUpperCase() ? true : false; 
-    }
-    if (pregunta.Campo == 'ApellidoPaterno'){
-      let apellidoPat = this.data.ApellidoPaterno;
-      if (index == 0){
+    let respuestaTxt = pregunta.Respuesta.Texto != '' ? pregunta.Respuesta.Texto.toUpperCase() : '';
+    if (pregunta.Tipo === 1 || pregunta.Tipo === 3 || pregunta.Tipo === 4){
+      if (index === 0){
         valorEvaluar = this.firstFormGroup.controls.firstCtrl.value;
       }
-      else if (index == 1){
+      else if (index === 1){
         valorEvaluar = this.secondFormGroup.controls.secondCtrl.value;
       }
       else{
         valorEvaluar = this.threeFormGroup.controls.threeCtrl.value;
       }
-      correcto = apellidoPat != '' && apellidoPat.toUpperCase() === valorEvaluar.toUpperCase() ? true : false;
-    }
-    if (pregunta.Campo == 'ApellidoMaterno'){
-      let apellidoMat = this.data.ApellidoMaterno;
-      if (index == 0){
-        valorEvaluar = this.firstFormGroup.controls.firstCtrl.value;
-      }
-      else if (index == 1){
-        valorEvaluar = this.secondFormGroup.controls.secondCtrl.value;
-      }
-      else{
-        valorEvaluar = this.threeFormGroup.controls.threeCtrl.value;
-      }
-      correcto = apellidoMat.toUpperCase() === valorEvaluar.toUpperCase() ? true : false;
 
+      correcto = valorEvaluar.toUpperCase() == respuestaTxt ? true : false;
+      
     }
-    if (pregunta.Campo == 'Edad'){
-      let edad = this.data.Edad.toString();
-      if (index == 0){
-        valorEvaluar = this.firstFormGroup.controls.firstCtrl.value;
+    else if (pregunta.Tipo === 2){
+      if (index === 0){
+        valorEvaluar = this.myControlCombo1.value;
       }
-      else if (index == 1){
-        valorEvaluar = this.secondFormGroup.controls.secondCtrl.value;
+      else if (index === 1) {
+        valorEvaluar = this.myControlCombo2.value;
       }
       else{
-        valorEvaluar = this.threeFormGroup.controls.threeCtrl.value;
+        valorEvaluar = this.myControlCombo3.value;
       }
-      correcto = edad != '' && edad.toUpperCase() === valorEvaluar.toUpperCase() ? true : false;
-    }
 
-    if (pregunta.Campo == 'ComunaNacimiento'){
-      //myControlComNac
-      let comunaNac = this.data.ComunaNacimiento.Nombre  ?  this.data.ComunaNacimiento.Nombre : '';
-      console.log(comunaNac);
-      let valor = this.myControlComNac.value;
-      correcto = comunaNac != '' && comunaNac.toUpperCase() === valor.toUpperCase() ? true : false; 
-    }
+      correcto = valorEvaluar.toUpperCase() == respuestaTxt ? true : false;      
 
-    if (pregunta.Campo == 'ComunaResidencia'){
-      //myControlComNac
-      let comunaRes = this.data.ComunaResidencia.Nombre  ?  this.data.ComunaResidencia.Nombre : '';
-      console.log(comunaRes);
-      let valor = this.myControlComRes.value;
-      correcto = comunaRes != '' && comunaRes.toUpperCase() === valor.toUpperCase() ? true : false; 
-    }
-
-    if (pregunta.Campo == 'EstadoCivil'){
-      //myControlComNac
-      let eCivil = this.data.EstadoCivil.Nombre  ?  this.data.EstadoCivil.Nombre : '';
-      console.log(eCivil);
-      let valor = this.myControlECivil.value;
-      correcto = eCivil != '' && eCivil.toUpperCase() === valor.toUpperCase() ? true : false; 
-    }
-
-    if (pregunta.Campo == 'Nacionalidad'){
-      //myControlComNac
-      let nac = this.data.Nacionalidad.Nombre  ?  this.data.Nacionalidad.Nombre : '';
-      console.log(nac);
-      let valor = this.myControlNac.value;
-      correcto = nac != '' && nac.toUpperCase() === valor.toUpperCase() ? true : false; 
-    }
-
-    if (pregunta.Campo == 'Prevision'){
-      //myControlComNac
-      let previ = this.data.Prevision.Nombre  ?  this.data.Prevision.Nombre : '';
-      console.log(previ);
-      let valor = this.myControlPrevision.value;
-      correcto = previ != '' && previ.toUpperCase() === valor.toUpperCase() ? true : false; 
-    }
-
-    if (pregunta.Campo == 'Sector'){
-      //myControlComNac
-      let sector = this.data.Sector.Nombre  ?  this.data.Sector.Nombre : '';
-      console.log(sector);
-      let valor = this.myControlSector.value;
-      correcto = sector != '' && sector.toUpperCase() === valor.toUpperCase() ? true : false; 
     }
 
     return correcto;
   }
 
-  procesarRespuestas(){
+  procesarRespuestasNew(){
     const parametroIntentos = this.parametros.INTENTOS_INSCRIPCION();
     let contador = 0;
     let indice = 0;
-    if (this.listaPreguntas && this.listaPreguntas.length > 0){
-      this.listaPreguntas.forEach(pregunta => {
-        let res = this.extraerRespuesta(pregunta, indice);
+    if (this.newListaPreguntas && this.newListaPreguntas.length > 0){
+      this.newListaPreguntas.forEach(pregunta => {
+        //console.log('respueesta a la prgunta *****', pregunta.Respuesta.Texto);
+        let res = this.extraerRespuestaNew(pregunta, indice);
         console.log(res);
         if (res === true){
           contador++
@@ -658,11 +404,9 @@ export class ValidacionRegistroPage implements OnInit {
       this.verficarEnrolamientoRayen(this.run);
 
     }
-    
 
-    //por mientras
-    //stepper.reset();
   }
+  
 
   procesaRespuestaEnrolamiento(usuarioAps, loader) {
     if (usuarioAps.RespuestaBase.CodigoMensaje == 0) {
@@ -859,6 +603,5 @@ export class ValidacionRegistroPage implements OnInit {
     }); */
     window.location.reload();
   }
-
 
 }
