@@ -4,13 +4,8 @@
 
 export const environment = {
   production: false,
-<<<<<<< HEAD
   API_ENDPOINT: 'http://localhost:27563/Api/',
   URL_FOTOS: 'http://localhost:27563/',
-=======
-  API_ENDPOINT: 'http://127.0.0.1:8080/Api/',
-  URL_FOTOS: 'http://127.0.0.1:8080/',
->>>>>>> 5304a3e777e604ce100bb01596c129efc857a9ea
   API_KEY_MAPA: 'AIzaSyAqx2BInVZJP-xhUh5oSUgKSPh3rpB_Rzc',
   USA_CALENDARIO: false,
   HORAS_FECHA_INICIO: 3,
