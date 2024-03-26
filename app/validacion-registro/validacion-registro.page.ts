@@ -87,7 +87,7 @@ export class ValidacionRegistroPage implements OnInit {
         {
           text: 'Aceptar',
           handler: () => {
-            console.log('Confirm aceptar');
+            // console.log('Confirm aceptar');
             if (esIntentosFallidos){
               this.navCtrl.navigateRoot('nuevo-login');
             }
@@ -186,7 +186,7 @@ export class ValidacionRegistroPage implements OnInit {
           if (!this.utiles.isAppOnDevice()) {
             this.servicioGeo.getPreguntas(this.run).subscribe((response: any) => {
               //procesar
-              console.log('Respuesta ********', response);
+              //console.log('Respuesta ********', response);
               let data = response;
               this.procesarRespuestaNew(data);
               loader.dismiss();
@@ -195,7 +195,7 @@ export class ValidacionRegistroPage implements OnInit {
           else {
             this.servicioGeo.getPreguntasNative(this.run).then((response: any) => {
               //procesar
-              console.log('Respuesta ********', JSON.parse(response.data));
+              //console.log('Respuesta ********', JSON.parse(response.data));
               let data = JSON.parse(response.data);
               this.procesarRespuestaNew(data);
               loader.dismiss();
@@ -261,7 +261,7 @@ export class ValidacionRegistroPage implements OnInit {
     });
 
     this.newListaPreguntas = data.ListaPreguntas[0];
-    console.log('***** nuevo preguntas *****', this.newListaPreguntas);
+    //console.log('***** nuevo preguntas *****', this.newListaPreguntas);
 
     if (data.ListaPreguntas[0][0] && data.ListaPreguntas[0][0].Respuesta.Lista){
       this.listaCombo1 = data.ListaPreguntas[0][0].Respuesta.Lista;
@@ -354,7 +354,7 @@ export class ValidacionRegistroPage implements OnInit {
     let indice = 0;
     if (this.newListaPreguntas && this.newListaPreguntas.length > 0){
       this.newListaPreguntas.forEach(pregunta => {
-        console.log('respueesta a la prgunta *****', pregunta.Respuesta.Texto);
+        //console.log('respueesta a la prgunta *****', pregunta.Respuesta.Texto);
         let res = this.extraerRespuestaNew(pregunta, indice);
         console.log(res);
         if (res === true){

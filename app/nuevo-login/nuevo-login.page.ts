@@ -958,14 +958,14 @@ export class NuevoLoginPage implements OnInit {
           //console.log(error.message);
           //this.utiles.presentToast("Error de conexión.", "middle", 3000);
           this.estaCargandoHome = false;
-          if (this.utiles.isAppIOS()) {
+          /* if (this.utiles.isAppIOS()) { */
             this.procesoLocal();
-          } else {
+/*           } else {
             this.utiles.presentToast("Error de conexión.", "middle", 3000);
-          }
+          } */
           
         })
-      }, 15000);
+      }, 2000);
     }
     else {
       //llamada nativa
