@@ -65,14 +65,20 @@ export class AppComponent {
         });
       }
       else{
-        //lo comentamos hasta implementar correctamente
-        //this.notificacion.buscarCitasTodas();
-        //lo comentamos ya que las notificaciones se crearan mediante firebase
-        //this.notificacion.buscarCitasTodasLocales();
-        await this.utiles.obtenerParametrosApp(environment.production);
-        await this.utiles.crearTokenPlano();
-        this.fcmService.initFCM();
-        this.fcmService.receiveMessage(true);
+        if (!navigator.onLine){
+          console.log('NO HAY INTERNET');
+        }
+        else {
+          //lo comentamos hasta implementar correctamente
+          //this.notificacion.buscarCitasTodas();
+          //lo comentamos ya que las notificaciones se crearan mediante firebase
+          //this.notificacion.buscarCitasTodasLocales();
+          await this.utiles.obtenerParametrosApp(environment.production);
+          await this.utiles.crearTokenPlano();
+          this.fcmService.initFCM();
+          this.fcmService.receiveMessage(true);
+        }
+
       }
 
     });

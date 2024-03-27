@@ -620,6 +620,7 @@ export class NuevoLoginPage implements OnInit {
 
   //pre-registro
   preRegistro: any;
+  hayInternet: boolean = true;
 
   constructor(
     private navCtrl: NavController,
@@ -916,6 +917,12 @@ export class NuevoLoginPage implements OnInit {
     this.irAHome();
   }
   async loguearseRegistro() {
+    this.hayInternet = await this.checkInternetConnection();
+    console.log('HAY INTERNET loguearse registro', this.hayInternet);
+    if (!this.hayInternet){
+      return;
+    }
+
     let correo = this.forma.controls.email.value;
     let password = this.forma.controls.clave ? this.utiles.encriptar(this.forma.controls.clave.value) : '';
 
@@ -925,10 +932,15 @@ export class NuevoLoginPage implements OnInit {
 
     if (!this.utiles.isAppOnDevice()) {
       //llamada web
-      setTimeout(() => {
         this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data: any) => {
           if (data) {
             let respuesta = data;
+            if (respuesta.Mensaje){
+              this.utiles.presentToast(respuesta.Mensaje, "middle", 3000);
+              this.estaCargandoHome = false;
+              return;
+            }
+
             //falta agregar esto *********
             if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
               //esta eliminado
@@ -947,6 +959,8 @@ export class NuevoLoginPage implements OnInit {
             let registro = JSON.parse(localStorage.getItem('REGISTRO'));
             this.estaCargandoHome = false;
             this.autentificarse(registro.Run, password);
+
+
           }
           else {
             this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
@@ -955,24 +969,21 @@ export class NuevoLoginPage implements OnInit {
           }
 
         }, error => {
-          //console.log(error.message);
-          //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          console.log(error.message);
+          this.utiles.presentToast("Error de conexión.", "middle", 3000);
           this.estaCargandoHome = false;
-          /* if (this.utiles.isAppIOS()) { */
-            this.procesoLocal();
-/*           } else {
-            this.utiles.presentToast("Error de conexión.", "middle", 3000);
-          } */
-          
         })
-      }, 2000);
     }
     else {
       //llamada nativa
-      setTimeout(() => {
         this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data: any) => {
           let respuesta = JSON.parse(data.data);
           if (respuesta) {
+            if (respuesta.Mensaje){
+              this.utiles.presentToast(respuesta.Mensaje, "middle", 3000);
+              this.estaCargandoHome = false;
+              return;
+            }
             //falta agregar esto *********
             if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
               //esta eliminado
@@ -995,34 +1006,37 @@ export class NuevoLoginPage implements OnInit {
           else {
             this.utiles.presentToast("No se encontró registro de usuario.", "middle", 3000);
             this.estaCargandoHome = false;
-
             return;
           }
 
         }).catch(error => {
-          //console.log(error.message);
-          //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          console.log(error.message);
+          this.utiles.presentToast("Error de conexión.", "middle", 3000);
           this.estaCargandoHome = false;
-          if (this.utiles.isAppIOS()) {
-            this.procesoLocal();
-          } else {
-            this.utiles.presentToast("Error de conexión.", "middle", 3000);
-          }
         })
-        }, 15000);
     }
 
   }
   async loguearseRegistroRecordarme(correo, password) {
+    this.hayInternet = await this.checkInternetConnection();
+    console.log('HAY INTERNET loguearse registro', this.hayInternet);
+    if (!this.hayInternet){
+      return;
+    }
+
     //ahora guardamos
     this.estaCargandoHome = true;
 
     if (!this.utiles.isAppOnDevice()) {
       //llamada web
-      setTimeout(() => {
         this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data: any) => {
           if (data) {
             let respuesta = data;
+            if (respuesta.Mensaje){
+              this.utiles.presentToast(respuesta.Mensaje, "middle", 3000);
+              this.estaCargandoHome = false;
+              return;
+            }
             //falta agregar esto *********
             if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
               //esta eliminado
@@ -1049,23 +1063,21 @@ export class NuevoLoginPage implements OnInit {
           }
 
         }, error => {
-          //console.log(error.message);
-          //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          console.log(error.message);
+          this.utiles.presentToast("Error de conexión.", "middle", 3000);
           this.estaCargandoHome = false;
-          if (this.utiles.isAppIOS()) {
-            this.procesoLocal();
-          } else {
-            this.utiles.presentToast("Error de conexión.", "middle", 3000);
-          }
         })
-      }, 15000);
     }
     else {
       //llamada nativa
-      setTimeout(() => {
         this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data: any) => {
           let respuesta = JSON.parse(data.data);
           if (respuesta) {
+            if (respuesta.Mensaje){
+              this.utiles.presentToast(respuesta.Mensaje, "middle", 3000);
+              this.estaCargandoHome = false;
+              return;
+            }
             //falta agregar esto *********
             if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
               //esta eliminado
@@ -1091,30 +1103,34 @@ export class NuevoLoginPage implements OnInit {
           }
 
         }).catch(error => {
-          //console.log(error.message);
-          //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          console.log(error.message);
+          this.utiles.presentToast("Error de conexión.", "middle", 3000);
           this.estaCargandoHome = false;
-          if (this.utiles.isAppIOS()) {
-            this.procesoLocal();
-          } else {
-            this.utiles.presentToast("Error de conexión.", "middle", 3000);
-          }
         })
-      }, 15000);
     }
 
   }
 
   async loguearseRegistroDirecto(correo, password, uspId, url) {
+    this.hayInternet = await this.checkInternetConnection();
+    console.log('HAY INTERNET loguearse registro', this.hayInternet);
+    if (!this.hayInternet){
+      return;
+    }
+
     //ahora guardamos
     this.estaCargandoHome = true;
 
     if (!this.utiles.isAppOnDevice()) {
       //llamada web
-      setTimeout(() => {
         this.servicioGeo.getRegistroAppCorreoPassword(correo, password).subscribe((data: any) => {
           if (data) {
             let respuesta = data;
+            if (respuesta.Mensaje){
+              this.utiles.presentToast(respuesta.Mensaje, "middle", 3000);
+              this.estaCargandoHome = false;
+              return;
+            }
             //falta agregar esto *********
             if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
               //esta eliminado
@@ -1139,16 +1155,21 @@ export class NuevoLoginPage implements OnInit {
           }
 
         }, error => {
+          console.log(error)
+          this.utiles.presentToast("Error de conexión.", "middle", 3000);
           this.estaCargandoHome = false;
         })
-      }, 15000);
     }
     else {
       //llamada nativa
-      setTimeout(() => {
         this.servicioGeo.getRegistroAppNativeCorreoPassword(correo, password).then((data: any) => {
           let respuesta = JSON.parse(data.data);
           if (respuesta) {
+            if (respuesta.Mensaje){
+              this.utiles.presentToast(respuesta.Mensaje, "middle", 3000);
+              this.estaCargandoHome = false;
+              return;
+            }
             //falta agregar esto *********
             if (respuesta.Activo == 0 && respuesta.Eliminado == 1) {
               //esta eliminado
@@ -1172,16 +1193,10 @@ export class NuevoLoginPage implements OnInit {
           }
 
         }).catch(error => {
-          //console.log(error.message);
-          //this.utiles.presentToast("Error de conexión.", "middle", 3000);
+          console.log(error.message);
+          this.utiles.presentToast("Error de conexión.", "middle", 3000);
           this.estaCargandoHome = false;
-          if (this.utiles.isAppIOS()) {
-            this.procesoLocal();
-          } else {
-            this.utiles.presentToast("Error de conexión.", "middle", 3000);
-          }
         })
-      }, 15000);
     }
 
   }
@@ -1208,7 +1223,6 @@ export class NuevoLoginPage implements OnInit {
           puede = false;
         }
       }
-
     }
     if (puede == false) {
       this.utiles.presentToast('NO tienes conexión a internet', 'bottom', 3000);
@@ -1607,5 +1621,17 @@ export class NuevoLoginPage implements OnInit {
     } */
 
   }
+
+  //nueeva funcion para verificar internet
+  async checkInternetConnection(): Promise<boolean> {
+    if (this.utiles.isAppOnDevice()) {
+      this.networkService.onNetworkChange().subscribe(async (status: ConnectionStatus) => {
+        return status !== ConnectionStatus.Offline;
+      });
+    } else {
+      return navigator.onLine;
+    }
+  }
+
   get f() { return this.forma.controls; }
 }

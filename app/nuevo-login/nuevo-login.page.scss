@@ -42,3 +42,26 @@ input.example-right-align {
   display: block;
   margin: 0 auto;
 }
+
+.offline-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #e74c3c; /* Color de fondo */
+  color: #fff; /* Color del texto */
+  text-align: center;
+  padding: 10px 0;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); /* Sombra debajo del recuadro */
+  z-index: 9999; /* Asegura que esté por encima de otros elementos */
+}
+
+.offline-bar ion-icon {
+  font-size: 24px; /* Tamaño del icono */
+  margin-bottom: 5px; /* Espacio entre el icono y el texto */
+}
+
+.offline-bar p {
+  font-size: 14px; /* Tamaño del texto */
+  margin: 0; /* Elimina el margen predeterminado del párrafo */
+}

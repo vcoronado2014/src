@@ -68,6 +68,8 @@
         </ion-row>
       </ion-grid>
     </div>
-
-  
+    <div class="offline-bar" *ngIf="!hayInternet">
+      <ion-icon name="information-circle"></ion-icon>
+      <p>Sin conexión a Internet</p>
+    </div>
   </ion-content>
